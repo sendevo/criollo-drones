@@ -1,0 +1,58 @@
+.MenuContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 93%;         
+    border-radius: 5px;    
+    margin-bottom: 5px;
+    padding: 0px;
+}
+
+.Menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.MenuItem {
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+    height: auto;
+    min-height: 40px;
+}
+
+.MenuDropdownItemBW {
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+    min-width: 200px;
+}
+
+.MenuDropdownItem {
+    text-align: left;
+}
+
+.SelectedOptionContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.SelectedOptionIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 7px;
+}
+
+.SelectedOptionText {      
+    font-size: 14px;    
+    color: #000;
+    max-width: 100px;
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

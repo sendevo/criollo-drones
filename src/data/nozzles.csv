@@ -1,0 +1,71 @@
+﻿level_0,level_1,id,name,long_name,img,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6
+0,2,tt_110,TT 110,abanico plano turbo,teejet_tt,C,C,C,M,M,M,F,F,F,F
+0,2,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,XC,XC,VC,VC,VC,VC,VC,VC
+0,3,tt_110,TT 110,abanico plano turbo,teejet_tt,VC,VC,C,C,M,M,M,M,F,F
+0,3,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,XC,XC,VC,VC,VC
+0,3,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,VC,VC,VC,VC,VC,VC,C,C
+0,3,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,VC,VC,VC,C,C,C,C
+0,3,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,VC,C,C,C,M,M,M,M,M,M
+0,3,dg_80,DG 80,abanico plano baja deriva,teejet_dg_80,-,M,M,F,F,F,-,-,-,-
+0,3,dg_95,DG 95,abanico plano baja deriva,teejet_dg_95,-,M,F,F,F,F,-,-,-,-
+0,3,dg_110_twin,DG 110 TWIN,doble abanico plano baja deriva,teejet_dg_110_twin,-,M,M,F,F,F,-,-,-,-
+0,3,dg_110,DG 110,abanico plano baja deriva,teejet_dg_110,-,M,M,M,M,F,-,-,-,-
+0,4,tt_110,TT 110,abanico plano turbo,teejet_tt,VC,VC,C,C,M,M,M,M,F,F
+0,4,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,XC,XC,VC,VC,VC
+0,4,tt_j60_110,TT J60 110,abanico plano turbo doble,teejet_ttj60,C,C,M,M,M,M,M,M,M,M
+0,4,tt_i60_110,TT I60 110,abanico plano turbo doble inducción,teejet_tti60,XC,XC,XC,VC,VC,VC,VC,VC,VC,VC
+0,4,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,XC,XC,XC,VC,VC,VC,VC,C
+0,4,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,VC,VC,VC,C,C,C,C
+0,4,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,VC,VC,C,C,M,M,M,M,M,M
+0,4,dg_80,DG 80,abanico plano baja deriva,teejet_dg_80,-,C,M,M,M,M,-,-,-,-
+0,4,dg_95,DG 95,abanico plano baja deriva,teejet_dg_95,-,M,M,M,M,M,-,-,-,-
+0,4,dg_110_twin,DG 110 TWIN,doble abanico plano baja deriva,teejet_dg_110_twin,-,M,M,M,M,M,-,-,-,-
+0,4,dg_110,DG 110,abanico plano baja deriva,teejet_dg_110,-,C,C,M,M,M,-,-,-,-
+0,5,tt_110,TT 110,abanico plano turbo,teejet_tt,VC,VC,C,C,M,M,M,M,F,F
+0,5,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,XC,XC,VC,VC,VC
+0,5,tt_j60_110,TT J60 110,abanico plano turbo doble,teejet_ttj60,VC,C,C,C,M,M,M,M,M,M
+0,5,tt_i60_110,TT I60 110,abanico plano turbo doble inducción,teejet_tti60,XC,XC,XC,VC,VC,VC,VC,VC,VC,VC
+0,5,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,XC,XC,XC,VC,VC,VC,VC,C
+0,5,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,VC,VC,VC,C,C,C,C
+0,5,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,VC,VC,C,C,M,M,M,M,M,M
+0,6,tt_110,TT 110,abanico plano turbo,teejet_tt,XC,VC,C,C,M,M,M,M,F,F
+0,6,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,VC,VC,VC,VC,VC
+0,6,tt_j60_110,TT J60 110,abanico plano turbo doble,teejet_ttj60,VC,C,C,C,M,M,M,M,M,M
+0,6,tt_i60_110,TT I60 110,abanico plano turbo doble inducción,teejet_tti60,UC,UC,XC,XC,XC,VC,VC,VC,VC,VC
+0,6,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,XC,XC,XC,VC,VC,VC,VC,C
+0,6,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,VC,VC,VC,C,C,C,C
+0,6,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,VC,VC,C,C,C,M,M,M,M,M
+0,6,dg_80,DG 80,abanico plano baja deriva,teejet_dg_80,-,C,M,M,M,M,-,-,-,-
+0,6,dg_95,DG 95,abanico plano baja deriva,teejet_dg_95,-,M,M,M,M,M,-,-,-,-
+0,6,dg_110_twin,DG 110 TWIN,doble abanico plano baja deriva,teejet_dg_110_twin,-,M,M,M,M,M,-,-,-,-
+0,6,dg_110,DG 110,abanico plano baja deriva,teejet_dg_110,-,C,C,M,M,M,-,-,-,-
+0,7,tt_110,TT 110,abanico plano turbo,teejet_tt,XC,VC,C,C,M,M,M,M,F,F
+0,7,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,VC,VC,VC,VC,VC
+0,7,tt_j60_110,TT J60 110,abanico plano turbo doble,teejet_ttj60,VC,C,C,C,M,M,M,M,M,M
+0,7,tt_i60_110,TT I60 110,abanico plano turbo doble inducción,teejet_tti60,UC,UC,XC,XC,XC,VC,VC,VC,VC,VC
+0,7,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,XC,XC,XC,VC,VC,VC,VC,C
+0,7,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,VC,VC,VC,C,C,C,C
+0,7,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,VC,VC,VC,C,C,C,M,M,M,M
+0,7,dg_80,DG 80,abanico plano baja deriva,teejet_dg_80,-,C,M,M,M,M,-,-,-,-
+0,7,dg_95,DG 95,abanico plano baja deriva,teejet_dg_95,-,C,M,M,M,M,-,-,-,-
+0,7,dg_110_twin,DG 110 TWIN,doble abanico plano baja deriva,teejet_dg_110_twin,-,C,C,C,M,M,-,-,-,-
+0,7,dg_110,DG 110,abanico plano baja deriva,teejet_dg_110,-,C,C,M,M,M,-,-,-,-
+0,8,tt_110,TT 110,abanico plano turbo,teejet_tt,XC,VC,C,C,M,M,M,M,F,F
+0,8,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,VC,VC,VC,VC,VC
+0,8,tt_j60_110,TT J60 110,abanico plano turbo doble,teejet_ttj60,VC,C,C,C,M,M,M,M,M,M
+0,8,tt_i60_110,TT I60 110,abanico plano turbo doble inducción,teejet_tti60,UC,UC,XC,XC,XC,VC,VC,VC,VC,VC
+0,8,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,XC,XC,XC,VC,VC,VC,VC,VC
+0,8,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,XC,VC,VC,VC,VC,VC,C
+0,8,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,XC,VC,VC,VC,C,C,C,M,M,M
+0,8,dg_80,DG 80,abanico plano baja deriva,teejet_dg_80,-,C,C,M,M,M,-,-,-,-
+0,8,dg_95,DG 95,abanico plano baja deriva,teejet_dg_95,-,C,C,C,M,M,-,-,-,-
+0,8,dg_110_twin,DG 110 TWIN,doble abanico plano baja deriva,teejet_dg_110_twin,-,C,C,C,M,M,-,-,-,-
+0,8,dg_110,DG 110,abanico plano baja deriva,teejet_dg_110,-,C,C,C,M,M,-,-,-,-
+0,9,tt_110,TT 110,abanico plano turbo,teejet_tt,XC,VC,C,C,M,M,M,M,F,F
+0,9,tti_110,TTI 110,abanico plano turbo inducción,teejet_tti,UC,UC,UC,XC,XC,VC,VC,VC,VC,VC
+0,9,tt_j60_110,TT J60 110,abanico plano turbo doble,teejet_ttj60,VC,C,C,C,M,M,M,M,M,M
+0,9,tt_i60_110,TT I60 110,abanico plano turbo doble inducción,teejet_tti60,UC,UC,UC,XC,XC,XC,VC,VC,VC,VC
+0,9,ai_80,AI 80,abanico plano antideriva,ai_80,-,XC,XC,XC,XC,VC,VC,VC,VC,VC
+0,9,ai_110,AI 110,abanico plano antideriva,ai_110,-,XC,XC,XC,VC,VC,VC,VC,VC,C
+0,9,ai_xr_110,AI XR 110,abanico plano antideriva rango extendido,teejet_aixr,VC,VC,VC,VC,C,C,C,C,C,C
+0,9,dg_110_twin,DG 110 TWIN,doble abanico plano baja deriva,teejet_dg_110_twin,-,C,C,C,M,M,-,-,-,-

@@ -1,0 +1,137 @@
+.Content {
+	position: relative;
+	min-height: 100%;
+}
+
+.BlueTop {
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	max-width: 600px;
+	height: 120px;
+	pointer-events: none;
+	background-color: #245977;
+	z-index: 99999;
+}
+
+@media (min-width: 501px) {
+    .BlueTop {
+        border-radius: 20px 20px 0px 0px;
+    }
+}
+
+.Wave {
+	position: fixed;
+	top: 120px;
+	width: 100%;
+	max-width: 600px;
+	height: 120px;
+	pointer-events: none;
+	z-index: 99999;
+}
+
+.TitleContainer {
+	position: fixed;
+	top: 40px;
+	left: 0px;
+	display: grid;
+	width: 100%;
+	grid-auto-flow: column;
+  	align-items: center;
+	justify-content: center;
+	gap: 50px;
+	margin-top: 5px;
+	margin-bottom: 100px;
+	z-index: 99999;
+}
+
+.AppLogo {
+	height: 65px;
+	width: 65px;
+	box-shadow: 1px 1px 1px black; 
+	margin-top: -50px;
+}
+
+.Title {
+	margin-top: 0px;
+	margin-bottom: 0px;	
+	line-height: 100%;
+	color: white;
+	font-size: 4.5em;
+	text-shadow: 1px 1px 1px black; 
+	font-family: 'Brush Script MT', cursive;
+}
+
+.Subtitle {	
+	font-family: 'Arial', sans-serif;
+	font-size: 30px; 
+	font-weight: 600; 
+	color:white;
+	margin-top: -10px;	
+	margin-left: 50px;
+}
+
+.HomeIcon {
+	position: absolute;
+	left: 15px;
+    height: 40px;
+    width: 40px;
+}
+
+.ButtonContainer {
+	position: absolute;
+	top: 180px;
+	width: 100%;
+	overflow-y: auto;
+	padding-bottom: 60px;
+	z-index: 0;
+}
+
+.MenuButton{
+	background-color: rgba(200, 200, 200, .9);	
+	box-shadow: 1px 1px 2px black;
+	color: black;
+	margin: 10px auto;
+	height: 60px;
+	line-height: 18px;
+	border-radius: 5px;
+	display: inline-block;
+	width: 75%;
+	display: flex;
+	z-index: -99999;
+}
+
+.MenuButton p{
+	margin: 20px;
+	font-weight: bold;
+	line-height: 1.2em;
+	font-size: 1.2em;
+	text-align: center;
+}
+
+.InfoPage {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;	
+}
+
+.InfoPage::after {
+	content: "";	
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	filter: blur(2px);
+	opacity: 1;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	position: absolute;
+	z-index: -1;   
+}
+
+@font-face {	
+	font-family: "Brush Script MT";
+	src: url("../assets/fonts/brush-script-mt-italic.woff2") format("woff2"),
+		url("../assets/fonts/brush-script-mt-italic.woff") format("woff");	
+}

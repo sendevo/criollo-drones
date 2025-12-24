@@ -1,0 +1,27 @@
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    text-align: left;
+}
+
+.marquee-text {
+    display: block;
+    white-space: nowrap;
+    width: fit-content;
+}
+
+.marquee-text.animate {
+    padding-left: 100%;
+    animation: marquee linear infinite;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}

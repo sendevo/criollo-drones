@@ -1,0 +1,29 @@
+.Form ul{
+    background: transparent;
+    padding-top: 30px;    
+    margin-bottom: 50px;
+}
+
+.Icon {
+    padding-top: 7%;
+    padding-right: 0%;
+    padding-left: 11%;
+    position: absolute;
+    width: 85%;
+    height: 145px;
+    top: -50px;
+    left: 0px;
+    z-index: 1;    
+}
+
+.Table {
+    text-align: center!important;
+}
+
+.Table td {
+    padding: 0px;
+}
+
+.Table th {
+    padding: 0px!important;
+}
