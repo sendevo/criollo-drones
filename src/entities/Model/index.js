@@ -150,51 +150,7 @@ export default class CriolloModel {
         }
     }
 
-    getNozzleName(selection) { // Obtener nombre del pico seleccionado
-        let current = nozzles;
-        for (let i = 0; i < selection.length; i++) {
-            const level = selection[i];
-            if (level === -1) break;
-
-            if (Array.isArray(current)) {
-                if (level >= 0 && level < current.length) {
-                    current = current[level];
-                } else {
-                    return null;
-                }
-            } else if (current.childs && Array.isArray(current.childs)) {
-                if (level >= 0 && level < current.childs.length) {
-                    current = current.childs[level];
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        }
-
-        return current && typeof current === 'object' ? current.long_name : null;
-    }
-
-    getNozzle = selection => {
-        if (!Array.isArray(selection) || selection.length === 0) 
-            return null;
-        let level = selection.findIndex(x => x === -1); // Max prof. de seleccion
-        if (level === -1) 
-            level = selection.length;
-        const node = selection
-            .slice(0, level) // Tomar los niveles seleccionados
-            .reduce((acc, idx) => { // Nodo seleccionado
-                if (!acc || !Array.isArray(acc.childs) || idx < 0)  // Si no hay seleccion
-                    return null;
-                return acc.childs[idx];
-            }, { childs: nozzles });
-        if(node){
-            const hasParameters = node.b !== undefined && node.c !== undefined;
-            return hasParameters ? node : null; // Retornar solo si tiene parametros para evitar error de calculo
-        }
-        return null;
-    }
+    
 
     /// Persistencia de parametros
     updateDatabase(){ // Guardar datos en localStorage
