@@ -16,7 +16,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import Input from '../../components/Input';
 import { NavbarTitle, DeleteButton, AddButton, BackButton } from '../../components/Buttons';
 import Toast from '../../components/Toast';
-import { ModelCtx, WalkthroughCtx } from '../../context';
+import { ModelCtx } from '../../context';
 import * as API from '../../entities/API';
 import { generateId } from '../../utils';
 import { PresentationSelector } from '../../components/Selectors';
@@ -159,24 +159,6 @@ const Supplies = props => {
             Toast("error", err.message, 3000, "bottom");
         }
     };
-
-    const wlk = useContext(WalkthroughCtx);
-    Object.assign(wlk.callbacks, {
-        supplies_capacity: () => {
-            setInputs(prevState => ({ 
-                ...prevState, 
-                lotName: model.lotName,
-                workArea: model.workArea,
-                capacity: model.capacity 
-            }));
-        },
-        supplies_add: () => {
-            setProducts(model.products)
-        },
-        supplies_results: () => {
-            submit()
-        }
-    });
 
     return (
         <Page>            

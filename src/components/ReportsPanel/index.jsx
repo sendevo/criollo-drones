@@ -8,6 +8,7 @@ import classes from './style.module.css';
 const ReportsPanel = () => {
     
     const model = useContext(ModelCtx);
+
     const [completedSections, setCompletedSections] = useState(model.currentReport?.completed || {params: false, control: false, supplies: false});
 
     const emptyReport = !completedSections.params && !completedSections.control && !completedSections.supplies;

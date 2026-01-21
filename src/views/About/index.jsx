@@ -42,8 +42,7 @@ const About = props => (
                 <ListItem accordionItem title="Descripción de la app">
                     <AccordionContent>
                         <Block>
-                            <p style={{textAlign: "justify"}}>Criollo Drones es una aplicación utilitaria para tablets y smartphones que permite calcular los principales parámetros de operación de drones de pulverización y realizar la verificación estática correspondiente.</p>
-		                    <p style={{textAlign: "justify"}}>Al usar la aplicación es posible calcular alternativamente....</p>
+                            <p style={{textAlign: "justify"}}>Criollo Drones es una aplicación utilitaria para tablets y smartphones que permite calcular y verificar los principales parámetros de operación de drones de pulverización, siembra o fertilización.</p>
                             <p style={{textAlign: "justify"}}>La información generada a partir del ingreso de los datos y los cálculos realizados se compila en un reporte que puede ser guardado en formato PDF y compartido mediante correo electrónico y/o WhatsApp.</p>
                             <p style={{textAlign: "justify"}}>Una vez instalada, la utilización de Criollo Drones no requiere disponibilidad de señal ni acceso a la red. Estos servicios sólo son necesarios si se desea compartir los reportes generados.</p>                            
                         </Block>
@@ -67,9 +66,7 @@ const About = props => (
                 <ListItem accordionItem title="Fuente de información">
                     <AccordionContent>
                         <Block>                        
-                        <p style={{textAlign:"justify"}}>La lista de picos con código de color normalizado se basa en los criterios de la norma <b>ISO 10625</b> (2005) <i>"Equipment for crop protection - Sprayer nozzles - Colour coding for identification"</i>.</p>
-                        <p style={{textAlign:"justify"}}>El código de colores indicativo de los espectros de tamaño de gota se basa en los criterios de la norma <b>ISO 25358 (2018)</b> <i>"Crop protection equipment — Droplet-size spectra from atomizers — Measurement and classification"</i>.</p>
-                        <p style={{textAlign:"justify"}}>Las ecuaciones de cálculo fueron tomadas del libro "Pulverizaciones agrícolas terrestres" Onorato, Agustín y Tesouro, Omar. Ediciones, INTA. 2006.</p>
+                            <p style={{textAlign:"justify"}}>La información técnica utilizada en la aplicación fue obtenida de las siguientes fuentes:</p>
                         </Block>
                     </AccordionContent>
                 </ListItem>

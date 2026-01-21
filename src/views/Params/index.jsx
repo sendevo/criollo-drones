@@ -28,7 +28,7 @@ const Params = props => {
     const handleProductTypeChange = (value) => {
         if(value === "solido" || value === "liquido") {
             const prevInputs = { ...inputs, productType: value };
-            model.update({ productType: value });
+            model.update("productType", value );
             setInputs({
                 ...prevInputs,
                 productType: value
@@ -41,7 +41,7 @@ const Params = props => {
     return (
         <Page>            
             <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
-                <NavbarTitle {...props} title="Parámetros de aplicación"/>
+                <NavbarTitle {...props} title="Parámetros de operación"/>
             </Navbar>
 
             <ProductTypeSelector value={inputs.productType} onChange={handleProductTypeChange}/>

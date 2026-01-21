@@ -1,2 +1,2 @@
-# criollo-drones
-Cálculos de pulverización agrícola con drones
+# Criollo Drones
+Cálculos de parámetros operativos de drones agrícolas.

@@ -34,11 +34,7 @@ const Home = () => (
             <div className={classes.ButtonContainer}>
                 <Link href="/params/" className={classes.MenuButton}>
                     <img className={classes.HomeIcon} src={paramsIcon} alt="params"/>
-                    <p>Parámetros de <br/> aplicación</p>
-                </Link>
-                <Link href="/control/" className={classes.MenuButton}>
-                    <img className={classes.HomeIcon} src={controlIcon} alt="control"/>
-                    <p>Verificación de <br/> picos</p>
+                    <p>Parámetros de <br/> operación</p>
                 </Link>
                 <Link href="/supplies/" className={classes.MenuButton}>
                     <img className={classes.HomeIcon} src={suppliesIcon} alt="supplies"/>
@@ -52,8 +48,8 @@ const Home = () => (
                     <img className={classes.HomeIcon} src={reportsIcon} alt="reports"/>
                     <p>Reportes</p>
                 </Link>
-                <Link href="/info/" className={classes.MenuButton}>
-                    <img className={classes.HomeIcon} src={infoIcon} alt="info"/>
+                <Link href="/about/" className={classes.MenuButton}>
+                    <img className={classes.HomeIcon} src={infoIcon} alt="about"/>
                     <p>Información <br/> y ayuda</p>
                 </Link>
             </div>

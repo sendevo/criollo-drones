@@ -5,8 +5,7 @@ import { Capacitor } from '@capacitor/core';
 import * as Views from './views';
 import ReportsPanel from './components/ReportsPanel';
 import Toast from './components/Toast';
-import Popovers from './components/Popover';
-import { ModelProvider, WalkthroughProvider } from './context';
+import { ModelProvider } from './context';
 import './index.css';
 
 // Navegacion
@@ -161,29 +160,26 @@ const Criollo = () => {
     return (
         <App {...f7params}>
             <ModelProvider>
-                <WalkthroughProvider>
-                    {showBackground && (
-                        <div
-                            style={{
-                                background: "lightgray",
-                                filter: 'brightness(1.2) blur(6px) contrast(0.8)',
-                                position: 'fixed',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center top',
-                                backgroundSize: 'cover',
-                                zIndex: -1,
-                            }}/>
-                    )}
-                    <div className="app-container">
-                        <View main url="/" className="app"/>
-                    </div>
-                    <ReportsPanel />
-                    <Popovers />
-                </WalkthroughProvider>
+                {showBackground && (
+                    <div
+                        style={{
+                            background: "lightgray",
+                            filter: 'brightness(1.2) blur(6px) contrast(0.8)',
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center top',
+                            backgroundSize: 'cover',
+                            zIndex: -1,
+                        }}/>
+                )}
+                <div className="app-container">
+                    <View main url="/" className="app"/>
+                </div>
+                <ReportsPanel />
             </ModelProvider>
         </App>
     );

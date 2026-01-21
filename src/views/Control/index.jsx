@@ -1,6 +1,6 @@
 import { f7, Page, Navbar, Block, List, Row, Col, Button } from "framework7-react";
 import { useContext, useEffect, useState } from "react";
-import { ModelCtx, WalkthroughCtx } from "../../context";
+import { ModelCtx } from "../../context";
 import { useSound } from "use-sound";
 import moment from 'moment';
 import * as API from '../../entities/API/index.js';
@@ -245,16 +245,6 @@ const Control = props => {
         });
         f7.panel.open();       
     };
-
-    const wlk = useContext(WalkthroughCtx);
-    Object.assign(wlk.callbacks, {
-        control_nozzles: () => {            
-            handleNozzleCntChange({target: {value: 3}});
-        },
-        control_results: () => {
-            updateData(model.collectedData);
-        }
-    });
 
     return (
         <Page>

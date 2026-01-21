@@ -11,6 +11,7 @@ export const BUILD_DATE = 1766405960722; // 22-12-2025 9:19hs
 
 // Lista de versiones
 const DB_NAMES = [
+    "criollo_drones_1"
     //"criollo_drones_2" // Descomentar para migraciones posteriores
 ];
 
@@ -66,57 +67,8 @@ const get_blank_report = () => {
 };
 
 const defaultFormParams = {
-    productType: "fitosanitarios", // Tipo de producto. Puede ser "fitosanitarios" o "fertilizante"
-    productDensity: 1, // Densidad del producto (g/l)
-    workVelocity: "20.0", // Velocidad de trabajo (km/h)
-    velocityMeasured: false, // Para disparar render en vista de parametros
-    volumeMeasured: false, // Para disparar render en vista de parametros
-    workPressure: "2.0", // Presion de trabajo (bar)
-    workVolume: "56.0", // Volumen de aplicacion (l/ha)
-    workFlow: 0.65, // Caudal de trabajo efectivo (l/min) por pico
-    nominalFlow: 0.8, // Caudal nominal de pico seleccionado
-    nominalPressure: 3, // Presion nominal de pico seleccionado
-    sprayFlow: null, // Caudal de pulverizacion (caudal de picos multiplicado por n de picos)
-    waterEqSprayFlow: null, // Caudal de agua equivalente (para aplicacion con fertilizantes)
-    nozzleSeparation: 0.35, // Distancia entre picos (m)
-    nozzleNumber: null, // Numero de picos
-    nozzleSelection: [-1, -1, -1, -1], // Indices de picos seleccionados
-
-    nutrientConcentration: "100", // Concentracion de nutriente (%)
-    nutrientDose: "0.0", // Dosis de nutriente (kg/ha)
+    productType: "solido", // Tipo de producto. Puede ser "solido" o "liquido"
     
-    // Verificacion de picos
-    samplingTimeMs: 30000, // 30000, 60000 o 90000
-    collectedData: [], // Datos de jarreo
-    verificationOutput: {
-        /*
-            ready: false, // Verificacion finalizada: muestra resultados
-            efAvg: undefined, // Caudal pulverizado promedio
-            totalEffectiveFlow: undefined, // Caudal pulverizado efectivo
-            expectedSprayVolume: undefined, // model.workVolume
-            effectiveSprayVolume: undefined, // Volumen pulverizado efectivo
-            diff: undefined, // effectiveSprayVolume - expectedSprayVolume
-            diffp: undefined, // diff/model.workVolume*100
-            comments: ""
-        */
-    },
-
-    // Variables de insumos
-    workArea: null, // Superficie de lote
-    lotName: null, // Nombre del lote
-    lotCoordinates: null, // Coordenadas del lote
-    gpsEnabled: false, // Habilitacion coordenadas lote
-    loadBalancingEnabled: true, // Habilitacion balanceo de carga
-    capacity: null, // Capacidad del tanque
-    products: [], // Lista de prductos. Formato:
-    /*
-    {
-        key: "id_unico",
-        name: "Nombre del producto",
-        dose: "0.0",
-        presentation: 0 -> ml/ha, 1 -> ml/100L, 2 -> gr/ha, 3 -> gr/100L, 4 -> L/ha
-    }
-    */
     supplies: {}, // Insumos y cantidades
 
     currentReport: get_blank_report(),
