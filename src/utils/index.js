@@ -1,5 +1,6 @@
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
+import { Geolocation } from '@capacitor/geolocation';
 
 
 export const set2Decimals = value => Math.round(value * 100) / 100;
@@ -35,6 +36,47 @@ export const getLastNonEmptyRowIndex = matrix => {
     }
     return -1;
 }
+
+export const requestLocationPermissions = () => {
+    return new Promise( (resolve, reject) => {        
+        Geolocation.checkPermissions().then(permissions => {                        
+            if(permissions.location === "granted"){ 
+                resolve();
+            }else{
+                Geolocation.requestPermissions()
+                .then( res => {
+                    if(res.location === "granted"){
+                        resolve();
+                    }else{
+                        reject("Permisos de ubicación no otorgados");
+                    }
+                })
+                .catch( err => {
+                    reject(err);
+                });
+            }
+        });
+    });
+};
+
+export const getLocation = () => {
+    return new Promise( (resolve, reject) => {        
+        requestLocationPermissions()
+        .then( () => {
+            Geolocation.getCurrentPosition()
+            .then( position => {
+                const coords = [position.coords.latitude, position.coords.longitude];
+                resolve(coords);
+            })
+            .catch( err => {
+                reject({...err, type: "getLocation" });
+            });
+        })
+        .catch( err => {
+            reject({...err, type: "locationPermissions" });
+        });
+    });
+};
 
 
 // Métodos para guardar y compartir archivos

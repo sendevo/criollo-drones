@@ -18,7 +18,7 @@ import { NavbarTitle, DeleteButton, AddButton, BackButton } from '../../componen
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import * as API from '../../entities/API';
-import { generateId } from '../../utils';
+import { generateId, getLocation } from '../../utils';
 import { PresentationSelector } from '../../components/Selectors';
 import iconProduct from '../../assets/icons/calculador.png';
 import iconDose from '../../assets/icons/recolectado.png';
@@ -27,43 +27,6 @@ import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconCapacity from '../../assets/icons/capacidad_carga.png';
 import Typography from '../../components/Typography';
-
-
-const getPosition = () => {
-    return new Promise( (resolve, reject) => {        
-
-        const getCoords = () => {
-            Geolocation.getCurrentPosition().then( position => {            
-                const coords = [position.coords.latitude, position.coords.longitude];
-                resolve(coords);
-            }).catch( error => {
-                reject(error);
-            });
-        };
-
-        Geolocation.checkPermissions().then(permissions => {                        
-            if(permissions.location === "granted"){ 
-                getCoords(); 
-            }else{
-                Toast("info", "Permisos de ubicación no otorgados", 2000, "center");
-                Geolocation.requestPermissions().then(res => {
-                    //console.log(res);
-                    getCoords();
-                }).catch(() => {
-                    //console.log("No se pudo obtener coordenadas");
-                    Function.prototype();
-                });
-            }
-        });
-        /*
-        navigator.geolocation.getCurrentPosition( position => {
-            const coords = [position.coords.latitude, position.coords.longitude];
-            resolve(coords);
-            // El valor de model.lotCoordinates se actualiza al hacer submit
-        });
-        */
-    });
-};
 
 const Supplies = props => {
 
@@ -126,7 +89,7 @@ const Supplies = props => {
         model.update(attr, value);
         if(attr === "gpsEnabled"){
             if(value){
-                getPosition().then( coords => {
+                getLocation().then( coords => {
                     setInputs(prevState => ({ ...prevState, lotCoordinates: coords }));
                 });
             }
