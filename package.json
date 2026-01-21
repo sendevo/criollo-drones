@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "vite --open",
+        "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
         "postinstall": "sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' node_modules/@capacitor-community/keep-awake/android/build.gradle"

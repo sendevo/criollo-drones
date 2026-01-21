@@ -68,6 +68,13 @@ const get_blank_report = () => {
 
 const defaultFormParams = {
     productType: "solido", // Tipo de producto. Puede ser "solido" o "liquido"
+    lotCoordinates: [], // Coordenadas del lote
+    lotName: '', // Nombre del lote
+    workArea: '', // Superficie a trabajar (ha)
+    workVelocity: '', // Velocidad de trabajo (m/s)
+    workWidth: '', // Ancho de trabajo (m)
+    doseSolid: '', // Dosis para productos solidos (kg/ha)
+    doseLiquid: '', // Dosis para productos liquidos (l/ha)
     
     supplies: {}, // Insumos y cantidades
 

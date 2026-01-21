@@ -2,17 +2,24 @@ import {
     Navbar, 
     Page, 
     List,
-    Checkbox
+    Checkbox,
+    BlockTitle
 } from 'framework7-react';
 import { useContext, useEffect, useState } from 'react';
 import { NavbarTitle, BackButton } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
+import Typography from '../../components/Typography';
 import Input from '../../components/Input';
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
+import iconVel from '../../assets/icons/velocidad.png';
+import iconWidth from '../../assets/icons/ancho_faja.png';
+import iconDoseLiq from '../../assets/icons/dosis_liq.png';
+import iconDoseSol from '../../assets/icons/dosis_sol.png';
+
 
 const Params = props => {
 
@@ -23,6 +30,10 @@ const Params = props => {
         lotCoordinates: model.lotCoordinates || [],
         lotName: model.lotName || '',
         workArea: model.workArea || '',
+        workVelocity: model.workVelocity || '',
+        workWidth: model.workWidth || '',
+        doseSolid: model.doseSolid || '',
+        doseLiquid: model.doseLiquid || '',
         gpsEnabled: false
     });
 
@@ -40,11 +51,13 @@ const Params = props => {
     };
 
     const setMainParams = (attr, value) => {
-        model.update(attr, value);
         if(attr === "gpsEnabled"){
             if(value){
                 getLocation().then( coords => {
-                    setInputs(prevState => ({ ...prevState, lotCoordinates: coords }));
+                    setInputs(prevState => ({ 
+                        ...prevState, 
+                        lotCoordinates: coords 
+                    }));
                 })
                 .catch( err => {
                     if(err.type === "locationPermissions"){
@@ -55,9 +68,10 @@ const Params = props => {
                         Toast("error", "Error desconocido al obtener la ubicación");
                     }
                     setInputs(prevState => ({ ...prevState, gpsEnabled: false }));
-                    model.update("gpsEnabled", false);
                 });
             }
+        }else{ // gpsEnabled no forma parte del modelo
+            model.update(attr, value); 
         }
         setInputs(prevState => ({ ...prevState, [attr]: value }));
     };
@@ -70,6 +84,10 @@ const Params = props => {
 
             <ProductTypeSelector value={inputs.productType} onChange={handleProductTypeChange}/>
 
+            <BlockTitle>
+                <Typography>Datos del lote</Typography>
+            </BlockTitle>
+
             <List form noHairlinesMd style={{marginBottom:"10px"}}>    
                 <Input
                     slot="list"
@@ -81,7 +99,6 @@ const Params = props => {
                     onChange={v=>setMainParams('lotName', v.target.value)}>
                 </Input>
                 <Input
-                    className="help-target-supplies-form"
                     slot="list"
                     label="Superficie"
                     name="workArea"
@@ -93,8 +110,7 @@ const Params = props => {
                 </Input>
                 <div 
                     slot="list" 
-                    style={{paddingLeft: 30, paddingBottom: 10}}
-                    className="help-target-supplies-gps">
+                    style={{paddingLeft: 30, paddingBottom: 10}}>
                     <Checkbox
                         checked={inputs.gpsEnabled}
                         onChange={v=>setMainParams('gpsEnabled', v.target.checked)}/>
@@ -109,7 +125,61 @@ const Params = props => {
                     </span>
                 </div>
             </List>
+
+            <BlockTitle>
+                <Typography>Datos de aplicación</Typography>
+            </BlockTitle>
+        
+            <List form noHairlinesMd style={{marginBottom:"10px"}}>
+                <Input
+                    slot="list"
+                    label="Velocidad de trabajo"
+                    name="workVelocity"
+                    type="number"
+                    unit="m/s"
+                    icon={iconVel}
+                    value={inputs.workVelocity}
+                    onChange={v=>setMainParams('workVelocity', parseFloat(v.target.value))}>
+                </Input>
             
+                <Input
+                    slot="list"
+                    label="Ancho de faja"
+                    name="workWidth"
+                    type="number"
+                    unit="m"
+                    icon={iconWidth}
+                    value={inputs.workWidth}
+                    onChange={v=>setMainParams('workWidth', parseFloat(v.target.value))}>
+                </Input>
+
+                {inputs.productType === "solido" && 
+                    <Input
+                        slot="list"
+                        label="Dosis"
+                        name="doseSolid"
+                        type="number"
+                        unit="kg/ha"
+                        icon={iconDoseSol}
+                        value={inputs.doseSolid}
+                        onChange={v=>setMainParams('doseSolid', parseFloat(v.target.value))}>
+                    </Input>
+                }
+    
+                {inputs.productType === "liquido" &&
+                    <Input
+                        slot="list"
+                        label="Dosis"
+                        name="doseLiquid"
+                        type="number"
+                        unit="L/ha"
+                        icon={iconDoseLiq}
+                        value={inputs.doseLiquid}
+                        onChange={v=>setMainParams('doseLiquid', parseFloat(v.target.value))}>
+                    </Input>
+                }
+            </List>
+
             <BackButton {...props} />
         </Page>
     );

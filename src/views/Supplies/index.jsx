@@ -22,7 +22,7 @@ import { generateId, getLocation } from '../../utils';
 import { PresentationSelector } from '../../components/Selectors';
 import iconProduct from '../../assets/icons/calculador.png';
 import iconDose from '../../assets/icons/recolectado.png';
-import iconVolume from '../../assets/icons/dosis.png';
+import iconVolume from '../../assets/icons/dosis_liq.png';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconCapacity from '../../assets/icons/capacidad_carga.png';
