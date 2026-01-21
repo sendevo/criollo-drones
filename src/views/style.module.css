@@ -80,7 +80,7 @@
 
 .ButtonContainer {
 	position: absolute;
-	top: 180px;
+	top: 250px;
 	width: 100%;
 	overflow-y: auto;
 	padding-bottom: 60px;
@@ -91,7 +91,7 @@
 	background-color: rgba(200, 200, 200, .9);	
 	box-shadow: 1px 1px 2px black;
 	color: black;
-	margin: 10px auto;
+	margin: 15px auto;
 	height: 60px;
 	line-height: 18px;
 	border-radius: 5px;

@@ -36,12 +36,14 @@ const Security = props => (
                     <p style={{...styles.text, fontSize: "0.75em"}}># Agende este número y el del centro de salud más cercano</p>
                 </div>
             </div>
-            <Link external href="https://inta.gob.ar/documentos/seguridad-y-prevencion-de-accidentes" target="_blank" className={classes.MenuButton}>
-                <img className={classes.HomeIcon} src={infoIcon} alt="info"/>
-                <p>Más información</p>
-            </Link>
 
         </div>
+
+        <Link external href="https://inta.gob.ar/documentos/seguridad-y-prevencion-de-accidentes" target="_blank" className={classes.MenuButton}>
+            <img className={classes.HomeIcon} src={infoIcon} alt="info"/>
+            <p>Más información</p>
+        </Link>
+        
         <BackButton {...props} />
     </Page>
 );

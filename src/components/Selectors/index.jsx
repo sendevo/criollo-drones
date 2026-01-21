@@ -11,7 +11,7 @@ const ProductTypeSelector = ({value, onChange}) => {
     return(
         <Block style={{marginTop:"0px", marginBottom:"20px"}}>
             <BlockTitle>
-                <Typography variant='subtitle'>Producto a aplicar</Typography>
+                <Typography variant='subtitle'>Tipo de producto</Typography>
             </BlockTitle>
 
             <Row>

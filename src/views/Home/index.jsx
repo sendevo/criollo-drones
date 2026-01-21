@@ -1,7 +1,6 @@
 import { Page, Link, PageContent, Block } from 'framework7-react';
 import Footer from '../../components/Footer';
-import paramsIcon from '../../assets/icons/parametros.png'
-import controlIcon from '../../assets/icons/verificacion.png'
+import paramsIcon from '../../assets/icons/drone.png'
 import suppliesIcon from '../../assets/icons/calculador.png';
 import reportsIcon from '../../assets/icons/reportes.png';
 import securityIcon from '../../assets/icons/seguridad.png';

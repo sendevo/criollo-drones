@@ -106,7 +106,7 @@ const Params = props => {
                     unit="ha"
                     icon={iconArea}
                     value={inputs.workArea}
-                    onChange={v=>setMainParams('workArea', parseFloat(v.target.value))}>
+                    onChange={v=>setMainParams('workArea', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
                 <div 
                     slot="list" 
@@ -127,7 +127,7 @@ const Params = props => {
             </List>
 
             <BlockTitle>
-                <Typography>Datos de aplicación</Typography>
+                <Typography>Datos de operación</Typography>
             </BlockTitle>
         
             <List form noHairlinesMd style={{marginBottom:"10px"}}>
@@ -139,7 +139,7 @@ const Params = props => {
                     unit="m/s"
                     icon={iconVel}
                     value={inputs.workVelocity}
-                    onChange={v=>setMainParams('workVelocity', parseFloat(v.target.value))}>
+                    onChange={v=>setMainParams('workVelocity', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
             
                 <Input
@@ -150,7 +150,7 @@ const Params = props => {
                     unit="m"
                     icon={iconWidth}
                     value={inputs.workWidth}
-                    onChange={v=>setMainParams('workWidth', parseFloat(v.target.value))}>
+                    onChange={v=>setMainParams('workWidth', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
 
                 {inputs.productType === "solido" && 
@@ -162,7 +162,7 @@ const Params = props => {
                         unit="kg/ha"
                         icon={iconDoseSol}
                         value={inputs.doseSolid}
-                        onChange={v=>setMainParams('doseSolid', parseFloat(v.target.value))}>
+                        onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
                     </Input>
                 }
     
@@ -175,7 +175,7 @@ const Params = props => {
                         unit="L/ha"
                         icon={iconDoseLiq}
                         value={inputs.doseLiquid}
-                        onChange={v=>setMainParams('doseLiquid', parseFloat(v.target.value))}>
+                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
                     </Input>
                 }
             </List>

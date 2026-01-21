@@ -9,7 +9,7 @@
 .UnitLabel {
     position: absolute;
     top: 25px;
-    right: 30px;
+    right: 40px;
     /*right: 45px; (con clearbutton)*/
     z-index: 999;
     color: rgb(150,150,150);

@@ -56,7 +56,7 @@ const get_blank_report = () => {
         comments: "",
         params:{},
         control: {},
-        supplies: {},
+        supplies: [],
         completed: {
             params: false,
             control: false,
@@ -76,7 +76,9 @@ const defaultFormParams = {
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
     
-    supplies: {}, // Insumos y cantidades
+    tankCapacity: '', // Capacidad del tanque (l)
+    loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado
+    supplies: [], // Insumos y cantidades
 
     currentReport: get_blank_report(),
     reports: [], // Lista de reportes
