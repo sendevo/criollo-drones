@@ -91,29 +91,7 @@ const ReportsPanel = () => {
                                         <th>Agregado</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Parámetros de pulverización</td>
-                                        <td className={classes.SectionStatus}>
-                                        {
-                                            completedSections.params ? 
-                                            <FaCheck size={20} color="green"/> 
-                                            : 
-                                            <FaTimes size={20} color="red"/>
-                                        }
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Verificación de picos</td>
-                                        <td className={classes.SectionStatus}>
-                                        {
-                                            completedSections.control ? 
-                                            <FaCheck size={20} color="green"/> 
-                                            : 
-                                            <FaTimes size={20} color="red"/>
-                                        }
-                                        </td>
-                                    </tr>                        
+                                <tbody>                     
                                     <tr>
                                         <td>Cálculo de mezcla</td>
                                         <td className={classes.SectionStatus}>

@@ -1,40 +1,13 @@
 import { 
-    f7, 
     Navbar, 
     Page, 
-    List,
-    BlockTitle, 
-    Row, 
-    Col, 
-    Button 
 } from 'framework7-react';
 import { useContext, useEffect, useState } from 'react';
-import { NavbarTitle, CalculatorButton, VolumeCalculatorButton, BackButton } from '../../components/Buttons';
-import { NozzleSeparationSelector, ProductTypeSelector } from '../../components/Selectors';
-import Input from "../../components/Input";
-import NozzleMenu from "../../components/NozzleMenu";
+import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { ProductTypeSelector } from '../../components/Selectors';
 import Toast from '../../components/Toast';
 import Typography from '../../components/Typography';
-import DropletSizeSlider from '../../components/DropletSizeSlider';
-import Divider from '../../components/Divider';
-import { ModelCtx, WalkthroughCtx } from '../../context';
-import {
-    computeQa,
-    computeQb,
-    computeQt,
-    computeQNom,
-    computeVt,
-    computePt,
-    computeVa,
-    dropletSizeProperties,
-    getDropletSizeName
-} from '../../entities/API';
-import iconDistance from '../../assets/icons/dpicos.png';
-import iconNozzles from '../../assets/icons/cant_picos2.png';
-import iconVelocity from '../../assets/icons/velocidad.png';
-import iconPressure from '../../assets/icons/presion.png';
-import iconDensity from '../../assets/icons/densidad.png';
-import iconVolume from '../../assets/icons/dosis.png';
+import { ModelCtx } from '../../context';
 
 const getInputBorderColor = (updated, productType) => {
     if(productType === "fitosanitarios") {
@@ -49,27 +22,15 @@ const Params = props => {
     const model = useContext(ModelCtx);
 
     const [inputs, setInputs] = useState({
-        nozzleSeparation: model.nozzleSeparation || 0.35,
-        nozzleNumber: model.nozzleNumber || '',        
-        nominalFlow: model.nominalFlow || 0.8,        
-        nominalPressure: model.nominalPressure || 3,
-        productDensity: 1,
-        workVelocity: model.workVelocity || 20,
-        workVelocityUpdated: false,
-        workPressure: model.workPressure || 2,
-        workPressureUpdated: false,
-        workVolume: model.workVolume || 56,
-        workVolumeUpdated: false,
         productType: model.productType
     });
 
     const handleProductTypeChange = (value) => {
-        if(value === "fitosanitarios" || value === "fertilizante") {
-            model.update({
-                productType: value,
-            });
+        if(value === "solido" || value === "liquido") {
+            const prevInputs = { ...inputs, productType: value };
+            model.update({ productType: value });
             setInputs({
-                ...inputs,
+                ...prevInputs,
                 productType: value
             });
         }else{

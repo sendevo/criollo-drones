@@ -18,14 +18,14 @@ const ProductTypeSelector = ({value, onChange}) => {
                 <Col style={{textAlign:"center"}}>
                     <Radio 
                         name="input-type" 
-                        checked={value==="fitosanitarios"} 
-                        onChange={e=>setValue(e, "fitosanitarios")}/> Fitosanitario
+                        checked={value==="solido"} 
+                        onChange={e=>setValue(e, "solido")}/> Sólidos
                 </Col>
                 <Col style={{textAlign:"center"}}>
                     <Radio 
                         name="input-type" 
-                        checked={value==="fertilizante"} 
-                        onChange={e=>setValue(e, "fertilizante")}/> Fertilizante
+                        checked={value==="liquido"} 
+                        onChange={e=>setValue(e, "liquido")}/> Líquidos
                 </Col>
             </Row>
         </Block>
