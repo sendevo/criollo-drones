@@ -19,6 +19,9 @@ import iconVel from '../../assets/icons/velocidad.png';
 import iconWidth from '../../assets/icons/ancho_faja.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
+import trayAreaIcon from '../../assets/icons/sup_bandeja.png';
+import trayCountIcon from '../../assets/icons/cant_bandejas.png';
+import traySeparationIcon from '../../assets/icons/dist_bandejas.png';
 
 
 const Params = props => {
@@ -34,7 +37,10 @@ const Params = props => {
         workWidth: model.workWidth || '',
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
-        gpsEnabled: false
+        gpsEnabled: false,
+        trayArea: model.trayArea || '',
+        trayCount: model.trayCount || '',
+        traySeparation: model.traySeparation || ''
     });
 
     const handleProductTypeChange = (value) => {
@@ -153,7 +159,18 @@ const Params = props => {
                     onChange={v=>setMainParams('workWidth', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
 
-                {inputs.productType === "solido" && 
+                {inputs.productType === "liquido" ?
+                    <Input
+                        slot="list"
+                        label="Dosis"
+                        name="doseLiquid"
+                        type="number"
+                        unit="L/ha"
+                        icon={iconDoseLiq}
+                        value={inputs.doseLiquid}
+                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
+                    </Input>
+                    :
                     <Input
                         slot="list"
                         label="Dosis"
@@ -165,18 +182,47 @@ const Params = props => {
                         onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
                     </Input>
                 }
-    
-                {inputs.productType === "liquido" &&
-                    <Input
-                        slot="list"
-                        label="Dosis"
-                        name="doseLiquid"
-                        type="number"
-                        unit="L/ha"
-                        icon={iconDoseLiq}
-                        value={inputs.doseLiquid}
-                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
-                    </Input>
+            </List>
+
+            <BlockTitle>
+                <Typography>Distribución</Typography>
+            </BlockTitle>
+
+            <List form noHairlinesMd style={{marginBottom:"10px"}}>
+                {inputs.productType === "solido" && 
+                    <>
+                        <Input
+                            slot="list"
+                            label="Superficie de bandeja"
+                            name="trayArea"
+                            type="number"
+                            unit="m²"
+                            icon={trayAreaIcon}
+                            value={inputs.trayArea}
+                            onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+
+                        <Input
+                            slot="list"
+                            label="Cantidad de bandejas"
+                            name="trayCount"
+                            type="number"
+                            icon={trayCountIcon}
+                            value={inputs.trayCount}
+                            onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
+                        </Input>
+
+                        <Input
+                            slot="list"
+                            label="Separación entre bandejas"
+                            name="traySeparation"
+                            type="number"
+                            unit="m"
+                            icon={traySeparationIcon}
+                            value={inputs.traySeparation}
+                            onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+                    </>
                 }
             </List>
 

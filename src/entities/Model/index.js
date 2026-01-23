@@ -75,6 +75,10 @@ const defaultFormParams = {
     workWidth: '', // Ancho de trabajo (m)
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
+
+    trayArea: '', // Superficie de bandeja (m²)
+    trayCount: '', // Cantidad de bandejas
+    traySeparation: '', // Separacion entre bandejas (m)
     
     tankCapacity: '', // Capacidad del tanque (l)
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado

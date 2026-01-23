@@ -51,22 +51,6 @@ const f7params = {
                 transition: "f7-cover"        
             }
         },
-        { // Cronometro
-            path: '/control/',
-            component: Views.Control,
-            on:{pageInit: ()=>pushState("control")},
-            options: {
-                transition: "f7-cover"        
-            }
-        },
-        { // Medicion de velocidad
-            path: '/velocity/',
-            component: Views.Velocity,
-            on:{pageInit: ()=>pushState("velocity")},
-            options: {
-                transition: "f7-cover"        
-            }
-        },
         { // Ajuste de caudal
             path: '/volume/',
             component: Views.Volume,

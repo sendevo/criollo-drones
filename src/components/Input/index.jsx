@@ -5,7 +5,7 @@ const Input = props => {
     
     const newProps = { 
         ...props,
-        value: props.type === 'number' && props.value !== undefined && props.value !== null ? Number(props.value) : props.value
+        value: props.value || '',
     };
 
     return (
