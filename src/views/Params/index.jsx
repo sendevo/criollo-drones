@@ -5,12 +5,13 @@ import {
     Checkbox,
     BlockTitle
 } from 'framework7-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { NavbarTitle, BackButton } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
 import Toast from '../../components/Toast';
+import TrayTable from '../../components/TrayTable';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
 import iconArea from '../../assets/icons/sup_lote.png';
@@ -40,7 +41,8 @@ const Params = props => {
         gpsEnabled: false,
         trayArea: model.trayArea || '',
         trayCount: model.trayCount || '',
-        traySeparation: model.traySeparation || ''
+        traySeparation: model.traySeparation || '',
+        trayData: model.trayData || []
     });
 
     const handleProductTypeChange = (value) => {
@@ -76,10 +78,35 @@ const Params = props => {
                     setInputs(prevState => ({ ...prevState, gpsEnabled: false }));
                 });
             }
-        }else{ // gpsEnabled no forma parte del modelo
-            model.update(attr, value); 
         }
+
+        if(attr === "trayCount"){ // Actualizar array de datos de bandejas
+            const trayCount = isNaN(value) ? 0 : parseInt(value);
+            const newTrayData = [];
+            for(let i=0; i < trayCount; i++){
+                if(inputs.trayData[i]){
+                    newTrayData.push(inputs.trayData[i]);
+                }else{
+                    newTrayData.push({collected: 0});
+                }
+            }
+            setInputs(prevState => ({ 
+                ...prevState, 
+                trayData: newTrayData
+            }));
+            model.update("trayData", newTrayData);
+        }
+
         setInputs(prevState => ({ ...prevState, [attr]: value }));
+        if(attr !== "gpsEnabled") // gpsEnabled no forma parte del modelo
+            model.update(attr, value); 
+    };
+
+    const handleTrayAddCollected = (trayIndex, collectedWeight) => {
+        const updatedTrayData = [...inputs.trayData];
+        updatedTrayData[trayIndex].collected = collectedWeight;
+        model.update("trayData", updatedTrayData);
+        setInputs(prevState => ({ ...prevState, trayData: updatedTrayData }));
     };
 
     return (
@@ -222,6 +249,10 @@ const Params = props => {
                             value={inputs.traySeparation}
                             onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
                         </Input>
+
+                        {inputs.trayData.length > 0 &&
+                            <TrayTable trayData={inputs.trayData} onAddCollected={handleTrayAddCollected}/>
+                        }
                     </>
                 }
             </List>

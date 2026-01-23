@@ -1,10 +1,57 @@
 import { f7, List, Row } from 'framework7-react';
 import ReactDOMServer from 'react-dom/server';
-import IconCollected from '../../assets/icons/recolectado.png';
+import IconCollected from '../../assets/icons/peso_recolectado.png';
 import Input from '../Input';
-import React from 'react';
 
-const nozzleCollectedPrompt = (row, callback) => { 
+export const trayCollectedPrompt = (row, len, callback) => { 
+    // Modal ingreso de peso recolectado de la bandeja
+
+    const elId = `collectedweightinput-${row}`; // Id del input (único por bandeja)
+    
+    const content = ReactDOMServer.renderToStaticMarkup(
+        <List form noHairlinesMd style={{marginBottom:"0px"}}>
+            <Input
+                inputId={elId}
+                slot="list"
+                label="Peso recolectado"
+                icon={IconCollected}
+                type="number"
+                unit="gr"/>
+        </List>
+    );
+
+    const returnValue = r => { // Capturar valor ingresado y retornar
+        const inputEl = document.getElementById(elId);
+        const value = parseFloat(inputEl.value) || 0;
+        callback(r, value);
+    };
+
+    const buttons = [ // Botones del modal
+        {text: "Cancelar"},
+        {text: "Aceptar", onClick: () => returnValue(row)}
+    ];
+
+    if(row + 1 < len) // Si no es la ultima bandeja, agregar boton de siguiente
+        buttons.push({
+            text: "Siguiente",
+            onClick: ()=>{
+                console.log("Siguiente bandeja");
+                returnValue(row);
+                f7.dialog.close();
+                trayCollectedPrompt(row + 1, len, callback);
+            }
+        });
+
+    f7.dialog.create({
+        title: "Bandeja "+(row+1),
+        content: content,
+        buttons: buttons,
+        destroyOnClose: true        
+    }).open();
+};
+
+
+export const nozzleCollectedPrompt = (row, callback) => { 
     // Modal ingreso de peso recolectado de la bandeja
 
     const elId = "collectedvolumeinput"; // Id del input
@@ -45,7 +92,7 @@ const nozzleCollectedPrompt = (row, callback) => {
     }).open();
 };
 
-const openRecipientSizePrompt = callback => { 
+export const openRecipientSizePrompt = callback => { 
     // Modal ingreso de tamanio de recipiente
 
     const elId = "recipientsizeinput"; // Id del input
@@ -84,7 +131,7 @@ const openRecipientSizePrompt = callback => {
     }).open();
 };
 
-const timerCollectedPrompt = (callback) => { 
+export const timerCollectedPrompt = (callback) => { 
     // Modal ingreso de peso recolectado para dosis
 
     const elId = "collectedvolumeinput"; // Id del input
@@ -124,7 +171,3 @@ const timerCollectedPrompt = (callback) => {
         destroyOnClose: true        
     }).open();
 };
-
-
-export { nozzleCollectedPrompt, timerCollectedPrompt, openRecipientSizePrompt };
-

@@ -79,6 +79,7 @@ const defaultFormParams = {
     trayArea: '', // Superficie de bandeja (m²)
     trayCount: '', // Cantidad de bandejas
     traySeparation: '', // Separacion entre bandejas (m)
+    trayData: [], // Datos de bandejas de muestreo
     
     tankCapacity: '', // Capacidad del tanque (l)
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado
