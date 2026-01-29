@@ -72,6 +72,7 @@ const defaultFormParams = {
     lotName: '', // Nombre del lote
     workArea: '', // Superficie a trabajar (ha)
     workVelocity: '', // Velocidad de trabajo (m/s)
+    recolected: '', // Cantidad recolectada (kg o l)
     workWidth: '', // Ancho de trabajo (m)
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)

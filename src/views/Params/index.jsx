@@ -3,10 +3,12 @@ import {
     Page, 
     List,
     Checkbox,
+    Row,
+    Col,
     BlockTitle
 } from 'framework7-react';
-import { useContext, useState } from 'react';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { useContext, useEffect, useState } from 'react';
+import { NavbarTitle, BackButton, CalculatorButton } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
@@ -17,6 +19,7 @@ import { getLocation } from '../../utils';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
+import iconRecolected from '../../assets/icons/peso_recolectado.png';
 import iconWidth from '../../assets/icons/ancho_faja.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
@@ -35,6 +38,7 @@ const Params = props => {
         lotName: model.lotName || '',
         workArea: model.workArea || '',
         workVelocity: model.workVelocity || '',
+        recolected: model.recolected || '',
         workWidth: model.workWidth || '',
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
@@ -44,6 +48,21 @@ const Params = props => {
         traySeparation: model.traySeparation || '',
         trayData: model.trayData || []
     });
+
+    useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
+        setInputs({
+            ...inputs,
+            workVelocity: model.workVelocity || ''
+        });
+    }, [model.workVelocity]);
+
+    useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
+        setInputs({
+            ...inputs,
+            recolected: model.recolected || ''
+        });
+    }, [model.recolected]);
+
 
     const handleProductTypeChange = (value) => {
         if(value === "solido" || value === "liquido") {
@@ -160,21 +179,35 @@ const Params = props => {
             </List>
 
             <BlockTitle>
-                <Typography>Datos de operación</Typography>
+                <Typography>Dosis</Typography>
             </BlockTitle>
-        
+
             <List form noHairlinesMd style={{marginBottom:"10px"}}>
-                <Input
-                    slot="list"
-                    label="Velocidad de trabajo"
-                    name="workVelocity"
-                    type="number"
-                    unit="m/s"
-                    icon={iconVel}
-                    value={inputs.workVelocity}
-                    onChange={v=>setMainParams('workVelocity', Math.abs(parseFloat(v.target.value)))}>
-                </Input>
-            
+
+                {inputs.productType === "liquido" ?
+                    <Input
+                        slot="list"
+                        label="Dosis prevista"
+                        name="doseLiquid"
+                        type="number"
+                        unit="L/ha"
+                        icon={iconDoseLiq}
+                        value={inputs.doseLiquid}
+                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
+                    </Input>
+                    :
+                    <Input
+                        slot="list"
+                        label="Dosis prevista"
+                        name="doseSolid"
+                        type="number"
+                        unit="kg/ha"
+                        icon={iconDoseSol}
+                        value={inputs.doseSolid}
+                        onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
+                    </Input>
+                }
+
                 <Input
                     slot="list"
                     label="Ancho de faja"
@@ -186,76 +219,91 @@ const Params = props => {
                     onChange={v=>setMainParams('workWidth', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
 
-                {inputs.productType === "liquido" ?
-                    <Input
-                        slot="list"
-                        label="Dosis"
-                        name="doseLiquid"
-                        type="number"
-                        unit="L/ha"
-                        icon={iconDoseLiq}
-                        value={inputs.doseLiquid}
-                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
-                    </Input>
-                    :
-                    <Input
-                        slot="list"
-                        label="Dosis"
-                        name="doseSolid"
-                        type="number"
-                        unit="kg/ha"
-                        icon={iconDoseSol}
-                        value={inputs.doseSolid}
-                        onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
-                    </Input>
-                }
+                <Row slot="list">
+                    <Col width="80">
+                        <Input
+                            label="Velocidad"
+                            name="workVelocity"
+                            type="number"
+                            unit="m/s"
+                            icon={iconVel}
+                            value={inputs.workVelocity}
+                            onChange={v=>setMainParams('workVelocity', Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+                    </Col>
+                    <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
+                        <CalculatorButton href="/velocity/" tooltip="Medir velocidad"/>
+                    </Col>
+                </Row>
+
+                <Row slot="list">
+                    <Col width="80">
+                        <Input
+                            label="Peso recolectado"
+                            name="recolected"
+                            type="number"
+                            unit={inputs.productType === "liquido" ? "L" : "kg"}
+                            icon={iconRecolected}
+                            value={inputs.recolected}
+                            onChange={v=>setMainParams('recolected', Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+                    </Col>
+                    <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
+                        <CalculatorButton href="/recolected/" tooltip="Cronómetro" color="teal"/>
+                    </Col>
+                </Row>
+
             </List>
 
             <BlockTitle>
                 <Typography>Distribución</Typography>
             </BlockTitle>
 
-            <List form noHairlinesMd style={{marginBottom:"10px"}}>
-                {inputs.productType === "solido" && 
-                    <>
-                        <Input
-                            slot="list"
-                            label="Superficie de bandeja"
-                            name="trayArea"
-                            type="number"
-                            unit="m²"
-                            icon={trayAreaIcon}
-                            value={inputs.trayArea}
-                            onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
-                        </Input>
+            {inputs.productType === "solido" ? 
+                <List form noHairlinesMd style={{marginBottom:"10px"}}>        
+                    <Input
+                        slot="list"
+                        label="Superficie de bandeja"
+                        name="trayArea"
+                        type="number"
+                        unit="m²"
+                        icon={trayAreaIcon}
+                        value={inputs.trayArea}
+                        onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
+                    </Input>
 
-                        <Input
-                            slot="list"
-                            label="Cantidad de bandejas"
-                            name="trayCount"
-                            type="number"
-                            icon={trayCountIcon}
-                            value={inputs.trayCount}
-                            onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
-                        </Input>
+                    <Input
+                        slot="list"
+                        label="Cantidad de bandejas"
+                        name="trayCount"
+                        type="number"
+                        icon={trayCountIcon}
+                        value={inputs.trayCount}
+                        onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
+                    </Input>
 
-                        <Input
-                            slot="list"
-                            label="Separación entre bandejas"
-                            name="traySeparation"
-                            type="number"
-                            unit="m"
-                            icon={traySeparationIcon}
-                            value={inputs.traySeparation}
-                            onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
-                        </Input>
+                    <Input
+                        slot="list"
+                        label="Separación entre bandejas"
+                        name="traySeparation"
+                        type="number"
+                        unit="m"
+                        icon={traySeparationIcon}
+                        value={inputs.traySeparation}
+                        onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
+                    </Input>
 
-                        {inputs.trayData.length > 0 &&
-                            <TrayTable trayData={inputs.trayData} onAddCollected={handleTrayAddCollected}/>
-                        }
-                    </>
-                }
-            </List>
+                    {inputs.trayData.length > 0 &&
+                        <TrayTable trayData={inputs.trayData} onAddCollected={handleTrayAddCollected}/>
+                    }
+                </List>
+                :
+                <div style={{marginBottom:"10px", padding: "20px"}}>
+                    <Typography style={{textAlign:"center", marginTop:"10px"}}>
+                        Pendiente...
+                    </Typography>
+                </div>
+            }
 
             <BackButton {...props} />
         </Page>

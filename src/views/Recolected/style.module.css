@@ -1,0 +1,11 @@
+.Table {
+    text-align: right!important;
+}
+
+.Table td {
+    padding: 0px;
+}
+
+.Table th {
+    padding: 0px!important;
+}

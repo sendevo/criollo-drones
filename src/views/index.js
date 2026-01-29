@@ -1,6 +1,8 @@
 import Home from './Home';
 import Params from './Params';
 import Volume from './Volume';
+import Velocity from './Velocity';
+import Recolected from './Recolected';
 import Info from './Info';
 import About from './About';
 import Security from './Security';
@@ -13,6 +15,8 @@ export {
     Home,
     Params,
     Volume,
+    Velocity,
+    Recolected,
     Info,
     About,
     Security,

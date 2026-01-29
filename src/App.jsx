@@ -59,6 +59,23 @@ const f7params = {
                 transition: "f7-cover"        
             }
         },
+        {  // Calculo de velocidad
+            path: '/velocity/',
+            component: Views.Velocity,
+            on:{pageInit: ()=>pushState("velocity")},
+            options: {
+                transition: "f7-cover"        
+            }
+        },
+        {
+            // Calculo de peso recolectado
+            path: '/recolected/',
+            component: Views.Recolected,
+            on:{pageInit: ()=>pushState("recolected")},
+            options: {
+                transition: "f7-cover"        
+            }
+        },
         { // Seguridad y prevencion
             path: '/security/',
             component: Views.Security,
