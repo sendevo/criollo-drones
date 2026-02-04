@@ -72,6 +72,22 @@ const schemas = { // Esquemas de validación de parametros
         d: v => isPositiveFloat(v),
         vel: v => isPositiveFloat(v)
     },
+
+    computeDoseDirect:{        
+        expected_dose: v => isPositiveFloat(v),
+        work_width: v => isPositiveFloat(v),
+        distance: v => isPositiveFloat(v),
+        recolected: v => isPositiveFloat(v)
+    },
+    computeDoseIndirect: {
+        time: v =>  isPositiveFloat(v),
+        work_velocity: v => isPositiveFloat(v)
+    },
+    computeDensityFromRecolected: {
+        tray_area: v => isPositiveFloat(v),
+        recolected: v => isPositiveFloat(v),
+        pass_number: v => isPositiveInteger(v)
+    },
     computeDistributionProfile:{
         tray_data: v => Array.isArray(v) && v.length > 0 && v.every(x => isFloat(x)),
         tray_distance: v => isPositiveFloat(v),
@@ -308,6 +324,37 @@ const computeProductVolume = (prod, vol, Va) => { // Cantidad de insumo (gr, ml 
         default:
             return 0;
     }   
+};
+
+export const computeDoseDirect = params => { 
+    // Dosis a partir de distancia    
+    const wrong_keys = validate(schemas.computeDoseDirect, params);
+    if(wrong_keys.length > 0) return {status: "error", wrong_keys};
+    const { recolected, distance, work_width, expected_dose } = params;    
+    const dose = recolected/distance/work_width*10000;
+    const diffkg = dose-expected_dose;
+    const diffp = diffkg/expected_dose*100;
+    return { status: "success", dose, diffkg, diffp };
+};
+
+export const computeDoseIndirect = params => { 
+    // Dosis a partir de tiempo y velocidad de avance
+    if(DEBUG) console.log(params);
+    const wrong_keys = validate(schemas.computeDoseIndirect, params);
+    if(wrong_keys.length > 0) return {status: "error", wrong_keys};
+    const { recolected, work_velocity, time, work_width, expected_dose } = params;
+    const distance = work_velocity*time*10/36;
+    return computeDoseDirect({ recolected, distance, work_width, expected_dose });
+};
+
+export const computeDensityFromRecolected = params => { 
+    // Densidad a partir de lo recolectado en bandeja
+    if(DEBUG) console.log(params);
+    const wrong_keys = validate(schemas.computeDensityFromRecolected, params);
+    if(wrong_keys.length > 0) return {status: "error", wrong_keys};
+    const {recolected, pass_number, tray_area} = params;
+    const density = recolected/pass_number/tray_area*10;
+    return {status: "success", density};
 };
 
 export const computeDistributionProfile = params => {

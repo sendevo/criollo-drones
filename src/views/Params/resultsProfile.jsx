@@ -13,11 +13,14 @@ const fieldCellStyle = {
 };
 
 const ResultsProfile = ({results}) => {
+    
+    console.log(results);
+    const {fitted_dose, avg, cv, work_width} = results;    
 
     const model = useContext(ModelCtx);
+    const {expectedDose, effectiveDose, workWidth} = model;
 
-    const {expectedDose, effectiveDose, expectedWorkWidth} = model;
-    const {fitted_dose, avg, cv, work_width} = results;    
+    
     const diffp_c = expectedDose > 0 ? ((effectiveDose - expectedDose)/expectedDose*100).toFixed(2) : '';
     const diffp_f = expectedDose > 0 ? ((fitted_dose - expectedDose)/expectedDose*100).toFixed(2) : '';
 
@@ -47,7 +50,7 @@ const ResultsProfile = ({results}) => {
                             { expected_work_width &&
                             <tr>
                                 <td style={fieldCellStyle}><b>Ancho de labor efectivo:</b></td>
-                                <td style={dataCellStyle}>{expectedWorkWidth} m</td>
+                                <td style={dataCellStyle}>{workWidth} m</td>
                             </tr>
                             }
                         </>

@@ -82,6 +82,11 @@ const defaultFormParams = {
     traySeparation: '', // Separacion entre bandejas (m)
     trayData: [], // Datos de bandejas de muestreo
 
+    profile: [],
+    avgDist: '', // Promedio de distribucion (gr o ml)
+    stdDist: '', // Desviacion estandar de distribucion (gr o ml)
+    cvDist: '', // Coeficiente de variacion de distribucion (%)
+
     expectedDose: '', // Dosis prevista (kg/ha o l/ha)
     effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
     expectedWorkWidth: '', // Ancho de labor efectivo (m)

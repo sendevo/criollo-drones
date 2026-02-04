@@ -47,10 +47,17 @@ const Params = props => {
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
         gpsEnabled: false,
+
         trayArea: model.trayArea || '',
         trayCount: model.trayCount || '',
         traySeparation: model.traySeparation || '',
-        trayData: model.trayData || []
+        trayData: model.trayData || [],
+
+        profileComputed: false,
+        profile: model.profile || [],
+        avgDist: model.avgDist || null,
+        stdDist: model.stdDist || null,
+        cvDist: model.cvDist || null
     });
 
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
@@ -160,7 +167,15 @@ const Params = props => {
                 Toast("error", `Error en parámetros: ${result.wrongKeys}`);
                 return;
             }else{
-                console.log(result);
+                const {profile, avg, std, cv} = result;
+                setInputs(prevState => ({ 
+                    ...prevState, 
+                    profile: profile,
+                    avgDist: avg,
+                    stdDist: std,
+                    cvDist: cv,
+                    profileComputed: true
+                }));
             }
         } catch (error) {
             Toast("error", "Error al calcular el perfil de distribución");
@@ -359,14 +374,17 @@ const Params = props => {
                                 trayData={inputs.trayData} 
                                 onAddCollected={handleTrayAddCollected}/>
 
-                            <ResultsProfile results={
-                                {
-                                    fitted_dose: 54,
-                                    avg: 3.4,
-                                    cv: 12.5,
-                                    work_width: inputs.workWidth
-                                }
-                            }/>
+                            {inputs.profileComputed &&
+                                <ResultsProfile results={
+                                    {
+                                        
+                                        fitted_dose: 0,
+                                        avg: inputs.avgDist,
+                                        cv: inputs.cvDist,
+                                        work_width: inputs.workWidth
+                                    }
+                                }/>
+                            }
 
                             <Chart 
                                 title="Distribución medida"
