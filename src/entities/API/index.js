@@ -1,5 +1,5 @@
-/** Misc */
-const round2 = x => Math.round(x*100)/100;
+import { set2Decimals } from "../../utils";
+
 const isString = value => (typeof value === 'string' || value instanceof String) && value !== "";
 const isFloat = value => Number.isFinite(value);
 const isPositiveFloat = value => Number.isFinite(value) && value > 0;
@@ -72,6 +72,13 @@ const schemas = { // Esquemas de validación de parametros
         d: v => isPositiveFloat(v),
         vel: v => isPositiveFloat(v)
     },
+    computeDistributionProfile:{
+        tray_data: v => Array.isArray(v) && v.length > 0 && v.every(x => isPositiveFloat(x)),
+        tray_distance: v => isPositiveFloat(v),
+        pass_number: v => isPositiveFloat(v),
+        work_width: v => isPositiveFloat(v),
+        work_pattern: v => isString(v) && (v === "circular" || v === "lineal")
+    },
     computeSuppliesList: {
         A: v => isPositiveFloat(v),
         T: v => isPositiveFloat(v),
@@ -111,15 +118,23 @@ const parameterNames = { // Al costado, notación de la documentación
     tms: "Tiempo de muestreo",
     A: "Superficie de trabajo", 
     T: "Capacidad del tanque", 
-    products: "Lista de productos"
+    products: "Lista de productos",
+    tray_data: "Datos de bandejas",
+    tray_distance: "Distancia entre bandejas",
+    pass_number: "Número de pasadas",
+    work_width: "Ancho de trabajo",
+    work_pattern: "Patrón de trabajo"
 };
 
 const getParameterNames = paramList => paramList.map(key => parameterNames[key]).join(", ");
 
 const checkParams = (schema, params) => { // Valida parametros y genera mensaje de error
     const wrongKeys = validate(schema, params);
-    if(wrongKeys.length > 0) 
-        throw new Error(`Parámetros incorrectos: ${getParameterNames(wrongKeys)}`);
+    if(wrongKeys.length > 0) {
+        console.error(`Parámetros incorrectos: ${getParameterNames(wrongKeys)}`);
+        return wrongKeys;
+    }
+    return null;
 };
 
 
@@ -200,7 +215,7 @@ export const computeQNom = params => { // qn (Caudal nominal de pico)
     const p = toFloat(params);
     checkParams(schemas.computeQNom, p);
     const {b, c, Pnom} = p;
-    return round2(b + c * Math.sqrt(Pnom));
+    return set2Decimals(b + c * Math.sqrt(Pnom));
 }
 
 const K = (Qnom, Pnom) => 600*Qnom/Math.sqrt(Pnom);
@@ -210,7 +225,7 @@ export const computeVa = params => { // Q (volumen de aplicación)
     checkParams(schemas.computeVa, p);
     const { Pt, Vt, d, Qnom, Pnom, Dp } = p;
     const Va = Math.sqrt(Pt/Dp) * K(Qnom, Pnom) / Vt / d;
-    return round2(Va);
+    return set2Decimals(Va);
 };
 
 export const computePt = params => { // pe (presión de trabajo)
@@ -218,7 +233,7 @@ export const computePt = params => { // pe (presión de trabajo)
     checkParams(schemas.computePt, p);
     const { Va, Vt, d, Qnom, Pnom, Dp } = p;
     const sqPt = Va * Vt * d / K(Qnom, Pnom);
-    const Pt = round2(sqPt*sqPt)*Dp;
+    const Pt = set2Decimals(sqPt*sqPt)*Dp;
     return Pt;
 };
 
@@ -227,7 +242,7 @@ export const computeVt = params => { // V (velocidad de trabajo)
     checkParams(schemas.computeVt, p);
     const { Va, Pt, d, Qnom, Pnom, Dp } = p;
     const Vt = K(Qnom, Pnom) * Math.sqrt(Pt/Dp) / Va / d;
-    return round2(Vt);
+    return set2Decimals(Vt);
 };
 
 export const computeQt = params => { // qe (Caudal efectivo)
@@ -235,7 +250,7 @@ export const computeQt = params => { // qe (Caudal efectivo)
     checkParams(schemas.computeQt, p);
     const { Qnom, Pnom, Pt } = p;
     const Qt = Math.sqrt(Pt/Pnom)*Qnom;
-    return round2(Qt);
+    return set2Decimals(Qt);
 };
 
 export const computeQd = params => { // Caudal de pulverizado ajustado por concentración
@@ -243,14 +258,14 @@ export const computeQd = params => { // Caudal de pulverizado ajustado por conce
     checkParams(schemas.computeQd, p);
     const { Dnu, Cnu, Dp } = p;
     const Qd = Dnu * 100 / Cnu / Dp; // Caudal ajustado
-    return round2(Qd);
+    return set2Decimals(Qd);
 };
 
 export const computeQb = params => { // Caudal de bomba o pulverizado (qe * numero de picos)
     const p = toFloat(params);
     checkParams(schemas.computeQb, p);
     const Qb = computeQt(p)*p.n / Math.sqrt(p.Dp);
-    return round2(Qb);
+    return set2Decimals(Qb);
 };
 
 export const computeQa = params => { // Caudal equivalente en agua
@@ -266,8 +281,8 @@ export const computeEffectiveFlow = params => {
     checkParams(schemas.computeEffectiveFlow, p);
     const { c, tms, Va } = p;
     const th = 10; // Umbral en porcentaje
-    const ef = round2(c / tms * 60000); // Caudal efectivo
-    const s = round2((ef - Va) / Va * 100); // Desviacion estandar
+    const ef = set2Decimals(c / tms * 60000); // Caudal efectivo
+    const s = set2Decimals((ef - Va) / Va * 100); // Desviacion estandar
     const ok = Math.abs(s) <= th; // Correcto 
     return { ef, s, ok };
 };
@@ -277,7 +292,7 @@ export const computeSprayVolume = params => {
     checkParams(schemas.computeSprayVolume, p);
     const { Q, d, vel } = p;
     const vol = 600*Q / (d * vel);
-    return round2(vol);
+    return set2Decimals(vol);
 };
 
 const computeProductVolume = (prod, vol, Va) => { // Cantidad de insumo (gr, ml o l) por volumen de agua
@@ -293,6 +308,56 @@ const computeProductVolume = (prod, vol, Va) => { // Cantidad de insumo (gr, ml 
         default:
             return 0;
     }   
+};
+
+export const computeDistributionProfile = params => {
+    
+    const p = toFloat(params);
+
+    const wrongKeys = checkParams(schemas.computeDistributionProfile, p);
+    
+    if(wrongKeys && wrongKeys.length > 0) {
+        return {
+            status:"error",
+            wrongKeys: parameterNames[wrongKeys[0]]
+        };
+    }
+
+    const {tray_data, tray_distance, pass_number, work_width, work_pattern} = p;
+    const tray_number = tray_data.length;
+    const profile = tray_data.map(x => x/pass_number); // Perfil resultante
+    const tw = tray_distance * tray_number; // Ancho maximo (hasta donde llegan las bandejas)
+
+    // Solapamiento
+    let r = 1; // Numero de pasada hacia los laterales
+    const get_s = r => Math.floor((tw - r * work_width) / tray_distance);
+    let s = get_s(r);   
+    while(s > 0) { // Mientras haya solapamiento                       
+        // Si es patron circular, siempre se solapa en el mismo sentido
+        // si el patron es ida y vuelta, se suma una vez de cada lado
+        const side = work_pattern === "circular" ? "left" : r%2===0 ? "left" : "right";
+        if(side === "left"){
+            for(let i = 0; i < s; i++) {
+                profile[i] += tray_data[tray_number - s + i]/pass_number;
+                profile[tray_number - 1 - i] += tray_data[s - i - 1]/pass_number;                    
+            }
+        }else{
+            for(let i = 0; i < s; i++) {
+                profile[i] += tray_data[s - i - 1]/pass_number;
+                profile[tray_number - 1 - i] += tray_data[tray_number - s + i]/pass_number;
+            } 
+        }       
+        r++; // Siguiente pasada
+        s = get_s(r); // Solapamiento en la siguiente pasada
+    }
+    // Calcular promedio y desvios
+    const sum = profile.reduce((a, b) => a + b, 0);
+    const avg = sum / profile.length;
+    const sqdiff = profile.map(x => Math.pow(x - avg, 2));
+    const dst = Math.sqrt(sqdiff.reduce((a, b) => a + b, 0) / (profile.length-1));    
+    const cv = avg === 0 ? 0 : dst/avg*100;
+
+    return {status: "success", profile, avg, dst, cv};
 };
 
 export const computeSuppliesList = params => { // Lista de insumos y cargas para mezcla   

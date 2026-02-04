@@ -5,17 +5,20 @@ import {
     Checkbox,
     Row,
     Col,
+    Button,
     BlockTitle
 } from 'framework7-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, Fragment } from 'react';
 import { NavbarTitle, BackButton, CalculatorButton } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
 import Toast from '../../components/Toast';
 import TrayTable from '../../components/TrayTable';
+import Chart from '../../components/Chart';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
+import { computeDistributionProfile } from '../../entities/API';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
@@ -127,6 +130,60 @@ const Params = props => {
         model.update("trayData", updatedTrayData);
         setInputs(prevState => ({ ...prevState, trayData: updatedTrayData }));
     };
+
+    const handleComputeProfile = () => {
+        if(inputs.trayData.length === 0){
+            Toast("error", "No hay datos de bandejas para calcular el perfil");
+            return;
+        }
+
+        const tray_data = inputs.trayData.map(tray => tray.collected);
+        const tray_distance = inputs.traySeparation;
+        const pass_number = 1;
+        const work_width = inputs.workWidth;
+        const work_pattern = "lineal"; // ida y vuelta (lineal) o circular
+
+        try {
+
+            const result = computeDistributionProfile({
+                tray_data,
+                tray_distance,
+                pass_number,
+                work_width,
+                work_pattern
+            });
+
+            if(result.status === "error") {
+                Toast("error", `Error en parámetros: ${result.wrongKeys}`);
+                return;
+            }else{
+                console.log(result);
+            }
+        } catch (error) {
+            Toast("error", "Error al calcular el perfil de distribución");
+        }
+    };
+
+    const handleClearDistrForm = () => {
+        setInputs(prevState => ({ 
+            ...prevState, 
+            trayArea: '',
+            trayCount: '',
+            traySeparation: '',
+            trayData: [] 
+        }));
+        model.update({
+            trayArea: '',
+            trayCount: '',
+            traySeparation: '',
+            trayData: [] 
+        });
+    };
+
+    const chartData = inputs.trayData.map( (tray, index) => ({ 
+        name: `Band. ${index + 1}`, 
+        recolectado: tray.collected*100 // Convertir a kg por ha
+    }));
 
     return (
         <Page>            
@@ -294,7 +351,43 @@ const Params = props => {
                     </Input>
 
                     {inputs.trayData.length > 0 &&
-                        <TrayTable trayData={inputs.trayData} onAddCollected={handleTrayAddCollected}/>
+                        <Fragment slot="list" >
+                            <TrayTable 
+                                trayData={inputs.trayData} 
+                                onAddCollected={handleTrayAddCollected}/>
+
+                            <Chart 
+                                title="Distribución medida"
+                                data={chartData} 
+                                tooltipSuffix=" kg/ha"
+                                />
+
+                            <Row style={{marginBottom:"15px", marginTop:"20px"}}>
+                                <Col width={20}></Col>
+                                <Col width={60}>
+                                    <Button 
+                                        fill 
+                                        onClick={handleComputeProfile}
+                                        style={{textTransform:"none"}}>
+                                            Calcular perfil
+                                    </Button>
+                                </Col>
+                                <Col width={20}></Col>
+                            </Row>
+
+                            <Row style={{marginBottom:"15px"}}>
+                                <Col width={20}></Col>
+                                <Col width={60}>
+                                    <Button 
+                                        fill 
+                                        onClick={handleClearDistrForm}
+                                        style={{textTransform:"none", backgroundColor:"red"}}>
+                                            Borrar formulario
+                                    </Button>
+                                </Col>
+                                <Col width={20}></Col>
+                            </Row>
+                        </Fragment>
                     }
                 </List>
                 :
