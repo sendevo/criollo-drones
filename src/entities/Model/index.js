@@ -81,6 +81,10 @@ const defaultFormParams = {
     trayCount: '', // Cantidad de bandejas
     traySeparation: '', // Separacion entre bandejas (m)
     trayData: [], // Datos de bandejas de muestreo
+
+    expectedDose: '', // Dosis prevista (kg/ha o l/ha)
+    effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
+    expectedWorkWidth: '', // Ancho de labor efectivo (m)
     
     tankCapacity: '', // Capacidad del tanque (l)
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado

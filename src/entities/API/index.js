@@ -73,7 +73,7 @@ const schemas = { // Esquemas de validación de parametros
         vel: v => isPositiveFloat(v)
     },
     computeDistributionProfile:{
-        tray_data: v => Array.isArray(v) && v.length > 0 && v.every(x => isPositiveFloat(x)),
+        tray_data: v => Array.isArray(v) && v.length > 0 && v.every(x => isFloat(x)),
         tray_distance: v => isPositiveFloat(v),
         pass_number: v => isPositiveFloat(v),
         work_width: v => isPositiveFloat(v),
@@ -352,10 +352,10 @@ export const computeDistributionProfile = params => {
     }
     // Calcular promedio y desvios
     const sum = profile.reduce((a, b) => a + b, 0);
-    const avg = sum / profile.length;
+    const avg = sum / profile.length; // Promedio de la distribución
     const sqdiff = profile.map(x => Math.pow(x - avg, 2));
-    const dst = Math.sqrt(sqdiff.reduce((a, b) => a + b, 0) / (profile.length-1));    
-    const cv = avg === 0 ? 0 : dst/avg*100;
+    const dst = Math.sqrt(sqdiff.reduce((a, b) => a + b, 0) / (profile.length-1)); // Desvio estandar
+    const cv = avg === 0 ? 0 : dst/avg*100; // Coeficiente de variacion
 
     return {status: "success", profile, avg, dst, cv};
 };

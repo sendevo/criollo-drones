@@ -19,6 +19,7 @@ import Chart from '../../components/Chart';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
 import { computeDistributionProfile } from '../../entities/API';
+import ResultsProfile from './resultsProfile.jsx';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
@@ -144,6 +145,8 @@ const Params = props => {
         const work_pattern = "lineal"; // ida y vuelta (lineal) o circular
 
         try {
+
+            console.log(tray_data, tray_distance, pass_number, work_width, work_pattern);
 
             const result = computeDistributionProfile({
                 tray_data,
@@ -355,6 +358,15 @@ const Params = props => {
                             <TrayTable 
                                 trayData={inputs.trayData} 
                                 onAddCollected={handleTrayAddCollected}/>
+
+                            <ResultsProfile results={
+                                {
+                                    fitted_dose: 54,
+                                    avg: 3.4,
+                                    cv: 12.5,
+                                    work_width: inputs.workWidth
+                                }
+                            }/>
 
                             <Chart 
                                 title="Distribución medida"
