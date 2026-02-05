@@ -9,6 +9,11 @@ export const ANDROID_VERSION_CODE = "1"; // Para app store
 export const VERSION_NAME = "0.0.1"; // Version visible para el usuario
 export const BUILD_DATE = 1766405960722; // 22-12-2025 9:19hs
 
+export const PRODUCT_TYPES = {
+    SOLID: "solido",
+    LIQUID: "liquido"
+};
+
 // Lista de versiones
 const DB_NAMES = [
     "criollo_drones_1"
@@ -67,7 +72,7 @@ const get_blank_report = () => {
 };
 
 const defaultFormParams = {
-    productType: "solido", // Tipo de producto. Puede ser "solido" o "liquido"
+    productType: PRODUCT_TYPES.SOLID, // Tipo de producto.
     lotCoordinates: [], // Coordenadas del lote
     lotName: '', // Nombre del lote
     workArea: '', // Superficie a trabajar (ha)

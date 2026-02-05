@@ -1,5 +1,6 @@
 import { Block, Radio, Row, Col, BlockTitle } from 'framework7-react';
 import Typography from '../Typography';
+import { PRODUCT_TYPES } from '../../entities/Model';
 
 const ProductTypeSelector = ({value, onChange}) => {
 
@@ -18,14 +19,14 @@ const ProductTypeSelector = ({value, onChange}) => {
                 <Col style={{textAlign:"center"}}>
                     <Radio 
                         name="input-type" 
-                        checked={value==="solido"} 
-                        onChange={e=>setValue(e, "solido")}/> Sólidos
+                        checked={value===PRODUCT_TYPES.SOLID} 
+                        onChange={e=>setValue(e, PRODUCT_TYPES.SOLID)}/> Sólidos
                 </Col>
                 <Col style={{textAlign:"center"}}>
                     <Radio 
                         name="input-type" 
-                        checked={value==="liquido"} 
-                        onChange={e=>setValue(e, "liquido")}/> Líquidos
+                        checked={value===PRODUCT_TYPES.LIQUID} 
+                        onChange={e=>setValue(e, PRODUCT_TYPES.LIQUID)}/> Líquidos
                 </Col>
             </Row>
         </Block>

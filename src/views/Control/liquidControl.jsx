@@ -1,17 +1,10 @@
-import { 
-    Navbar, 
-    Page, 
+import {  
     List,
-    Checkbox,
     Row,
     Col,
-    Button,
-    BlockTitle
+    Button
 } from 'framework7-react';
 import { useContext, useEffect, useState, Fragment } from 'react';
-import { NavbarTitle, BackButton, CalculatorButton } from '../../components/Buttons';
-import { ProductTypeSelector } from '../../components/Selectors';
-import Typography from '../../components/Typography';
 import Input from '../../components/Input';
 import Toast from '../../components/Toast';
 import TrayTable from '../../components/TrayTable';
@@ -19,19 +12,13 @@ import Chart from '../../components/Chart';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
 import { computeDistributionProfile } from '../../entities/API';
-import iconArea from '../../assets/icons/sup_lote.png';
-import iconName from '../../assets/icons/reportes.png';
-import iconVel from '../../assets/icons/velocidad.png';
-import iconWidth from '../../assets/icons/ancho_faja.png';
-import iconDoseLiq from '../../assets/icons/dosis_liq.png';
-import iconDoseSol from '../../assets/icons/dosis_sol.png';
+import ResultsProfile from './resultsProfile.jsx';
 import trayAreaIcon from '../../assets/icons/sup_bandeja.png';
 import trayCountIcon from '../../assets/icons/cant_bandejas.png';
 import traySeparationIcon from '../../assets/icons/dist_bandejas.png';
-import { PRODUCT_TYPES } from '../../entities/Model';
 
 
-const Params = props => {
+const LiquidControl = () => {
 
     const model = useContext(ModelCtx);
 
@@ -59,33 +46,12 @@ const Params = props => {
         cvDist: model.cvDist || null
     });
 
-    useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
-        setInputs({
-            ...inputs,
-            workVelocity: model.workVelocity || ''
-        });
-    }, [model.workVelocity]);
-
     useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
         setInputs({
             ...inputs,
             recolected: model.recolected || ''
         });
     }, [model.recolected]);
-
-
-    const handleProductTypeChange = (value) => {
-        if(Object.values(PRODUCT_TYPES).includes(value)){
-            const prevInputs = { ...inputs, productType: value };
-            model.update("productType", value );
-            setInputs({
-                ...prevInputs,
-                productType: value
-            });
-        }else{
-            Toast("error", "Tipo de producto inválido");
-        }
-    };
 
     const setMainParams = (attr, value) => {
         if(attr === "gpsEnabled"){
@@ -176,6 +142,8 @@ const Params = props => {
                     profileComputed: true
                 }));
             }
+
+            Toast("info", "Funcionalidad en desarrollo - resultados simulados");
         } catch (error) {
             Toast("error", "Error al calcular el perfil de distribución");
         }
@@ -203,117 +171,92 @@ const Params = props => {
     }));
 
     return (
-        <Page>            
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
-                <NavbarTitle {...props} title="Parámetros de operación"/>
-            </Navbar>
+        <List form noHairlinesMd style={{marginTop: "0px", marginBottom:"10px"}}>        
+            <Input
+                slot="list"
+                label="Superficie de bandeja"
+                name="trayArea"
+                type="number"
+                unit="m²"
+                icon={trayAreaIcon}
+                value={inputs.trayArea}
+                onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
+            </Input>
 
-            <ProductTypeSelector value={inputs.productType} onChange={handleProductTypeChange}/>
+            <Input
+                slot="list"
+                label="Cantidad de bandejas"
+                name="trayCount"
+                type="number"
+                icon={trayCountIcon}
+                value={inputs.trayCount}
+                onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
+            </Input>
 
-            <BlockTitle>
-                <Typography>Datos del lote</Typography>
-            </BlockTitle>
+            <Input
+                slot="list"
+                label="Separación entre bandejas"
+                name="traySeparation"
+                type="number"
+                unit="m"
+                icon={traySeparationIcon}
+                value={inputs.traySeparation}
+                onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
+            </Input>
 
-            <List form noHairlinesMd style={{marginBottom:"10px"}}>    
-                <Input
-                    slot="list"
-                    label="Lote"
-                    name="lotName"
-                    type="text"
-                    icon={iconName}
-                    value={inputs.lotName}
-                    onChange={v=>setMainParams('lotName', v.target.value)}>
-                </Input>
-                <Input
-                    slot="list"
-                    label="Superficie"
-                    name="workArea"
-                    type="number"
-                    unit="ha"
-                    icon={iconArea}
-                    value={inputs.workArea}
-                    onChange={v=>setMainParams('workArea', Math.abs(parseFloat(v.target.value)))}>
-                </Input>
-                <div 
-                    slot="list" 
-                    style={{paddingLeft: 30, paddingBottom: 10}}>
-                    <Checkbox
-                        checked={inputs.gpsEnabled}
-                        onChange={v=>setMainParams('gpsEnabled', v.target.checked)}/>
-                    <span style={{
-                        paddingLeft: 10, 
-                        color: inputs.gpsEnabled ? "#000000" : "#999999", 
-                        fontSize: "0.8em"}}>
-                            Geoposición [
-                                {inputs.lotCoordinates[0]?.toFixed(4) || '?'}, 
-                                {inputs.lotCoordinates[1]?.toFixed(4) || '?'}
-                            ] 
-                    </span>
-                </div>
-            </List>
+            {inputs.trayData.length > 0 &&
+                <Fragment slot="list" >
+                    <TrayTable 
+                        trayData={inputs.trayData} 
+                        onAddCollected={handleTrayAddCollected}/>
 
-            <BlockTitle>
-                <Typography>Parámetros de labor</Typography>
-            </BlockTitle>
+                    {inputs.profileComputed &&
+                        <ResultsProfile results={
+                            {
+                                
+                                fitted_dose: 0,
+                                avg: inputs.avgDist,
+                                cv: inputs.cvDist,
+                                work_width: inputs.workWidth
+                            }
+                        }/>
+                    }
 
-            <List form noHairlinesMd style={{marginBottom:"10px"}}>
+                    <Chart 
+                        title="Distribución medida"
+                        data={chartData} 
+                        tooltipSuffix=" kg/ha"
+                        />
 
-                {inputs.productType === PRODUCT_TYPES.LIQUID ?
-                    <Input
-                        slot="list"
-                        label="Dosis prevista"
-                        name="doseLiquid"
-                        type="number"
-                        unit="L/ha"
-                        icon={iconDoseLiq}
-                        value={inputs.doseLiquid}
-                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
-                    </Input>
-                    :
-                    <Input
-                        slot="list"
-                        label="Dosis prevista"
-                        name="doseSolid"
-                        type="number"
-                        unit="kg/ha"
-                        icon={iconDoseSol}
-                        value={inputs.doseSolid}
-                        onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
-                    </Input>
-                }
+                    <Row style={{marginBottom:"15px", marginTop:"20px"}}>
+                        <Col width={20}></Col>
+                        <Col width={60}>
+                            <Button 
+                                fill 
+                                onClick={handleComputeProfile}
+                                style={{textTransform:"none"}}>
+                                    Calcular perfil
+                            </Button>
+                        </Col>
+                        <Col width={20}></Col>
+                    </Row>
 
-                <Input
-                    slot="list"
-                    label="Ancho de faja"
-                    name="workWidth"
-                    type="number"
-                    unit="m"
-                    icon={iconWidth}
-                    value={inputs.workWidth}
-                    onChange={v=>setMainParams('workWidth', Math.abs(parseFloat(v.target.value)))}>
-                </Input>
-
-                <Row slot="list">
-                    <Col width="80">
-                        <Input
-                            label="Velocidad"
-                            name="workVelocity"
-                            type="number"
-                            unit="m/s"
-                            icon={iconVel}
-                            value={inputs.workVelocity}
-                            onChange={v=>setMainParams('workVelocity', Math.abs(parseFloat(v.target.value)))}>
-                        </Input>
-                    </Col>
-                    <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                        <CalculatorButton href="/velocity/" tooltip="Medir velocidad"/>
-                    </Col>
-                </Row>
-            </List>
-
-            <BackButton {...props} />
-        </Page>
+                    <Row style={{marginBottom:"15px"}}>
+                        <Col width={20}></Col>
+                        <Col width={60}>
+                            <Button 
+                                fill 
+                                onClick={handleClearDistrForm}
+                                style={{textTransform:"none", backgroundColor:"red"}}>
+                                    Borrar formulario
+                            </Button>
+                        </Col>
+                        <Col width={20}></Col>
+                    </Row>
+                </Fragment>
+            }
+        </List>
     );
 };
 
-export default Params;
+export default LiquidControl;

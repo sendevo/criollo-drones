@@ -1,5 +1,6 @@
 import Home from './Home';
 import Params from './Params';
+import Control from './Control';
 import Volume from './Volume';
 import Velocity from './Velocity';
 import Recolected from './Recolected';
@@ -14,6 +15,7 @@ import ReportDetails from './ReportDetails';
 export {
     Home,
     Params,
+    Control,
     Volume,
     Velocity,
     Recolected,

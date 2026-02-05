@@ -51,6 +51,14 @@ const f7params = {
                 transition: "f7-cover"        
             }
         },
+        { // Seccion de control de prestacion
+            path: '/control/',
+            component: Views.Control,
+            on:{pageInit: ()=>pushState("control")},
+            options: {
+                transition: "f7-cover"        
+            }
+        },
         { // Ajuste de caudal
             path: '/volume/',
             component: Views.Volume,

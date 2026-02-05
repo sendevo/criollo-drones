@@ -24,31 +24,34 @@ import oneSfx from '../../assets/sounds/uno.mp3';
 import twoSfx from '../../assets/sounds/dos.mp3';
 import threeSfx from '../../assets/sounds/tres.mp3';
 import readySfx from '../../assets/sounds/listo.mp3';
+import { PRODUCT_TYPES } from "../../entities/Model";
 
 const defaultTimer = 30000;
 
 const DataTable = props => {
 
+    const unit = props.productType === PRODUCT_TYPES.LIQUID ? "L" : "kg";
+
     return ( // Tabla de pesos recolectados
-    <table className={`data-table ${classes.Table}`}>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Recolectado</th>
-            </tr>
-        </thead>
-        <tbody>
-        {
-            props.data.map((d, idx) => (
-                <tr key={idx}>
-                    <td>{idx+1}</td>                        
-                    <td>{d?.toFixed(2)} kg</td>
+        <table className={`data-table ${classes.Table}`}>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Recolectado</th>
                 </tr>
-            ))
-        }
-        </tbody>
-    </table>
-);
+            </thead>
+            <tbody>
+            {
+                props.data.map((d, idx) => (
+                    <tr key={idx}>
+                        <td>{idx+1}</td>                        
+                        <td>{d?.toFixed(2)} {unit}</td>
+                    </tr>
+                ))
+            }
+            </tbody>
+        </table>
+    );
     }
 
 const OutputBlock = props => ( // Bloque con resultado final a exportar
@@ -59,9 +62,9 @@ const OutputBlock = props => ( // Bloque con resultado final a exportar
                 <Input
                     readOnly
                     value={props.output}
-                    label="Peso recolectado promedio"
+                    label={`${props.productType === PRODUCT_TYPES.LIQUID ? "Peso":"Volumen"} recolectado promedio`}
                     type="number"
-                    unit="kg"
+                    unit={props.productType === PRODUCT_TYPES.LIQUID ? "L" : "kg"}
                     clearButton={false}
                 ></Input>
             </Col>
@@ -83,7 +86,7 @@ const Recolected = props => {
     const [play2] = useSound(twoSfx);
     const [play1] = useSound(oneSfx);
     const [play0] = useSound(readySfx);
-    
+
     const updateElapsed = value => {
         timer.setInitial(value);
         setTime(value);
@@ -120,6 +123,7 @@ const Recolected = props => {
     };
 
     const toggleRunning = () => {
+        console.log("running:", running);
         if(data.length >= 3){
             Toast("info", "Sólo puede ingresar hasta 3 muestras", 2000, "center");
         }else{
@@ -127,9 +131,12 @@ const Recolected = props => {
                 timer.onChange = setTime;
                 timer.onTimeout = onTimeout;
                 timer.clear();
-                timer.start();
-                setRunning(true);            
-            }        
+                timer.start();            
+            }else{
+                timer.stop();
+                timer.clear();
+            }
+            setRunning(!running);
         }
     };
 
@@ -157,21 +164,23 @@ const Recolected = props => {
                 <PlayButton onClick={toggleRunning} running={running} />
             </Block>
             <Block style={{marginBottom: "0px",textAlign:"center"}}>
-                <Row style={{alignItems:"center"}}>
-                    <Col width={20}>                        
-                        <Row>
-                            <Button disabled={running || data.length===0} onClick={popData}>
-                                <FaMinus color="red" size={30}/>
-                            </Button>
-                        </Row>
-                    </Col>
-                    <Col width={80}>
-                        <DataTable data={data} />
-                    </Col>
-                </Row>
+                {data.length > 0 &&
+                    <Row style={{alignItems:"center"}}>
+                        <Col width={20}>                        
+                            <Row>
+                                <Button disabled={running || data.length===0} onClick={popData}>
+                                    <FaMinus color="red" size={30}/>
+                                </Button>
+                            </Row>
+                        </Col>
+                        <Col width={80}>
+                            <DataTable data={data} productType={model.productType}/>
+                        </Col>
+                    </Row>
+                }
             </Block>
             <Block style={{marginTop:"0px",textAlign:"center"}}>
-                <OutputBlock output={dataAvg().toFixed(2)}/>
+                <OutputBlock output={dataAvg().toFixed(2)} productType={model.productType}/>
             </Block>
             <Block style={{textAlign:"center"}}>
                 <Row>

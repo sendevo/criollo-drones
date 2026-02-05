@@ -1,6 +1,7 @@
-import { Page, Link, PageContent, Block } from 'framework7-react';
+import { Page, Link, PageContent } from 'framework7-react';
 import Footer from '../../components/Footer';
-import paramsIcon from '../../assets/icons/drone.png'
+import paramsIcon from '../../assets/icons/drone.png';
+import controlIcon from '../../assets/icons/control.png';
 import suppliesIcon from '../../assets/icons/calculador.png';
 import reportsIcon from '../../assets/icons/reportes.png';
 import securityIcon from '../../assets/icons/seguridad.png';
@@ -34,6 +35,10 @@ const Home = () => (
                 <Link href="/params/" className={classes.MenuButton}>
                     <img className={classes.HomeIcon} src={paramsIcon} alt="params"/>
                     <p>Parámetros de <br/> operación</p>
+                </Link>
+                <Link href="/control/" className={classes.MenuButton}>
+                    <img className={classes.HomeIcon} src={controlIcon} alt="control"/>
+                    <p>Verificación de <br/> prestación</p>
                 </Link>
                 <Link href="/supplies/" className={classes.MenuButton}>
                     <img className={classes.HomeIcon} src={suppliesIcon} alt="supplies"/>
