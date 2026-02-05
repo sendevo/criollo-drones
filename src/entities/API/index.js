@@ -73,7 +73,7 @@ const schemas = { // Esquemas de validación de parametros
         vel: v => isPositiveFloat(v)
     },
     computeDose: {
-        recolectedTime: v =>  isPositiveFloat(v),
+        recolected_time: v =>  isPositiveFloat(v),
         work_velocity: v => isPositiveFloat(v)
     },
     computeDensityFromRecolected: {
@@ -321,11 +321,10 @@ const computeProductVolume = (prod, vol, Va) => { // Cantidad de insumo (gr, ml 
 
 export const computeDose = params => { 
     // Dosis a partir de tiempo y velocidad de avance
-    if(DEBUG) console.log(params);
-    const wrong_keys = validate(schemas.computeDoseIndirect, params);
+    const wrong_keys = validate(schemas.computeDose, params);
     if(wrong_keys.length > 0) return {status: "error", wrong_keys};
-    const { recolected, work_velocity, recolectedTime, work_width, expected_dose } = params;
-    const distance = work_velocity*recolectedTime*10/36;
+    const { recolected, work_velocity, recolected_time, work_width, expected_dose } = params;
+    const distance = work_velocity*recolected_time*10/36;
     const dose = recolected/distance/work_width*10000;
     const diffkg = dose-expected_dose;
     const diffp = diffkg/expected_dose*100;
@@ -334,7 +333,6 @@ export const computeDose = params => {
 
 export const computeDensityFromRecolected = params => { 
     // Densidad a partir de lo recolectado en bandeja
-    if(DEBUG) console.log(params);
     const wrong_keys = validate(schemas.computeDensityFromRecolected, params);
     if(wrong_keys.length > 0) return {status: "error", wrong_keys};
     const {recolected, pass_number, tray_area} = params;

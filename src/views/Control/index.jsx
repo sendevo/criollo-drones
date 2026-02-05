@@ -13,6 +13,7 @@ import { NavbarTitle, BackButton, CalculatorButton } from '../../components/Butt
 import Typography from '../../components/Typography';
 import { ModelCtx } from '../../context';
 import { PRODUCT_TYPES } from '../../entities/Model';
+import { computeDose } from '../../entities/API';
 import LiquidControl from './liquidControl';
 import SolidControl from './solidControl';
 import Input from '../../components/Input';
@@ -21,6 +22,16 @@ import solidRecolectedIcon from '../../assets/icons/peso_recolectado.png';
 import liquidRecolectedIcon from '../../assets/icons/vol_recolectado.png';
 import Toast from '../../components/Toast';
 
+const dataCellStyle = {
+        textAlign: "right",
+        frontSize: "90%",
+        paddingLeft: "25px"
+};
+
+const fieldCellStyle = {
+    textAlign: "left",
+    frontSize: "90%"
+};
 
 const ParamsData = props => {
     const {
@@ -28,15 +39,6 @@ const ParamsData = props => {
         workWidth,
         workVelocity
     } = props;
-
-    const dataCellStyle = {
-        frontSize: "90%"
-    };
-
-    const fieldCellStyle = {
-        textAlign: "left",
-        frontSize: "90%"
-    };
 
     return (
         <Block style={{margin: "10px 0px 5px 0px"}}>
@@ -74,6 +76,45 @@ const ParamsData = props => {
     );
 };
 
+
+const OutputsData = props => {
+    const {
+        effectiveDose,
+        doseDiff,
+        doseDiffP,
+        productType
+    } = props;
+
+    return (
+        <Block style={{margin: "10px 0px 5px 0px"}}>
+            <table style={
+                {
+                    display: "block",
+                    padding: "0px !important",
+                    margin: "0 0 0 auto"
+                }}>
+                <tbody>
+                    {effectiveDose ? 
+                        <tr>
+                            <td style={fieldCellStyle}><b>Dosis efectiva:</b></td>
+                            <td style={dataCellStyle}>{effectiveDose?.toFixed(2)} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"}</td>
+                        </tr>
+                        : null
+                    }
+                    {doseDiff ?
+                        <tr>
+                            <td style={fieldCellStyle}><b>Diferencia con dosis prevista:</b></td>
+                            <td style={dataCellStyle}>{doseDiff?.toFixed(2)} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"} ({doseDiffP?.toFixed(2)}%)</td>
+                        </tr>
+                        : null
+                    }
+                </tbody>
+            </table>
+        </Block>
+    );
+};
+
+
 const Control = props => {
 
     const model = useContext(ModelCtx);
@@ -82,6 +123,12 @@ const Control = props => {
         productType: model.productType,
         recolected: model.recolected || '',
         recolectedTime: model.recolectedTime || ''
+    });
+
+    const [outputs, setOutputs] = useState({
+        effectiveDose: model.effectiveDose || '',
+        doseDiff: model.doseDiff || '',
+        doseDiffP: model.doseDiffP || ''
     });
 
     useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
@@ -109,7 +156,33 @@ const Control = props => {
     };
 
     const handleComputeDose = () => {
-        Toast("info", "No implementado...");
+        const params = {
+            recolected: parseFloat(inputs.recolected),
+            work_velocity: parseFloat(model.workVelocity),
+            recolected_time: parseFloat(inputs.recolectedTime),
+            work_width: parseFloat(model.workWidth),
+            expected_dose: model.productType === PRODUCT_TYPES.SOLID ? parseFloat(model.doseSolid) : parseFloat(model.doseLiquid)
+        };
+
+        const result = computeDose(params);
+
+        if(result.status === "error"){
+            Toast("error", "Error al calcular la dosis. Verifique los datos ingresados.");
+            console.log("Wrong keys:", result.wrong_keys);
+            return;
+        }
+
+        setOutputs({
+            ...outputs,
+            effectiveDose: result.dose,
+            doseDiff: result.diffkg,
+            doseDiffP: result.diffp,
+        });
+        model.update({
+            effectiveDose: result.dose,
+            doseDiff: result.diffkg,
+            doseDiffP: result.diffp,
+        });
     };
 
     return (
@@ -153,6 +226,8 @@ const Control = props => {
                     </Col>
                 </Row>
             </List>
+
+            <OutputsData {...outputs} productType={inputs.productType} />
 
             <Row style={{marginBottom:"15px", marginTop:"20px"}}>
                 <Col width={20}></Col>

@@ -94,7 +94,8 @@ const defaultFormParams = {
     cvDist: '', // Coeficiente de variacion de distribucion (%)
 
     effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
-    expectedWorkWidth: '', // Ancho de labor efectivo (m)
+    doseDiff: '', // Diferencia con dosis prevista (kg/ha o l/ha)
+    doseDiffP: '', // Diferencia con dosis prevista (%)
     
     tankCapacity: '', // Capacidad del tanque (l)
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado
