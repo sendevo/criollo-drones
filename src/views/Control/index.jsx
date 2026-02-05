@@ -23,9 +23,8 @@ import liquidRecolectedIcon from '../../assets/icons/vol_recolectado.png';
 import Toast from '../../components/Toast';
 
 const dataCellStyle = {
-        textAlign: "right",
-        frontSize: "90%",
-        paddingLeft: "25px"
+    textAlign: "right",
+    frontSize: "90%"
 };
 
 const fieldCellStyle = {
@@ -36,23 +35,28 @@ const fieldCellStyle = {
 const ParamsData = props => {
     const {
         doseSolid,
+        doseLiquid,
         workWidth,
-        workVelocity
+        workVelocity,
+        productType
     } = props;
+
+    const dose = productType === PRODUCT_TYPES.LIQUID ? doseLiquid : doseSolid;
+    const doseUnit = productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha";
 
     return (
         <Block style={{margin: "10px 0px 5px 0px"}}>
             <table style={
                 {
-                    display: "block",
                     padding: "0px !important",
-                    margin: "0 0 0 auto"
+                    margin: "0 auto",
+                    width: "90%"
                 }}>
                 <tbody>
                     {doseSolid ? 
                         <tr>
                             <td style={fieldCellStyle}><b>Dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{doseSolid?.toFixed(2)} kg/ha</td>
+                            <td style={dataCellStyle}>{dose?.toFixed(2)} {doseUnit}</td>
                         </tr>
                         : null
                     }
@@ -87,11 +91,10 @@ const OutputsData = props => {
 
     return (
         <Block style={{margin: "10px 0px 5px 0px"}}>
-            <table style={
-                {
-                    display: "block",
+            <table style={{
                     padding: "0px !important",
-                    margin: "0 0 0 auto"
+                    margin: "0 auto",
+                    width: "90%"
                 }}>
                 <tbody>
                     {effectiveDose ? 

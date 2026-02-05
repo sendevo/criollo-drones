@@ -31,7 +31,7 @@ const ResultsProfile = ({results}) => {
                 {
                     padding: "0px !important",
                     margin: "0 auto",
-                    width: "100%"
+                    width: "90%"
                 }}>
                 <tbody>
                     {expectedDose ? 
@@ -47,7 +47,7 @@ const ResultsProfile = ({results}) => {
                                 <td style={fieldCellStyle}><b>Dosis efectiva:</b></td>
                                 <td style={dataCellStyle}>{effectiveDose?.toFixed(2) || ''} kg/ha ({diffp_c} %)</td>
                             </tr>
-                            { expected_work_width &&
+                            { workWidth &&
                             <tr>
                                 <td style={fieldCellStyle}><b>Ancho de labor efectivo:</b></td>
                                 <td style={dataCellStyle}>{workWidth} m</td>
