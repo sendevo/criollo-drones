@@ -53,7 +53,7 @@ const DataTable = props => ( // Tabla de resultados parciales
                 <tr key={idx}>
                     <td>{idx+1}</td>
                     <td>{d.time/1000} seg.</td>
-                    <td>{d.vel.toFixed(2)} km/h</td>
+                    <td>{d.vel.toFixed(2)} m/s</td>
                 </tr>
             ))
         }
@@ -71,7 +71,7 @@ const OutputBlock = props => ( // Bloque con resultado final a exportar
                     value={props.output}
                     label="Vel. promedio"
                     type="number"
-                    unit="km/h"
+                    unit="m/s"
                     clearButton={false}
                 ></Input>
             </Col>
@@ -85,9 +85,9 @@ const timer = new Timer(0, false);
 const Velocity = props => { // View
     
     const model = useContext(ModelCtx);
-    const [time, setTime] = useState(0);
+    const [time, setTime] = useState(0); // Tiempo en ms
     const [running, setRunning] = useState(false);
-    const [distance, setDistance] = useState(50);
+    const [distance, setDistance] = useState(50); // Distancia en m
     const [data, setData] = useState([]);
     const [pushEnabled, setPushEnabled] = useState(false);
 
@@ -110,10 +110,10 @@ const Velocity = props => { // View
 
     const updateDistance = d => {
         if(d > 0){
-            setDistance(d);
+            setDistance(d); // Distancia en m
             setData(data.map(v => ({
-                time: v.time, 
-                vel: d/v.time*3600
+                time: v.time, // Tiempo en ms
+                vel: d/v.time*1000 // Velocidad en m/s
             })));
         }else
             Toast("error", "Ingrese un valor de distancia mayor que 0 m", 2000, "center");
@@ -124,7 +124,7 @@ const Velocity = props => { // View
             const temp = [...data];
             temp.push({
                 time: time,
-                vel: distance/time*3600
+                vel: distance/time*1000 // Velocidad en m/s
             });        
             setData(temp);
             setPushEnabled(false);

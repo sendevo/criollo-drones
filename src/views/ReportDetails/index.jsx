@@ -71,7 +71,7 @@ const ReportDetails = props => {
                             </tr>
                             <tr>
                                 <td><b>Velocidad de trabajo:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.params.workVelocity)} km/h</td>
+                                <td className={classes.DataCell}>{formatNumber(report.params.workVelocity)} m/s</td>
                             </tr>
                             <tr>
                                 <td><b>Presión de trabajo:</b></td>

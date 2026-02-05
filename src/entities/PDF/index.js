@@ -134,7 +134,7 @@ const PDFExport = async (report, share) => {
                     [{
                         text: "Velocidad de trabajo:",
                         style: "tableHeader"
-                    }, formatNumber(report.params.workVelocity) + " km/h"],
+                    }, formatNumber(report.params.workVelocity) + " m/s"],
                     [{
                         text: "Presión de trabajo:",
                         style: "tableHeader"
