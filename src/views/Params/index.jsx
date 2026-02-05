@@ -1,4 +1,5 @@
 import { 
+    f7,
     Navbar, 
     Page, 
     List,
@@ -14,20 +15,14 @@ import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
 import Toast from '../../components/Toast';
-import TrayTable from '../../components/TrayTable';
-import Chart from '../../components/Chart';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
-import { computeDistributionProfile } from '../../entities/API';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
 import iconWidth from '../../assets/icons/ancho_faja.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
-import trayAreaIcon from '../../assets/icons/sup_bandeja.png';
-import trayCountIcon from '../../assets/icons/cant_bandejas.png';
-import traySeparationIcon from '../../assets/icons/dist_bandejas.png';
 import { PRODUCT_TYPES } from '../../entities/Model';
 
 
@@ -37,26 +32,16 @@ const Params = props => {
 
     const [inputs, setInputs] = useState({
         productType: model.productType,
-        lotCoordinates: model.lotCoordinates || [],
+    
         lotName: model.lotName || '',
         workArea: model.workArea || '',
-        workVelocity: model.workVelocity || '',
-        recolected: model.recolected || '',
-        workWidth: model.workWidth || '',
-        doseSolid: model.doseSolid || '',
-        doseLiquid: model.doseLiquid || '',
+        lotCoordinates: model.lotCoordinates || [],
         gpsEnabled: false,
 
-        trayArea: model.trayArea || '',
-        trayCount: model.trayCount || '',
-        traySeparation: model.traySeparation || '',
-        trayData: model.trayData || [],
-
-        profileComputed: false,
-        profile: model.profile || [],
-        avgDist: model.avgDist || null,
-        stdDist: model.stdDist || null,
-        cvDist: model.cvDist || null
+        doseSolid: model.doseSolid || '',
+        doseLiquid: model.doseLiquid || '',
+        workWidth: model.workWidth || '',
+        workVelocity: model.workVelocity || ''
     });
 
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
@@ -65,13 +50,6 @@ const Params = props => {
             workVelocity: model.workVelocity || ''
         });
     }, [model.workVelocity]);
-
-    useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
-        setInputs({
-            ...inputs,
-            recolected: model.recolected || ''
-        });
-    }, [model.recolected]);
 
 
     const handleProductTypeChange = (value) => {
@@ -131,76 +109,10 @@ const Params = props => {
             model.update(attr, value); 
     };
 
-    const handleTrayAddCollected = (trayIndex, collectedWeight) => {
-        const updatedTrayData = [...inputs.trayData];
-        updatedTrayData[trayIndex].collected = collectedWeight;
-        model.update("trayData", updatedTrayData);
-        setInputs(prevState => ({ ...prevState, trayData: updatedTrayData }));
+    const addResultsToReport = () => {
+        model.addParamsToReport(inputs);
+        f7.panel.open();
     };
-
-    const handleComputeProfile = () => {
-        if(inputs.trayData.length === 0){
-            Toast("error", "No hay datos de bandejas para calcular el perfil");
-            return;
-        }
-
-        const tray_data = inputs.trayData.map(tray => tray.collected);
-        const tray_distance = inputs.traySeparation;
-        const pass_number = 1;
-        const work_width = inputs.workWidth;
-        const work_pattern = "lineal"; // ida y vuelta (lineal) o circular
-
-        try {
-
-            console.log(tray_data, tray_distance, pass_number, work_width, work_pattern);
-
-            const result = computeDistributionProfile({
-                tray_data,
-                tray_distance,
-                pass_number,
-                work_width,
-                work_pattern
-            });
-
-            if(result.status === "error") {
-                Toast("error", `Error en parámetros: ${result.wrongKeys}`);
-                return;
-            }else{
-                const {profile, avg, std, cv} = result;
-                setInputs(prevState => ({ 
-                    ...prevState, 
-                    profile: profile,
-                    avgDist: avg,
-                    stdDist: std,
-                    cvDist: cv,
-                    profileComputed: true
-                }));
-            }
-        } catch (error) {
-            Toast("error", "Error al calcular el perfil de distribución");
-        }
-    };
-
-    const handleClearDistrForm = () => {
-        setInputs(prevState => ({ 
-            ...prevState, 
-            trayArea: '',
-            trayCount: '',
-            traySeparation: '',
-            trayData: [] 
-        }));
-        model.update({
-            trayArea: '',
-            trayCount: '',
-            traySeparation: '',
-            trayData: [] 
-        });
-    };
-
-    const chartData = inputs.trayData.map( (tray, index) => ({ 
-        name: `Band. ${index + 1}`, 
-        recolectado: tray.collected*100 // Convertir a kg por ha
-    }));
 
     return (
         <Page>            
@@ -310,6 +222,19 @@ const Params = props => {
                     </Col>
                 </Row>
             </List>
+
+            <Row style={{marginBottom:"15px", marginTop:"20px"}}>
+                <Col width={20}></Col>
+                <Col width={60}>
+                    <Button 
+                        fill 
+                        onClick={addResultsToReport}
+                        style={{textTransform:"none"}}>
+                            Agegar al reporte
+                    </Button>
+                </Col>
+                <Col width={20}></Col>
+            </Row>
 
             <BackButton {...props} />
         </Page>

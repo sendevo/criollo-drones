@@ -78,6 +78,7 @@ const defaultFormParams = {
     workArea: '', // Superficie a trabajar (ha)
     workVelocity: '', // Velocidad de trabajo (m/s)
     recolected: '', // Cantidad recolectada (kg o l)
+    recolectedTime: '', // Tiempo de recolección (s)
     workWidth: '', // Ancho de trabajo (m)
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
@@ -92,7 +93,6 @@ const defaultFormParams = {
     stdDist: '', // Desviacion estandar de distribucion (gr o ml)
     cvDist: '', // Coeficiente de variacion de distribucion (%)
 
-    expectedDose: '', // Dosis prevista (kg/ha o l/ha)
     effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
     expectedWorkWidth: '', // Ancho de labor efectivo (m)
     

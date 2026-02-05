@@ -2,6 +2,7 @@ import { f7, List, Row } from 'framework7-react';
 import ReactDOMServer from 'react-dom/server';
 import IconCollected from '../../assets/icons/peso_recolectado.png';
 import Input from '../Input';
+import { PRODUCT_TYPES } from '../../entities/Model';
 
 export const trayCollectedPrompt = (row, len, callback) => { 
     // Modal ingreso de peso recolectado de la bandeja
@@ -131,7 +132,7 @@ export const openRecipientSizePrompt = callback => {
     }).open();
 };
 
-export const timerCollectedPrompt = (callback) => { 
+export const timerCollectedPrompt = (callback, productype) => { 
     // Modal ingreso de peso recolectado para dosis
 
     const elId = "collectedvolumeinput"; // Id del input
@@ -140,12 +141,12 @@ export const timerCollectedPrompt = (callback) => {
         <List form noHairlinesMd style={{marginBottom:"0px"}}>
             <Input
                 slot="list"
-                label="Volumen recolectado"
+                label={productype === PRODUCT_TYPES.LIQUID ? "Volumen recolectado" : "Peso recolectado"}
                 icon={IconCollected}
                 type="number"
-                unit="L"
-                inputId={elId}
-            ></Input>
+                unit={productype === PRODUCT_TYPES.LIQUID ? "L" : "kg"}
+                inputId={elId}>
+            </Input>
         </List>
     );
 

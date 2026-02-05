@@ -26,7 +26,6 @@ import threeSfx from '../../assets/sounds/tres.mp3';
 import readySfx from '../../assets/sounds/listo.mp3';
 import { PRODUCT_TYPES } from "../../entities/Model";
 
-const defaultTimer = 30000;
 
 const DataTable = props => {
 
@@ -73,13 +72,14 @@ const OutputBlock = props => ( // Bloque con resultado final a exportar
     </List>
 );
 
+const defaultTimer = 30000;
 const timer = new Timer(defaultTimer, true);
 
 const Recolected = props => {
     
     const model = useContext(ModelCtx);
-    const [elapsed, setElapsed] = useState(model.time*1000 || defaultTimer);
-    const [time, setTime] = useState(defaultTimer);
+    const [elapsed, setElapsed] = useState(model.recolectedTime*1000 || defaultTimer);
+    const [recolectedTime, setTime] = useState(model.recolectedTime*1000 || defaultTimer);
     const [running, setRunning] = useState(false);        
     const [data, setData] = useState([]);
     const [play3] = useSound(threeSfx);
@@ -89,6 +89,7 @@ const Recolected = props => {
 
     const updateElapsed = value => {
         timer.setInitial(value);
+        model.update('recolectedTime', value/1000);
         setTime(value);
         setElapsed(value);
         setData([]); // Al cambiar el tiempo, borrar datos anteriores
@@ -97,11 +98,11 @@ const Recolected = props => {
     const onTimeout = () => {        
         setRunning(false);        
         setTime(elapsed);        
-        timerCollectedPrompt( value => {
+        timerCollectedPrompt( (value => {
             const temp = [...data];
             temp.push(parseFloat(value));
             setData(temp);
-        });
+        }, model.productType));
     };
 
     const popData = () => { // Quitar último dato medido
@@ -117,17 +118,18 @@ const Recolected = props => {
     const exportData = () => {           
         model.update({
             recolected: set2Decimals(dataAvg()),
-            time: elapsed/1000
+            recolectedTime: elapsed/1000
         });
         props.f7router.back();
     };
 
     const toggleRunning = () => {
-        console.log("running:", running);
+        
         if(data.length >= 3){
             Toast("info", "Sólo puede ingresar hasta 3 muestras", 2000, "center");
         }else{
             if(!running){
+                timer.setInitial(elapsed);
                 timer.onChange = setTime;
                 timer.onTimeout = onTimeout;
                 timer.clear();
@@ -141,16 +143,16 @@ const Recolected = props => {
     };
 
     const getTime = () => {
-        if(time === 3000)
+        if(recolectedTime === 3000)
             play3();
-        if(time === 2000)
+        if(recolectedTime === 2000)
             play2();
-        if(time === 1000)
+        if(recolectedTime === 1000)
             play1();
-        if(time < 100)
+        if(recolectedTime < 100)
             play0();
         // unix to min:seg:ms
-        return moment(time).format('mm:ss:S');
+        return moment(recolectedTime).format('mm:ss:S');
     };
 
     return (

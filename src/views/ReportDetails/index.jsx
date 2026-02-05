@@ -9,6 +9,7 @@ import moment from 'moment';
 import { Capacitor } from '@capacitor/core';
 import PDFExport from '../../entities/PDF';
 import classes from './style.module.css';
+import { PRODUCT_TYPES } from '../../entities/Model';
 
 const ReportDetails = props => {
     
@@ -38,26 +39,18 @@ const ReportDetails = props => {
                             <tbody>
                                 <tr>
                                     <td><b>Producto a aplicar:</b></td>
-                                    <td>{report.params.productType}</td>
+                                    <td>{report.params.productType === PRODUCT_TYPES.LIQUID ? "Líquidos" : "Sólidos"}</td>
                                 </tr>
                             </tbody>
                         </table>
                     }
 
-                    <p style={{marginTop: "5px",marginBottom:0, padding:0}}>Pico</p>
+                    <p style={{marginTop: "5px",marginBottom:0, padding:0}}>Título</p>
                     <table className={classes.Table}>
                         <tbody>
                             <tr>
-                                <td><b>Pico seleccionado:</b></td>
-                                <td className={classes.DataCell}>{report.params.nozzleName ? report.params.nozzleName : <i>Otro pico</i>}</td>
-                            </tr>                     
-                            <tr>
-                                <td><b>Caudal nominal:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.params.nominalFlow)} l/min</td>
-                            </tr>
-                            <tr>
-                                <td><b>Presión nominal:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.params.nominalPressure)} bar</td>
+                                <td><b>Parámetro ejemplo:</b></td>
+                                <td className={classes.DataCell}>{formatNumber(1.23)} l/min</td>
                             </tr>
                             <tr></tr>
                         </tbody>
@@ -66,81 +59,16 @@ const ReportDetails = props => {
                     <table className={classes.Table}>
                         <tbody>
                             <tr>
-                                <td><b>Distancia entre picos:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.params.nozzleSeparation)} m</td>
-                            </tr>
-                            <tr>
                                 <td><b>Velocidad de trabajo:</b></td>
                                 <td className={classes.DataCell}>{formatNumber(report.params.workVelocity)} m/s</td>
                             </tr>
-                            <tr>
-                                <td><b>Presión de trabajo:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.params.workPressure)} bar</td>
-                            </tr>
-                            <tr>
-                                <td><b>Volumen de aplicación:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.params.workVolume)} l/ha</td>
-                            </tr>
-                            {report.params.waterEqSprayFlow && report.params.productType === "fertilizante" &&
-                                <tr>
-                                    <td><b>Caudal equivalente en agua:</b></td>
-                                    <td className={classes.DataCell}>{formatNumber(report.params.waterEqSprayFlow)} l/ha</td>
-                                </tr>
-                            }
-                            {report.params.dropletSizeLabel && 
-                                <tr>
-                                    <td><b>Tamaño de gota:</b></td>
-                                    <td className={classes.DataCell}>{report.params.dropletSizeLabel}</td>
-                                </tr>
-                            }
-                            {report.params.productDensity && 
-                                <tr>
-                                    <td><b>Densidad del producto:</b></td>
-                                    <td className={classes.DataCell}>{formatNumber(report.params.productDensity)} kg/l</td>
-                                </tr>
-                            }
                         </tbody>
                     </table>
                 </Block>
             }
             {report.completed.control &&
                 <Block className={classes.SectionBlock}>
-                    <h3>Verificación de picos</h3>
-                    <table className={classes.Table}>
-                        <tbody>
-                            {/*<tr>
-                                <td><b>Caudal efectivo promedio:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.control.efAvg)} l/min</td>
-                            </tr>*/}
-                            {report.control.totalEffectiveFlow && <tr>
-                                <td><b>Caudal pulverizado efectivo:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.control.totalEffectiveFlow)} l/min</td>
-                            </tr>}
-                            <tr>
-                                <td><b>Volumen pulverizado efectivo:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.control.effectiveSprayVolume)} l/ha</td>
-                            </tr>
-                            <tr>
-                                <td><b>Volumen previsto:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.control.expectedSprayVolume)} l/ha</td>
-                            </tr>
-                            <tr>
-                                <td><b>Diferencia:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.control.diff)} l/ha <br/>({formatNumber(report.control.diffp)} %)</td>
-                            </tr>
-                            { report.control.comments && 
-                                <tr>
-                                    <td><b>Comentarios:</b></td>
-                                    <td className={classes.DataCell}>{report.control.comments}</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <NozzlesTable 
-                        data={report.control.data} 
-                        onDataChange={()=>{}} 
-                        rowSelectDisabled={true}
-                        evalCollected={()=>{}}/>
+                    <h3>Verificación de prestación</h3>
                 </Block>
             }  
             {report.completed.supplies &&
@@ -165,12 +93,8 @@ const ReportDetails = props => {
                                 <td className={classes.DataCell}>{formatNumber(report.supplies.workArea)} ha</td>
                             </tr>
                             <tr>
-                                <td><b>Volumen pulverizado:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.supplies.workVolume)} l/ha</td>
-                            </tr>
-                            <tr>
-                                <td><b>Capacidad del tanque:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(report.supplies.capacity, 0)} litros</td>
+                                <td><b>Capacidad de carga:</b></td>
+                                <td className={classes.DataCell}>{formatNumber(report.supplies.capacity, 0)} {report.supplies.productType === PRODUCT_TYPES.LIQUID ? "litros" : "kilos"}</td>
                             </tr>
                             <tr>
                                 <td><b>Cantidad de cargas:</b></td>

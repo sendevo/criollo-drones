@@ -72,15 +72,8 @@ const schemas = { // Esquemas de validación de parametros
         d: v => isPositiveFloat(v),
         vel: v => isPositiveFloat(v)
     },
-
-    computeDoseDirect:{        
-        expected_dose: v => isPositiveFloat(v),
-        work_width: v => isPositiveFloat(v),
-        distance: v => isPositiveFloat(v),
-        recolected: v => isPositiveFloat(v)
-    },
-    computeDoseIndirect: {
-        time: v =>  isPositiveFloat(v),
+    computeDose: {
+        recolectedTime: v =>  isPositiveFloat(v),
         work_velocity: v => isPositiveFloat(v)
     },
     computeDensityFromRecolected: {
@@ -326,25 +319,17 @@ const computeProductVolume = (prod, vol, Va) => { // Cantidad de insumo (gr, ml 
     }   
 };
 
-export const computeDoseDirect = params => { 
-    // Dosis a partir de distancia    
-    const wrong_keys = validate(schemas.computeDoseDirect, params);
-    if(wrong_keys.length > 0) return {status: "error", wrong_keys};
-    const { recolected, distance, work_width, expected_dose } = params;    
-    const dose = recolected/distance/work_width*10000;
-    const diffkg = dose-expected_dose;
-    const diffp = diffkg/expected_dose*100;
-    return { status: "success", dose, diffkg, diffp };
-};
-
-export const computeDoseIndirect = params => { 
+export const computeDose = params => { 
     // Dosis a partir de tiempo y velocidad de avance
     if(DEBUG) console.log(params);
     const wrong_keys = validate(schemas.computeDoseIndirect, params);
     if(wrong_keys.length > 0) return {status: "error", wrong_keys};
-    const { recolected, work_velocity, time, work_width, expected_dose } = params;
-    const distance = work_velocity*time*10/36;
-    return computeDoseDirect({ recolected, distance, work_width, expected_dose });
+    const { recolected, work_velocity, recolectedTime, work_width, expected_dose } = params;
+    const distance = work_velocity*recolectedTime*10/36;
+    const dose = recolected/distance/work_width*10000;
+    const diffkg = dose-expected_dose;
+    const diffp = diffkg/expected_dose*100;
+    return { status: "success", dose, diffkg, diffp };
 };
 
 export const computeDensityFromRecolected = params => { 

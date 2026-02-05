@@ -1,16 +1,260 @@
-import React, { useContext } from 'react';
-import { ModelCtx } from '../../context';
-import Typography from '../../components/Typography';
+import {  
+    List,
+    Row,
+    Col,
+    Button
+} from 'framework7-react';
+import { useContext, useEffect, useState, Fragment } from 'react';
+import Input from '../../components/Input/index.jsx';
+import Toast from '../../components/Toast/index.js';
+import TrayTable from '../../components/TrayTable/index.jsx';
+import Chart from '../../components/Chart/index.jsx';
+import { ModelCtx } from '../../context/index.js';
+import { getLocation } from '../../utils/index.js';
+import { computeDistributionProfile } from '../../entities/API/index.js';
+import ResultsProfile from './resultsProfile.jsx';
+import trayAreaIcon from '../../assets/icons/sup_bandeja.png';
+import trayCountIcon from '../../assets/icons/cant_bandejas.png';
+import traySeparationIcon from '../../assets/icons/dist_bandejas.png';
 
 
-const SolidControl = props => {
+const SolidControl = () => {
 
     const model = useContext(ModelCtx);
 
+    const [inputs, setInputs] = useState({
+        productType: model.productType,
+        lotCoordinates: model.lotCoordinates || [],
+        lotName: model.lotName || '',
+        workArea: model.workArea || '',
+        workVelocity: model.workVelocity || '',
+        recolected: model.recolected || '',
+        workWidth: model.workWidth || '',
+        doseSolid: model.doseSolid || '',
+        doseLiquid: model.doseLiquid || '',
+        gpsEnabled: false,
+
+        trayArea: model.trayArea || '',
+        trayCount: model.trayCount || '',
+        traySeparation: model.traySeparation || '',
+        trayData: model.trayData || [],
+
+        profileComputed: false,
+        profile: model.profile || [],
+        avgDist: model.avgDist || null,
+        stdDist: model.stdDist || null,
+        cvDist: model.cvDist || null
+    });
+
+    useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
+        setInputs({
+            ...inputs,
+            recolected: model.recolected || ''
+        });
+    }, [model.recolected]);
+
+    const setMainParams = (attr, value) => {
+        if(attr === "gpsEnabled"){
+            if(value){
+                getLocation().then( coords => {
+                    setInputs(prevState => ({ 
+                        ...prevState, 
+                        lotCoordinates: coords 
+                    }));
+                })
+                .catch( err => {
+                    if(err.type === "locationPermissions"){
+                        Toast("error", "No se pudieron obtener los permisos de ubicación");
+                    }else if(err.type === "getLocation"){
+                        Toast("error", "No se pudo obtener la ubicación actual");
+                    }else{
+                        Toast("error", "Error desconocido al obtener la ubicación");
+                    }
+                    setInputs(prevState => ({ ...prevState, gpsEnabled: false }));
+                });
+            }
+        }
+
+        if(attr === "trayCount"){ // Actualizar array de datos de bandejas
+            const trayCount = isNaN(value) ? 0 : parseInt(value);
+            const newTrayData = [];
+            for(let i=0; i < trayCount; i++){
+                if(inputs.trayData[i]){
+                    newTrayData.push(inputs.trayData[i]);
+                }else{
+                    newTrayData.push({collected: 0});
+                }
+            }
+            setInputs(prevState => ({ 
+                ...prevState, 
+                trayData: newTrayData
+            }));
+            model.update("trayData", newTrayData);
+        }
+
+        setInputs(prevState => ({ ...prevState, [attr]: value }));
+        if(attr !== "gpsEnabled") // gpsEnabled no forma parte del modelo
+            model.update(attr, value); 
+    };
+
+    const handleTrayAddCollected = (trayIndex, collectedWeight) => {
+        const updatedTrayData = [...inputs.trayData];
+        updatedTrayData[trayIndex].collected = collectedWeight;
+        model.update("trayData", updatedTrayData);
+        setInputs(prevState => ({ ...prevState, trayData: updatedTrayData }));
+    };
+
+    const handleComputeProfile = () => {
+        if(inputs.trayData.length === 0){
+            Toast("error", "No hay datos de bandejas para calcular el perfil");
+            return;
+        }
+
+        const tray_data = inputs.trayData.map(tray => tray.collected);
+        const tray_distance = inputs.traySeparation;
+        const pass_number = 1;
+        const work_width = inputs.workWidth;
+        const work_pattern = "lineal"; // ida y vuelta (lineal) o circular
+
+        try {
+
+            console.log(tray_data, tray_distance, pass_number, work_width, work_pattern);
+
+            const result = computeDistributionProfile({
+                tray_data,
+                tray_distance,
+                pass_number,
+                work_width,
+                work_pattern
+            });
+
+            if(result.status === "error") {
+                Toast("error", `Error en parámetros: ${result.wrongKeys}`);
+                return;
+            }else{
+                const {profile, avg, std, cv} = result;
+                setInputs(prevState => ({ 
+                    ...prevState, 
+                    profile: profile,
+                    avgDist: avg,
+                    stdDist: std,
+                    cvDist: cv,
+                    profileComputed: true
+                }));
+            }
+
+            Toast("info", "Funcionalidad en desarrollo - resultados simulados");
+        } catch (error) {
+            Toast("error", "Error al calcular el perfil de distribución");
+        }
+    };
+
+    const handleClearDistrForm = () => {
+        setInputs(prevState => ({ 
+            ...prevState, 
+            trayArea: '',
+            trayCount: '',
+            traySeparation: '',
+            trayData: [] 
+        }));
+        model.update({
+            trayArea: '',
+            trayCount: '',
+            traySeparation: '',
+            trayData: [] 
+        });
+    };
+
+    const chartData = inputs.trayData.map( (tray, index) => ({ 
+        name: `Band. ${index + 1}`, 
+        recolectado: tray.collected*100 // Convertir a kg por ha
+    }));
+
     return (
-        <div style={{padding:"20px"}}>
-            <Typography sx={{marginBottom:"10px", fontSize: "18px"}}>Control de prestación - Sólido</Typography>
-        </div>
+        <List form noHairlinesMd style={{marginTop: "0px", marginBottom:"10px"}}>        
+            <Input
+                slot="list"
+                label="Superficie de bandeja"
+                name="trayArea"
+                type="number"
+                unit="m²"
+                icon={trayAreaIcon}
+                value={inputs.trayArea}
+                onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
+            </Input>
+
+            <Input
+                slot="list"
+                label="Cantidad de bandejas"
+                name="trayCount"
+                type="number"
+                icon={trayCountIcon}
+                value={inputs.trayCount}
+                onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
+            </Input>
+
+            <Input
+                slot="list"
+                label="Separación entre bandejas"
+                name="traySeparation"
+                type="number"
+                unit="m"
+                icon={traySeparationIcon}
+                value={inputs.traySeparation}
+                onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
+            </Input>
+
+            {inputs.trayData.length > 0 &&
+                <Fragment slot="list" >
+                    <TrayTable 
+                        trayData={inputs.trayData} 
+                        onAddCollected={handleTrayAddCollected}/>
+
+                    {inputs.profileComputed &&
+                        <ResultsProfile results={
+                            {
+                                
+                                fitted_dose: 0,
+                                avg: inputs.avgDist,
+                                cv: inputs.cvDist,
+                                work_width: inputs.workWidth
+                            }
+                        }/>
+                    }
+
+                    <Chart 
+                        title="Distribución medida"
+                        data={chartData} 
+                        tooltipSuffix=" kg/ha"/>
+
+                    <Row style={{marginBottom:"15px", marginTop:"20px"}}>
+                        <Col width={20}></Col>
+                        <Col width={60}>
+                            <Button 
+                                fill 
+                                onClick={handleComputeProfile}
+                                style={{textTransform:"none"}}>
+                                    Calcular perfil
+                            </Button>
+                        </Col>
+                        <Col width={20}></Col>
+                    </Row>
+
+                    <Row style={{marginBottom:"15px"}}>
+                        <Col width={20}></Col>
+                        <Col width={60}>
+                            <Button 
+                                fill 
+                                onClick={handleClearDistrForm}
+                                style={{textTransform:"none", backgroundColor:"red"}}>
+                                    Borrar formulario
+                            </Button>
+                        </Col>
+                        <Col width={20}></Col>
+                    </Row>
+                </Fragment>
+            }
+        </List>
     );
 };
 
