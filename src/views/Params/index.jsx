@@ -20,6 +20,7 @@ import { getLocation } from '../../utils';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
+import iconFlightAltitude from '../../assets/icons/altitud_vuelo.png';
 import iconWidth from '../../assets/icons/ancho_faja.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
@@ -41,7 +42,8 @@ const Params = props => {
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
         workWidth: model.workWidth || '',
-        workVelocity: model.workVelocity || ''
+        workVelocity: model.workVelocity || '',
+        flightAltitude: model.flightAltitude || ''
     });
 
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
@@ -221,7 +223,32 @@ const Params = props => {
                         <CalculatorButton href="/velocity/" tooltip="Medir velocidad"/>
                     </Col>
                 </Row>
+
+                <Input
+                    slot="list"
+                    label="Altura de vuelo"
+                    name="flightAltitude"
+                    type="number"
+                    unit="m"
+                    icon={iconFlightAltitude}
+                    value={inputs.flightAltitude}
+                    onChange={v=>setMainParams('flightAltitude', Math.abs(parseFloat(v.target.value)))}>
+                </Input>
             </List>
+
+            <Row style={{marginBottom:"15px", marginTop:"20px"}}>
+                <Col width={20}></Col>
+                <Col width={60}>
+                    <Button 
+                        fill 
+                        color="green"
+                        onClick={() => Toast("success", "Parámetros guardados")}
+                        style={{textTransform:"none"}}>
+                            Guardar parámetros
+                    </Button>
+                </Col>
+                <Col width={20}></Col>
+            </Row>
 
             <Row style={{marginBottom:"15px", marginTop:"20px"}}>
                 <Col width={20}></Col>

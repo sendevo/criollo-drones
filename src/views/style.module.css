@@ -73,14 +73,14 @@
 
 .HomeIcon {
 	position: absolute;
-	left: 15px;
-    height: 40px;
-    width: 40px;
+	left: 25px;
+    height: 45px;
+    width: 45px;
 }
 
 .ButtonContainer {
 	position: absolute;
-	top: 250px;
+	top: 30%;
 	width: 100%;
 	overflow-y: auto;
 	padding-bottom: 60px;

@@ -20,7 +20,6 @@ import { PRODUCT_TYPES } from '../../entities/Model';
 import ResultsProfile from './resultsProfile.jsx';
 import timeIcon from '../../assets/icons/tiempo.png';
 import solidRecolectedIcon from '../../assets/icons/peso_recolectado.png';
-import liquidRecolectedIcon from '../../assets/icons/vol_recolectado.png';
 import trayAreaIcon from '../../assets/icons/sup_bandeja.png';
 import trayCountIcon from '../../assets/icons/cant_bandejas.png';
 import traySeparationIcon from '../../assets/icons/dist_bandejas.png';
@@ -39,14 +38,9 @@ const fieldCellStyle = {
 const ParamsData = props => {
     const {
         doseSolid,
-        doseLiquid,
         workWidth,
-        workVelocity,
-        productType
+        workVelocity
     } = props;
-
-    const dose = productType === PRODUCT_TYPES.LIQUID ? doseLiquid : doseSolid;
-    const doseUnit = productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha";
 
     return (
         <Block style={{margin: "10px 0px 5px 0px"}}>
@@ -60,7 +54,7 @@ const ParamsData = props => {
                     {doseSolid ? 
                         <tr>
                             <td style={fieldCellStyle}><b>Dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{dose?.toFixed(2)} {doseUnit}</td>
+                            <td style={dataCellStyle}>{doseSolid?.toFixed(2)} kg/ha</td>
                         </tr>
                         : null
                     }
@@ -343,11 +337,11 @@ const SolidControl = () => {
                 <Row slot="list">
                     <Col width="80">
                         <Input
-                            label={inputs.productType === PRODUCT_TYPES.LIQUID ? "Volumen recolectado" : "Peso recolectado"}
+                            label={"Peso recolectado"}
                             name="recolected"
                             type="number"
-                            unit={inputs.productType === PRODUCT_TYPES.LIQUID ? "L" : "kg"}
-                            icon={inputs.productType === PRODUCT_TYPES.LIQUID ? liquidRecolectedIcon : solidRecolectedIcon}
+                            unit={"kg"}
+                            icon={solidRecolectedIcon}
                             value={inputs.recolected}
                             onChange={v=>handleSetRecolected(Math.abs(parseFloat(v.target.value)))}>
                         </Input>
@@ -357,6 +351,12 @@ const SolidControl = () => {
                     </Col>
                 </Row>
             </List>
+
+            {!inputs.doseSolid &&
+                <Block style={{marginTop:"20px", marginBottom:"10px"}}>
+                    <Typography sx={{color:"red"}}>Indique la dosis a aplicar en los parámetros de aplicación.</Typography>
+                </Block>
+            }
 
             <OutputsData {...outputs} productType={inputs.productType} />
 
