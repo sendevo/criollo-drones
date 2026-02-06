@@ -19,6 +19,7 @@ import twoSfx from '../../assets/sounds/dos.mp3';
 import threeSfx from '../../assets/sounds/tres.mp3';
 import readySfx from '../../assets/sounds/listo.mp3';
 import iconReport from '../../assets/icons/reportes.png';
+import Typography from "../../components/Typography/index.jsx";
 
 
 const timer = new Timer(0, true);
@@ -296,6 +297,12 @@ const LiquidControl = props => {
                     disabled={running}>
                 </Input>
             </List>
+
+            {!inputs.doseLiquid &&
+                <Block style={{marginTop:"20px", marginBottom:"10px"}}>
+                    <Typography sx={{color:"red"}}>Indique la dosis a aplicar en los parámetros de aplicación.</Typography>
+                </Block>
+            }
 
             <Block style={{marginTop:"20px", textAlign:"center"}}>
                 <p style={{fontSize:"50px", margin:"0px"}}>{getTime()} <PlayButton onClick={toggleRunning} running={running} /></p>

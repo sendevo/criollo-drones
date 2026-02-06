@@ -68,7 +68,47 @@ const ReportDetails = props => {
             }
             {report.completed.control &&
                 <Block className={classes.SectionBlock}>
-                    <h3>Verificación de prestación</h3>
+                    <h3>Verificación de picos</h3>
+                    <table className={classes.Table}>
+                        <tbody>
+                            {/*<tr>
+                                <td><b>Caudal efectivo promedio:</b></td>
+                                <td className={classes.DataCell}>{formatNumber(report.control.efAvg)} l/min</td>
+                            </tr>*/}
+                            {report.control.totalEffectiveFlow && <tr>
+                                <td><b>Caudal pulverizado efectivo:</b></td>
+                                <td className={classes.DataCell}>{formatNumber(report.control.totalEffectiveFlow)} l/min</td>
+                            </tr>}
+                            <tr>
+                                <td><b>Volumen pulverizado efectivo:</b></td>
+                                <td className={classes.DataCell}>{formatNumber(report.control.effectiveSprayVolume)} l/ha</td>
+                            </tr>
+                            {report.control.expectedSprayVolume && 
+                                <>
+                                    <tr>
+                                        <td><b>Volumen previsto:</b></td>
+                                        <td className={classes.DataCell}>{formatNumber(report.control.expectedSprayVolume)} l/ha</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Diferencia:</b></td>
+                                        <td className={classes.DataCell}>{formatNumber(report.control.diff)} l/ha <br/>({formatNumber(report.control.diffp)} %)</td>
+                                    </tr>
+                                </>
+                            }
+                            
+                            { report.control.comments && 
+                                <tr>
+                                    <td><b>Comentarios:</b></td>
+                                    <td className={classes.DataCell}>{report.control.comments}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <NozzlesTable 
+                        data={report.control.data} 
+                        onDataChange={()=>{}} 
+                        rowSelectDisabled={true}
+                        evalCollected={()=>{}}/>
                 </Block>
             }  
             {report.completed.supplies &&
