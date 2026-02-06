@@ -1,16 +1,10 @@
-import { 
-    Navbar, 
-    Page,
-    Block,
-    BlockTitle
-} from 'framework7-react';
+import { Navbar, Page } from 'framework7-react';
 import { useContext, useState, useEffect} from 'react';
 import { NavbarTitle, BackButton } from '../../components/Buttons';
-import Typography from '../../components/Typography';
 import { ModelCtx } from '../../context';
 import { PRODUCT_TYPES } from '../../entities/Model';
-import LiquidControl from './liquidControl';
-import SolidControl from './solidControl';
+import LiquidControl from './LiquidControl';
+import SolidControl from './SolidControl';
 
 
 const Control = props => {

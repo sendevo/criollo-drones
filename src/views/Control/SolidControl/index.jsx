@@ -7,113 +7,21 @@ import {
     Row,
     List
 } from 'framework7-react';
-import Typography from '../../components/Typography';
-import Input from '../../components/Input';
-import Toast from '../../components/Toast';
-import { CalculatorButton } from '../../components/Buttons';
-import TrayTable from '../../components/TrayTable/index.jsx';
-import Chart from '../../components/Chart/index.jsx';
-import { ModelCtx } from '../../context/index.js';
-import { getLocation } from '../../utils/index.js';
-import { computeDistributionProfile, computeDose } from '../../entities/API/index.js';
-import { PRODUCT_TYPES } from '../../entities/Model';
-import ResultsProfile from './resultsProfile.jsx';
-import timeIcon from '../../assets/icons/tiempo.png';
-import solidRecolectedIcon from '../../assets/icons/peso_recolectado.png';
-import trayAreaIcon from '../../assets/icons/sup_bandeja.png';
-import trayCountIcon from '../../assets/icons/cant_bandejas.png';
-import traySeparationIcon from '../../assets/icons/dist_bandejas.png';
-
-
-const dataCellStyle = {
-    textAlign: "right",
-    frontSize: "90%"
-};
-
-const fieldCellStyle = {
-    textAlign: "left",
-    frontSize: "90%"
-};
-
-const ParamsData = props => {
-    const {
-        doseSolid,
-        workWidth,
-        workVelocity
-    } = props;
-
-    return (
-        <Block style={{margin: "10px 0px 5px 0px"}}>
-            <table style={
-                {
-                    padding: "0px !important",
-                    margin: "0 auto",
-                    width: "90%"
-                }}>
-                <tbody>
-                    {doseSolid ? 
-                        <tr>
-                            <td style={fieldCellStyle}><b>Dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{doseSolid?.toFixed(2)} kg/ha</td>
-                        </tr>
-                        : null
-                    }
-                    {workWidth ?
-                        <tr>
-                            <td style={fieldCellStyle}><b>Ancho de labor:</b></td>
-                            <td style={dataCellStyle}>{workWidth} m</td>
-                        </tr>
-                        : null
-                    }
-                    {workVelocity ?
-                        <tr>
-                            <td style={fieldCellStyle}><b>Velocidad de trabajo:</b></td>
-                            <td style={dataCellStyle}>{workVelocity} m/s</td>
-                        </tr>
-                        : null
-                    }
-                </tbody>
-            </table>
-        </Block>
-    );
-};
-
-
-const OutputsData = props => {
-    const {
-        effectiveDose,
-        doseDiff,
-        doseDiffP,
-        productType
-    } = props;
-
-    return (
-        <Block style={{margin: "10px 0px 5px 0px"}}>
-            <table style={{
-                    padding: "0px !important",
-                    margin: "0 auto",
-                    width: "90%"
-                }}>
-                <tbody>
-                    {effectiveDose ? 
-                        <tr>
-                            <td style={fieldCellStyle}><b>Dosis efectiva:</b></td>
-                            <td style={dataCellStyle}>{effectiveDose?.toFixed(2)} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"}</td>
-                        </tr>
-                        : null
-                    }
-                    {doseDiff ?
-                        <tr>
-                            <td style={fieldCellStyle}><b>Diferencia con dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{doseDiff?.toFixed(2)} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"} ({doseDiffP?.toFixed(2)}%)</td>
-                        </tr>
-                        : null
-                    }
-                </tbody>
-            </table>
-        </Block>
-    );
-};
+import Typography from '../../../components/Typography';
+import Input from '../../../components/Input';
+import Toast from '../../../components/Toast';
+import { CalculatorButton } from '../../../components/Buttons';
+import { ModelCtx } from '../../../context/index.js';
+import ParamsData from './paramsData.jsx';
+import ValidationOutput from './validationOutput.jsx';
+import DistributionControl from '../DistributionControl';
+import { computeDistributionProfile, computeDose } from '../../../entities/API/index.js';
+import { set2Decimals } from '../../../utils/index.js';
+import timeIcon from '../../../assets/icons/tiempo.png';
+import solidRecolectedIcon from '../../../assets/icons/peso_recolectado.png';
+import trayAreaIcon from '../../../assets/icons/sup_bandeja.png';
+import trayCountIcon from '../../../assets/icons/cant_bandejas.png';
+import traySeparationIcon from '../../../assets/icons/dist_bandejas.png';
 
 
 const SolidControl = () => {
@@ -144,10 +52,15 @@ const SolidControl = () => {
         cvDist: model.cvDist || null
     });
 
-    const [outputs, setOutputs] = useState({
-        effectiveDose: model.effectiveDose || '',
-        doseDiff: model.doseDiff || '',
-        doseDiffP: model.doseDiffP || ''
+    const [validationOutputs, setValidationOutputs] = useState({
+        effective_dose: model.effectiveDose || '',
+        dose_diff: model.doseDiff || '',
+        dose_diff_p: model.doseDiffP || ''
+    });
+
+    const [distributionOutputs, setDistributionOutputs] = useState({
+        expected_dose: model.doseSolid || '',
+        effective_dose: model.effectiveDose || '',
     });
 
     useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
@@ -158,27 +71,6 @@ const SolidControl = () => {
     }, [model.recolected]);
 
     const setMainParams = (attr, value) => {
-        if(attr === "gpsEnabled"){
-            if(value){
-                getLocation().then( coords => {
-                    setInputs(prevState => ({ 
-                        ...prevState, 
-                        lotCoordinates: coords 
-                    }));
-                })
-                .catch( err => {
-                    if(err.type === "locationPermissions"){
-                        Toast("error", "No se pudieron obtener los permisos de ubicación");
-                    }else if(err.type === "getLocation"){
-                        Toast("error", "No se pudo obtener la ubicación actual");
-                    }else{
-                        Toast("error", "Error desconocido al obtener la ubicación");
-                    }
-                    setInputs(prevState => ({ ...prevState, gpsEnabled: false }));
-                });
-            }
-        }
-
         if(attr === "trayCount"){ // Actualizar array de datos de bandejas
             const trayCount = isNaN(value) ? 0 : parseInt(value);
             const newTrayData = [];
@@ -191,14 +83,23 @@ const SolidControl = () => {
             }
             setInputs(prevState => ({ 
                 ...prevState, 
-                trayData: newTrayData
+                trayData: newTrayData,
+                trayCount: value
             }));
             model.update("trayData", newTrayData);
         }
 
-        setInputs(prevState => ({ ...prevState, [attr]: value }));
-        if(attr !== "gpsEnabled") // gpsEnabled no forma parte del modelo
-            model.update(attr, value); 
+        if(attr === "trayArea" || attr === "traySeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
+            setInputs(prevState => ({ 
+                ...prevState, 
+                profileComputed: false,
+                avgDist: null,
+                stdDist: null,
+                cvDist: null,
+                [attr]: value
+            }));
+            model.update(attr, value);
+        }
     };
 
     const handleTrayAddCollected = (trayIndex, collectedWeight) => {
@@ -222,8 +123,6 @@ const SolidControl = () => {
 
         try {
 
-            console.log(tray_data, tray_distance, pass_number, work_width, work_pattern);
-
             const result = computeDistributionProfile({
                 tray_data,
                 tray_distance,
@@ -245,9 +144,17 @@ const SolidControl = () => {
                     cvDist: cv,
                     profileComputed: true
                 }));
+                setDistributionOutputs(prevState => ({
+                    ...prevState,
+                    effective_dose: avg
+                }));
+                model.update({
+                    profile,
+                    avgDist: avg,
+                    stdDist: std,
+                    cvDist: cv
+                });
             }
-
-            Toast("info", "Funcionalidad en desarrollo - resultados simulados");
         } catch (error) {
             Toast("error", "Error al calcular el perfil de distribución");
         }
@@ -266,10 +173,10 @@ const SolidControl = () => {
     const handleComputeDose = () => {
         const params = {
             recolected: parseFloat(inputs.recolected),
-            work_velocity: parseFloat(model.workVelocity),
+            work_velocity: parseFloat(inputs.workVelocity),
             recolected_time: parseFloat(inputs.recolectedTime),
-            work_width: parseFloat(model.workWidth),
-            expected_dose: model.productType === PRODUCT_TYPES.SOLID ? parseFloat(model.doseSolid) : parseFloat(model.doseLiquid)
+            work_width: parseFloat(inputs.workWidth),
+            expected_dose: parseFloat(inputs.doseSolid)
         };
 
         const result = computeDose(params);
@@ -280,12 +187,13 @@ const SolidControl = () => {
             return;
         }
 
-        setOutputs({
+        setValidationOutputs ({
             ...outputs,
-            effectiveDose: result.dose,
-            doseDiff: result.diffkg,
-            doseDiffP: result.diffp,
+            effective_dose: result.dose,
+            dose_diff: result.diffkg,
+            dose_diff_p: result.diffp,
         });
+        
         model.update({
             effectiveDose: result.dose,
             doseDiff: result.diffkg,
@@ -311,7 +219,7 @@ const SolidControl = () => {
 
     const chartData = inputs.trayData.map( (tray, index) => ({ 
         name: `Band. ${index + 1}`, 
-        recolectado: tray.collected*100 // Convertir a kg por ha
+        recolectado: set2Decimals(tray.collected * 10 / inputs.trayArea) // Convertir a kg/ha
     }));
 
     return (
@@ -358,7 +266,7 @@ const SolidControl = () => {
                 </Block>
             }
 
-            <OutputsData {...outputs} productType={inputs.productType} />
+            <ValidationOutput {...validationOutputs} productType={inputs.productType} />
 
             <Row style={{marginBottom:"15px", marginTop:"20px"}}>
                 <Col width={20}></Col>
@@ -414,54 +322,15 @@ const SolidControl = () => {
             </List>
 
             {inputs.trayData.length > 0 &&
-                <div>
-                    <TrayTable 
-                        trayData={inputs.trayData} 
-                        onAddCollected={handleTrayAddCollected}/>
-
-                    {inputs.profileComputed &&
-                        <ResultsProfile results={
-                            {
-                                
-                                fitted_dose: 0,
-                                avg: inputs.avgDist,
-                                cv: inputs.cvDist,
-                                work_width: inputs.workWidth
-                            }
-                        }/>
-                    }
-
-                    <Chart 
-                        title="Distribución medida"
-                        data={chartData} 
-                        tooltipSuffix=" kg/ha"/>
-
-                    <Row style={{marginBottom:"15px", marginTop:"20px"}}>
-                        <Col width={20}></Col>
-                        <Col width={60}>
-                            <Button 
-                                fill 
-                                onClick={handleComputeProfile}
-                                style={{textTransform:"none"}}>
-                                    Calcular perfil
-                            </Button>
-                        </Col>
-                        <Col width={20}></Col>
-                    </Row>
-
-                    <Row style={{marginBottom:"15px"}}>
-                        <Col width={20}></Col>
-                        <Col width={60}>
-                            <Button 
-                                fill 
-                                onClick={handleClearDistrForm}
-                                style={{textTransform:"none", backgroundColor:"red"}}>
-                                    Borrar formulario
-                            </Button>
-                        </Col>
-                        <Col width={20}></Col>
-                    </Row>
-                </div>
+                <DistributionControl 
+                    inputs={inputs}
+                    outputs={distributionOutputs}
+                    chartData={chartData}
+                    productType={inputs.productType}
+                    handleTrayAddCollected={handleTrayAddCollected}
+                    handleComputeProfile={handleComputeProfile}
+                    handleClearDistrForm={handleClearDistrForm}
+                />
             }
         </div>
     );
