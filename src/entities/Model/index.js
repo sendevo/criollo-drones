@@ -1,7 +1,6 @@
 import { generateId } from "../../utils";
 import { Preferences } from '@capacitor/preferences';
 import { Capacitor } from "@capacitor/core";
-import nozzles from '../../data/nozzles_droplet_sizes.json';
 
 // A partir de version 1.0.0, se agrega modelo de migraciones
 export const APP_NAME = "Criollo Drones";
@@ -83,10 +82,16 @@ const defaultFormParams = {
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
 
-    trayArea: '', // Superficie de bandeja (m²)
-    trayCount: '', // Cantidad de bandejas
-    traySeparation: '', // Separacion entre bandejas (m)
-    trayData: [], // Datos de bandejas de muestreo
+    nozzleCnt: '', // Cantidad de picos
+    nozzleSeparation: '', // Separacion entre picos (m)
+    recolectedData: [], // Datos de jarreo
+    nozzleFlow: '', // Caudal de pico (l/min)
+
+    samplingTimeMs: '', // Tiempo de muestreo verif. picos (ms)
+    trayArea: '', // Superficie de bandeja/espejos (m²)
+    trayCount: '', // Cantidad de bandejas/espejos
+    traySeparation: '', // Separacion entre bandejas/espejos (m)
+    trayData: [], // Datos de bandejas/espejos de muestreo
 
     profile: [],
     avgDist: '', // Promedio de distribucion (gr o ml)
@@ -131,8 +136,6 @@ export default class CriolloModel {
             Function.prototype();
         }
     }
-
-    
 
     /// Persistencia de parametros
     updateDatabase(){ // Guardar datos en localStorage
