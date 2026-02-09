@@ -17,21 +17,33 @@ const ParamsData = props => { // Encabezado para mostrar los parámetros operati
                     {doseSolid ? 
                         <tr>
                             <td style={fieldCellStyle}><b>Dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{doseSolid?.toFixed(2)} kg/ha</td>
+                            <td 
+                                data-testid="solid-dose-preview" 
+                                style={dataCellStyle}>
+                                    {doseSolid?.toFixed(2)} kg/ha
+                            </td>
                         </tr>
                         : null
                     }
                     {workWidth ?
                         <tr>
                             <td style={fieldCellStyle}><b>Ancho de labor:</b></td>
-                            <td style={dataCellStyle}>{workWidth} m</td>
+                            <td 
+                                data-testid="work-width-preview"
+                                style={dataCellStyle}>
+                                    {workWidth} m
+                            </td>
                         </tr>
                         : null
                     }
                     {workVelocity ?
                         <tr>
                             <td style={fieldCellStyle}><b>Velocidad de trabajo:</b></td>
-                            <td style={dataCellStyle}>{workVelocity} m/s</td>
+                            <td 
+                                data-testid="work-velocity-preview"
+                                style={dataCellStyle}>
+                                    {workVelocity} m/s
+                            </td>
                         </tr>
                         : null
                     }

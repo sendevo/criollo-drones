@@ -9,7 +9,7 @@ import {
     Button,
     BlockTitle
 } from 'framework7-react';
-import { useContext, useEffect, useState, Fragment } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { NavbarTitle, BackButton, CalculatorButton } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
@@ -130,6 +130,7 @@ const Params = props => {
 
             <List form noHairlinesMd style={{marginBottom:"10px"}}>    
                 <Input
+                    data-testid="input-lot-name"
                     slot="list"
                     label="Lote"
                     name="lotName"
@@ -139,6 +140,7 @@ const Params = props => {
                     onChange={v=>setMainParams('lotName', v.target.value)}>
                 </Input>
                 <Input
+                    data-testid="input-work-area"
                     slot="list"
                     label="Superficie"
                     name="workArea"
@@ -152,6 +154,7 @@ const Params = props => {
                     slot="list" 
                     style={{paddingLeft: 30, paddingBottom: 10}}>
                     <Checkbox
+                        data-testid="checkbox-gps-enabled"
                         checked={inputs.gpsEnabled}
                         onChange={v=>setMainParams('gpsEnabled', v.target.checked)}/>
                     <span style={{
@@ -174,6 +177,7 @@ const Params = props => {
 
                 {inputs.productType === PRODUCT_TYPES.LIQUID ?
                     <Input
+                        data-testid="input-dose-liquid"
                         slot="list"
                         label="Dosis prevista"
                         name="doseLiquid"
@@ -185,6 +189,7 @@ const Params = props => {
                     </Input>
                     :
                     <Input
+                        data-testid="input-dose-solid"
                         slot="list"
                         label="Dosis prevista"
                         name="doseSolid"
@@ -197,6 +202,7 @@ const Params = props => {
                 }
 
                 <Input
+                    data-testid="input-work-width"
                     slot="list"
                     label="Ancho de faja"
                     name="workWidth"
@@ -210,6 +216,7 @@ const Params = props => {
                 <Row slot="list">
                     <Col width="80">
                         <Input
+                            data-testid="input-work-velocity"
                             label="Velocidad"
                             name="workVelocity"
                             type="number"
@@ -225,6 +232,7 @@ const Params = props => {
                 </Row>
 
                 <Input
+                    data-testid="input-flight-altitude"
                     slot="list"
                     label="Altura de vuelo"
                     name="flightAltitude"
@@ -240,6 +248,7 @@ const Params = props => {
                 <Col width={20}></Col>
                 <Col width={60}>
                     <Button 
+                        data-testid="save-params-btn"
                         fill 
                         color="green"
                         onClick={() => Toast("success", "Parámetros guardados")}
@@ -254,6 +263,7 @@ const Params = props => {
                 <Col width={20}></Col>
                 <Col width={60}>
                     <Button 
+                        data-testid="add-to-report-btn"
                         fill 
                         onClick={addResultsToReport}
                         style={{textTransform:"none"}}>

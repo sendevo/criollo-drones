@@ -191,7 +191,7 @@ const SolidControl = () => {
         }
 
         setValidationOutputs ({
-            ...outputs,
+            ...validationOutputs,
             effective_dose: result.dose,
             dose_diff: result.diffkg,
             dose_diff_p: result.diffp,

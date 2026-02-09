@@ -14,6 +14,8 @@ import Typography from '../Typography';
 export const BackButton = props => (
     <Block className={classes.BackButtonContainer}>
         <Link tooltip="Volver" 
+            data-test-id="backbutton"
+            name="back"
             onClick={() => props.f7router.back()}
             className={classes.RoundButton} 
             style={props.gray?{color:"black", backgroundColor:"rgba(200,200,200,.8)"}:{}}>

@@ -32,27 +32,27 @@ const Home = () => (
             </div>
             
             <div className={classes.ButtonContainer}>
-                <Link href="/params/" className={classes.MenuButton}>
+                <Link href="/params/" className={classes.MenuButton} data-testid="home-params-btn">
                     <img className={classes.HomeIcon} src={paramsIcon} alt="params"/>
                     <p>Parámetros de <br/> operación</p>
                 </Link>
-                <Link href="/control/" className={classes.MenuButton}>
+                <Link href="/control/" className={classes.MenuButton} data-testid="home-control-btn">
                     <img className={classes.HomeIcon} src={controlIcon} alt="control"/>
                     <p>Verificación de <br/> prestación</p>
                 </Link>
-                <Link href="/supplies/" className={classes.MenuButton}>
+                <Link href="/supplies/" className={classes.MenuButton} data-testid="home-supplies-btn">
                     <img className={classes.HomeIcon} src={suppliesIcon} alt="supplies"/>
                     <p>Calculador de <br/> mezcla</p>
                 </Link>
-                <Link href="/security/" className={classes.MenuButton}>
+                <Link href="/security/" className={classes.MenuButton} data-testid="home-security-btn">
                     <img className={classes.HomeIcon} src={securityIcon} alt="security"/>
                     <p>Seguridad y <br/> prevención</p>
                 </Link>
-                <Link href="/reports/" className={classes.MenuButton}>
+                <Link href="/reports/" className={classes.MenuButton} data-testid="home-reports-btn">
                     <img className={classes.HomeIcon} src={reportsIcon} alt="reports"/>
                     <p>Reportes</p>
                 </Link>
-                <Link href="/about/" className={classes.MenuButton}>
+                <Link href="/about/" className={classes.MenuButton} data-testid="home-about-btn">
                     <img className={classes.HomeIcon} src={infoIcon} alt="about"/>
                     <p>Información <br/> y ayuda</p>
                 </Link>
