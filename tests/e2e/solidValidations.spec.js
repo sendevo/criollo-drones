@@ -21,7 +21,7 @@ test.describe('Solid Validations', () => {
     };
     
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:5173'); // Iniciar app
+        await page.goto('/'); // Iniciar app
         await fillParamsForm(page, params);
     });
 
