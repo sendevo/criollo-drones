@@ -1,12 +1,13 @@
 import { Card } from 'framework7-react';
 import {trayCollectedPrompt} from '../Prompts';
+import { PRODUCT_TYPES } from '../../entities/Model';
 
-const TrayTable = ({trayData, onAddCollected}) => {
+const TrayTable = ({productType, trayData, onAddCollected}) => {
 
     const handleAddCollected = index => {
         if(onAddCollected){
-            console.log("Agregar peso recolectado a bandeja ", index);
-            trayCollectedPrompt(index, trayData.length, onAddCollected);
+            //console.log("Agregar peso recolectado a bandeja ", index);
+            trayCollectedPrompt(productType, index, trayData.length, onAddCollected);
         }
     };
 
@@ -20,9 +21,11 @@ const TrayTable = ({trayData, onAddCollected}) => {
                     </colgroup>
                     <thead style={{backgroundColor:"rgb(200,200,200)"}}>
                         <tr style={{maxHeight:"40px!important"}}>
-                            <th className="label-cell" style={{margin:0, padding:0}}>Bandeja</th>
+                            <th className="label-cell" style={{margin:0, padding:0}}>{productType === PRODUCT_TYPES.LIQUID ? "Tarjeta" : "Bandeja"}</th>
                             <th className="label-cell" style={{margin:0, padding:0}}>
-                                <div>Peso</div><div>recolectado</div>
+                                <div>
+                                    {productType === PRODUCT_TYPES.LIQUID ? "Cantidad de gotas" : "Peso recolectado (gr)"}
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -36,12 +39,20 @@ const TrayTable = ({trayData, onAddCollected}) => {
                     </colgroup>
                     <tbody style={{maxHeight:"300px",overflow: "auto"}}>
                         {
-                            trayData.map((tr, idx) => (
-                                <tr key={idx} onClick={()=>{handleAddCollected(idx)}} style={{cursor:"pointer"}}>
-                                    <td>{idx+1}</td>
-                                    <td className="numeric-cell" style={{textAlign: "center"}}>{tr.collected.toFixed(2)} gr</td>
-                                </tr>
-                            ))
+                            trayData.map((tr, idx) => {
+                                const unit = productType === PRODUCT_TYPES.LIQUID ? " gotas" : " gr";
+                                const value = tr.collected.toFixed(productType === PRODUCT_TYPES.LIQUID ? 0 : 2);
+                                return (
+                                    <tr key={idx} onClick={()=>{handleAddCollected(idx)}} style={{cursor:"pointer"}}>
+                                        <td>{idx+1}</td>
+                                        <td 
+                                            className="numeric-cell" 
+                                            style={{textAlign: "center"}}>
+                                                {value} {unit}
+                                        </td>
+                                    </tr>
+                                )
+                            })
                         }
                     </tbody>
                 </table>

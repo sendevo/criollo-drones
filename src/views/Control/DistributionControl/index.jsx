@@ -23,7 +23,8 @@ const DistributionControl = props => {
     return (
         <div>
             <TrayTable 
-                trayData={inputs.trayData} 
+                productType={productType}
+                trayData={inputs.trayData || inputs.cardData || []} 
                 onAddCollected={handleTrayAddCollected}/>
 
             {inputs.profileComputed &&
@@ -36,7 +37,7 @@ const DistributionControl = props => {
             <Chart 
                 title="Distribución medida"
                 data={chartData} 
-                tooltipSuffix={productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"}/>
+                tooltipSuffix={productType === PRODUCT_TYPES.LIQUID ? " gotas/cm²" : " kg/ha"}/>
 
             <Row style={{marginBottom:"15px", marginTop:"20px"}}>
                 <Col width={20}></Col>

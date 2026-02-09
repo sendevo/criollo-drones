@@ -1,17 +1,27 @@
-import { f7, Page, Navbar, Block, List, Row, Col, Button } from "framework7-react";
+import { 
+    f7, 
+    Block, 
+    BlockTitle,
+    List, 
+    Row, 
+    Col, 
+    Button 
+} from "framework7-react";
 import { useContext, useEffect, useState } from "react";
 import { ModelCtx } from "../../../context";
 import { useSound } from "use-sound";
 import moment from 'moment';
 import { KeepAwake } from '@capacitor-community/keep-awake';
+import DistributionControl from '../DistributionControl';
 import Input from "../../../components/Input";
 import Toast from "../../../components/Toast";
 import { PlayButton } from "../../../components/Buttons";
 import { ElapsedSelector } from "../../../components/Selectors";
+import Typography from "../../../components/Typography";
 import NozzlesTable from "../../../components/NozzlesTable";
 import Timer from "../../../entities/Timer";
 import * as API from '../../../entities/API/index.js';
-import { arrayAvg, formatNumber } from "../../../utils";
+import { arrayAvg, formatNumber, set2Decimals } from "../../../utils";
 import iconFlow from "../../../assets/icons/caudal.png";
 import iconNumber from "../../../assets/icons/cant_picos.png";
 import oneSfx from '../../../assets/sounds/uno.mp3';
@@ -19,7 +29,9 @@ import twoSfx from '../../../assets/sounds/dos.mp3';
 import threeSfx from '../../../assets/sounds/tres.mp3';
 import readySfx from '../../../assets/sounds/listo.mp3';
 import iconReport from '../../../assets/icons/reportes.png';
-import Typography from "../../../components/Typography/index.jsx";
+import cardAreaIcon from '../../../assets/icons/sup_bandeja.png';
+import cardCountIcon from '../../../assets/icons/cant_tarjetas.png';
+import cardSeparationIcon from '../../../assets/icons/dist_tarjetas.png';
 
 
 const timer = new Timer(0, true);
@@ -29,12 +41,21 @@ const LiquidControl = props => {
     const model = useContext(ModelCtx);
 
     const [inputs, setInputs] = useState({
+        productType: model.productType || '',
+
         doseLiquid: model.doseLiquid || '',
         workWidth: model.workWidth || '',
         workVelocity: model.workVelocity || '',
         nozzleCnt: model.nozzleCnt || '',
         nozzleFlow: model.nozzleFlow || '',
-        recolectedData: model.recolectedData || []
+        recolectedData: model.recolectedData || [],
+        
+        cardArea: model.cardArea || '',
+        cardCount: model.cardCount || '',
+        cardSeparation: model.cardSeparation || '',
+        cardData: model.cardData || [],
+        
+        profileComputed: false
     });
 
     const [firstRound, setFirstRound] = useState(true); // Muestra indicativo la primera vez
@@ -49,6 +70,11 @@ const LiquidControl = props => {
         diff: undefined,
         diffp: undefined,
         comments: ""
+    });
+
+    const [distributionOutputs, setDistributionOutputs] = useState({
+        expected_dose: model.doseSolid || '',
+        effective_dose: model.effectiveDose || '',
     });
     
     // Estado del timer
@@ -270,6 +296,76 @@ const LiquidControl = props => {
         f7.panel.open();       
     };
 
+    const handleCardAddCollected = (cardIndex, collected) => {
+        const updatedCardData = [...inputs.cardData];
+        updatedCardData[cardIndex].collected = collected;
+        model.update("cardData", updatedCardData);
+        setInputs(prevState => ({ 
+            ...prevState, 
+            cardData: updatedCardData
+        }));
+    };
+
+    const handleComputeProfile = () => {
+        Toast("info", "Functionalidad en desarrollo", 2000);
+    };
+
+    const handleClearDistrForm = () => {
+        setInputs(prevState => ({ 
+            ...prevState, 
+            cardData: [],
+            cardCount: '',
+            cardArea: '',
+            cardSeparation: ''
+        }));
+        model.update({
+            cardData: [],
+            cardCount: '',
+            cardArea: '',
+            cardSeparation: ''
+        });
+    };
+
+    const setMainParams = (attr, value) => {
+        if(attr === "cardCount"){ // Actualizar array de datos de tarjetas
+            const cardCount = isNaN(value) ? 0 : parseInt(value);
+            const newCardData = [];
+            for(let i=0; i < cardCount; i++){
+                if(inputs.cardData[i]){
+                    newCardData.push(inputs.cardData[i]);
+                }else{
+                    newCardData.push({collected: 0});
+                }
+            }
+            setInputs(prevState => ({ 
+                ...prevState, 
+                cardData: newCardData,
+                cardCount: value
+            }));
+            model.update({
+                cardData: newCardData,
+                cardCount: value
+            });
+        }
+
+        if(attr === "cardArea" || attr === "cardSeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
+            setInputs(prevState => ({ 
+                ...prevState, 
+                profileComputed: false,
+                avgDist: null,
+                stdDist: null,
+                cvDist: null,
+                [attr]: value
+            }));
+            model.update(attr, value);
+        }
+    };
+
+    const chartData = inputs.cardData.map( (tray, index) => ({ 
+        name: `Tarj. ${index + 1}`, 
+        recolectado: set2Decimals(tray.collected / inputs.cardArea) // Convertir a gotas/cm2
+    }));
+
     return (
         <div>
             <ElapsedSelector value={elapsed} disabled={running} onChange={handleElapsedChange}/>
@@ -338,17 +434,69 @@ const LiquidControl = props => {
                     {outputs.totalEffectiveFlow && <p>Caudal pulverizado efectivo: {formatNumber(outputs.totalEffectiveFlow)} l/min</p>}
                     <p>Volumen pulverizado efectivo: {formatNumber(outputs.effectiveSprayVolume)} l/ha</p>
                     {inputs.doseLiquid && <p>Diferencia: {formatNumber(outputs.diff)} l/ha ({formatNumber(outputs.diffp)} %)</p>}
-                    <Row style={{marginTop:30, marginBottom: 20}}>
-                        <Col width={20}></Col>
-                        <Col width={60}>
-                            <Button fill style={{textTransform:"none"}} onClick={addResultsToReport}>
-                                Agregar a reporte
-                            </Button>
-                        </Col>
-                        <Col width={20}></Col>
-                    </Row>
                 </Block>
             }
+
+            <Block style={{marginTop:"30px", marginBottom:"0px"}}>
+                <BlockTitle>
+                    <Typography>Control de distribución</Typography>
+                </BlockTitle>
+            </Block>
+
+            <List form noHairlinesMd style={{marginTop: "0px", marginBottom:"10px"}}>        
+                <Input
+                    slot="list"
+                    label="Superficie de tarjeta"
+                    name="cardArea"
+                    type="number"
+                    unit="cm²"
+                    icon={cardAreaIcon}
+                    value={inputs.cardArea}
+                    onChange={v=>setMainParams('cardArea', Math.abs(parseFloat(v.target.value)))}>
+                </Input>
+
+                <Input
+                    slot="list"
+                    label="Cantidad de tarjetas"
+                    name="cardCount"
+                    type="number"
+                    icon={cardCountIcon}
+                    value={inputs.cardCount}
+                    onChange={v=>setMainParams('cardCount', Math.abs(parseInt(v.target.value)))}>
+                </Input>
+
+                <Input
+                    slot="list"
+                    label="Separación entre tarjetas"
+                    name="cardSeparation"
+                    type="number"
+                    unit="m"
+                    icon={cardSeparationIcon}
+                    value={inputs.cardSeparation}
+                    onChange={v=>setMainParams('cardSeparation', Math.abs(parseFloat(v.target.value)))}>
+                </Input>
+            </List>
+
+            {inputs.cardData.length > 0 && inputs.cardArea > 0 && inputs.cardSeparation > 0 &&
+                <DistributionControl 
+                    inputs={inputs}
+                    outputs={distributionOutputs}
+                    chartData={chartData}
+                    productType={inputs.productType}
+                    handleTrayAddCollected={handleCardAddCollected}
+                    handleComputeProfile={handleComputeProfile}
+                    handleClearDistrForm={handleClearDistrForm}/>
+            }
+
+            <Row style={{marginTop:30, marginBottom: 20}}>
+                <Col width={20}></Col>
+                <Col width={60}>
+                    <Button fill style={{textTransform:"none"}} onClick={addResultsToReport}>
+                        Agregar a reporte
+                    </Button>
+                </Col>
+                <Col width={20}></Col>
+            </Row>
         </div>
     );
 };

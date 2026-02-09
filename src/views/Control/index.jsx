@@ -35,7 +35,7 @@ const Control = props => {
     return (
         <Page>            
             <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
-                <NavbarTitle {...props} title="Verificación de prestación"/>
+                <NavbarTitle {...props} title={`Verificación de prestación ${inputs.productType === PRODUCT_TYPES.LIQUID ? "(líquidos)" : "(sólidos)"}`}/>
             </Navbar>
 
             { inputs.productType === PRODUCT_TYPES.LIQUID ? 

@@ -46,7 +46,7 @@ const SolidControl = () => {
         trayData: model.trayData || [],
 
         profileComputed: false,
-        profile: model.profile || [],
+        solidProfile: model.solidProfile || [],
         avgDist: model.avgDist || null,
         stdDist: model.stdDist || null,
         cvDist: model.cvDist || null
@@ -86,7 +86,10 @@ const SolidControl = () => {
                 trayData: newTrayData,
                 trayCount: value
             }));
-            model.update("trayData", newTrayData);
+            model.update({
+                trayData: newTrayData,
+                trayCount: value
+            });
         }
 
         if(attr === "trayArea" || attr === "traySeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
@@ -135,10 +138,10 @@ const SolidControl = () => {
                 Toast("error", `Error en parámetros: ${result.wrongKeys}`);
                 return;
             }else{
-                const {profile, avg, std, cv} = result;
+                const {solidProfile, avg, std, cv} = result;
                 setInputs(prevState => ({ 
                     ...prevState, 
-                    profile: profile,
+                    solidProfile: solidProfile,
                     avgDist: avg,
                     stdDist: std,
                     cvDist: cv,
@@ -149,7 +152,7 @@ const SolidControl = () => {
                     effective_dose: avg
                 }));
                 model.update({
-                    profile,
+                    solidProfile,
                     avgDist: avg,
                     stdDist: std,
                     cvDist: cv
@@ -321,7 +324,7 @@ const SolidControl = () => {
                 </Input>
             </List>
 
-            {inputs.trayData.length > 0 &&
+            {inputs.trayData.length > 0 && inputs.trayArea > 0 && inputs.traySeparation > 0 &&
                 <DistributionControl 
                     inputs={inputs}
                     outputs={distributionOutputs}
@@ -329,8 +332,7 @@ const SolidControl = () => {
                     productType={inputs.productType}
                     handleTrayAddCollected={handleTrayAddCollected}
                     handleComputeProfile={handleComputeProfile}
-                    handleClearDistrForm={handleClearDistrForm}
-                />
+                    handleClearDistrForm={handleClearDistrForm}/>
             }
         </div>
     );

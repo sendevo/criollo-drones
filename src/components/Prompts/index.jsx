@@ -4,20 +4,20 @@ import IconCollected from '../../assets/icons/peso_recolectado.png';
 import Input from '../Input';
 import { PRODUCT_TYPES } from '../../entities/Model';
 
-export const trayCollectedPrompt = (row, len, callback) => { 
-    // Modal ingreso de peso recolectado de la bandeja
+export const trayCollectedPrompt = (productType, row, len, callback) => { 
+    // Modal ingreso de peso/gotas recolectado de la bandeja/tarjeta
 
-    const elId = `collectedweightinput-${row}`; // Id del input (único por bandeja)
+    const elId = `collectedweightinput-${row}`; // Id del input (único)
     
     const content = ReactDOMServer.renderToStaticMarkup(
         <List form noHairlinesMd style={{marginBottom:"0px"}}>
             <Input
                 inputId={elId}
                 slot="list"
-                label="Peso recolectado"
+                label={productType === PRODUCT_TYPES.LIQUID ? "Gotas contadas" : "Peso recolectado"}
                 icon={IconCollected}
                 type="number"
-                unit="gr"/>
+                unit={productType === PRODUCT_TYPES.LIQUID ? "gotas" : "gr"}/>
         </List>
     );
 
@@ -36,15 +36,16 @@ export const trayCollectedPrompt = (row, len, callback) => {
         buttons.push({
             text: "Siguiente",
             onClick: ()=>{
-                console.log("Siguiente bandeja");
                 returnValue(row);
                 f7.dialog.close();
-                trayCollectedPrompt(row + 1, len, callback);
+                trayCollectedPrompt(productType, row + 1, len, callback);
             }
         });
 
+    const title = productType === PRODUCT_TYPES.LIQUID ? `Tarjeta ${row+1}` : `Bandeja ${row+1}`;
+
     f7.dialog.create({
-        title: "Bandeja "+(row+1),
+        title: title,
         content: content,
         buttons: buttons,
         destroyOnClose: true        

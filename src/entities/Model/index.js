@@ -89,21 +89,26 @@ const defaultFormParams = {
     nozzleFlow: '', // Caudal de pico (l/min)
 
     samplingTimeMs: '', // Tiempo de muestreo verif. picos (ms)
-    trayArea: '', // Superficie de bandeja/espejos (m²)
-    trayCount: '', // Cantidad de bandejas/espejos
-    traySeparation: '', // Separacion entre bandejas/espejos (m)
-    trayData: [], // Datos de bandejas/espejos de muestreo
-
-    profile: [],
-    avgDist: '', // Promedio de distribucion (gr o ml)
-    stdDist: '', // Desviacion estandar de distribucion (gr o ml)
-    cvDist: '', // Coeficiente de variacion de distribucion (%)
-
     effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
     doseDiff: '', // Diferencia con dosis prevista (kg/ha o l/ha)
     doseDiffP: '', // Diferencia con dosis prevista (%)
-    
-    tankCapacity: '', // Capacidad del tanque (l)
+
+    trayArea: '', // Superficie de bandejas (m²)
+    trayCount: '', // Cantidad de bandejas
+    traySeparation: '', // Separacion entre bandejas (m)
+    trayData: [], // Datos de bandejas de muestreo
+    solidProfile: [], // Perfil de distribucion (gr por bandeja)
+    avgDist: '', // Promedio de distribucion (gr)
+    stdDist: '', // Desviacion estandar de distribucion (gr)
+    cvDist: '', // Coeficiente de variacion de distribucion (%)
+
+    cardArea: '', // Superficie de tarjeta o espejo (cm²)
+    cardCount: '', // Cantidad de tarjetas o espejos
+    cardSeparation: '', // Separacion entre tarjetas o espejos (m)
+    cardData: [], // Datos de tarjeta o espejo
+    cardProfile: [], // Perfil de distribucion tarjetas/espejos (gotas por espejo o tarjeta)
+
+    tankCapacity: '', // Capacidad del tanque (kg / l)
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado
     supplies: [], // Insumos y cantidades
 

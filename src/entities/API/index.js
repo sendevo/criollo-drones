@@ -355,7 +355,7 @@ export const computeDistributionProfile = params => {
 
     const {tray_data, tray_distance, pass_number, work_width, work_pattern} = p;
     const tray_number = tray_data.length;
-    const profile = tray_data.map(x => x/pass_number); // Perfil resultante
+    const solidProfile = tray_data.map(x => x/pass_number); // Perfil resultante
     const tw = tray_distance * tray_number; // Ancho maximo (hasta donde llegan las bandejas)
 
     // Solapamiento
@@ -368,26 +368,26 @@ export const computeDistributionProfile = params => {
         const side = work_pattern === "circular" ? "left" : r%2===0 ? "left" : "right";
         if(side === "left"){
             for(let i = 0; i < s; i++) {
-                profile[i] += tray_data[tray_number - s + i]/pass_number;
-                profile[tray_number - 1 - i] += tray_data[s - i - 1]/pass_number;                    
+                solidProfile[i] += tray_data[tray_number - s + i]/pass_number;
+                solidProfile[tray_number - 1 - i] += tray_data[s - i - 1]/pass_number;                    
             }
         }else{
             for(let i = 0; i < s; i++) {
-                profile[i] += tray_data[s - i - 1]/pass_number;
-                profile[tray_number - 1 - i] += tray_data[tray_number - s + i]/pass_number;
+                solidProfile[i] += tray_data[s - i - 1]/pass_number;
+                solidProfile[tray_number - 1 - i] += tray_data[tray_number - s + i]/pass_number;
             } 
         }       
         r++; // Siguiente pasada
         s = get_s(r); // Solapamiento en la siguiente pasada
     }
     // Calcular promedio y desvios
-    const sum = profile.reduce((a, b) => a + b, 0);
-    const avg = sum / profile.length; // Promedio de la distribución
-    const sqdiff = profile.map(x => Math.pow(x - avg, 2));
-    const dst = Math.sqrt(sqdiff.reduce((a, b) => a + b, 0) / (profile.length-1)); // Desvio estandar
+    const sum = solidProfile.reduce((a, b) => a + b, 0);
+    const avg = sum / solidProfile.length; // Promedio de la distribución
+    const sqdiff = solidProfile.map(x => Math.pow(x - avg, 2));
+    const dst = Math.sqrt(sqdiff.reduce((a, b) => a + b, 0) / (solidProfile.length-1)); // Desvio estandar
     const cv = avg === 0 ? 0 : dst/avg*100; // Coeficiente de variacion
 
-    return {status: "success", profile, avg, dst, cv};
+    return {status: "success", solidProfile, avg, dst, cv};
 };
 
 export const computeSuppliesList = params => { // Lista de insumos y cargas para mezcla   
