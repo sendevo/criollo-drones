@@ -242,6 +242,7 @@ const SolidControl = () => {
                     type="number"
                     unit={"seg"}
                     icon={timeIcon}
+                    data-testid="input-recolected-time"
                     value={inputs.recolectedTime}
                     onChange={v=>handleSetRecolectedTime(Math.abs(parseFloat(v.target.value)))}>
                 </Input>
@@ -253,12 +254,17 @@ const SolidControl = () => {
                             type="number"
                             unit={"kg"}
                             icon={solidRecolectedIcon}
+                            data-testid="input-recolected-weight"
                             value={inputs.recolected}
                             onChange={v=>handleSetRecolected(Math.abs(parseFloat(v.target.value)))}>
                         </Input>
                     </Col>
                     <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                        <CalculatorButton href="/recolected/" tooltip="Cronómetro" color="teal"/>
+                        <CalculatorButton
+                            href="/recolected/"
+                            tooltip="Cronómetro"
+                            color="teal"
+                            data-testid="recolected-timer-btn"/>
                     </Col>
                 </Row>
             </List>
@@ -277,7 +283,8 @@ const SolidControl = () => {
                     <Button 
                         fill 
                         onClick={handleComputeDose}
-                        style={{textTransform:"none"}}>
+                        style={{textTransform:"none"}}
+                        data-testid="compute-dose-btn">
                             Calcular dosis
                     </Button>
                 </Col>
@@ -298,6 +305,7 @@ const SolidControl = () => {
                     type="number"
                     unit="m²"
                     icon={trayAreaIcon}
+                    data-testid="input-tray-area"
                     value={inputs.trayArea}
                     onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
@@ -308,6 +316,7 @@ const SolidControl = () => {
                     name="trayCount"
                     type="number"
                     icon={trayCountIcon}
+                    data-testid="input-tray-count"
                     value={inputs.trayCount}
                     onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
                 </Input>
@@ -319,6 +328,7 @@ const SolidControl = () => {
                     type="number"
                     unit="m"
                     icon={traySeparationIcon}
+                    data-testid="input-tray-separation"
                     value={inputs.traySeparation}
                     onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
                 </Input>

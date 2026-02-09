@@ -43,10 +43,15 @@ const TrayTable = ({productType, trayData, onAddCollected}) => {
                                 const unit = productType === PRODUCT_TYPES.LIQUID ? " gotas" : " gr";
                                 const value = tr.collected.toFixed(productType === PRODUCT_TYPES.LIQUID ? 0 : 2);
                                 return (
-                                    <tr key={idx} onClick={()=>{handleAddCollected(idx)}} style={{cursor:"pointer"}}>
+                                    <tr
+                                        key={idx}
+                                        onClick={()=>{handleAddCollected(idx)}}
+                                        style={{cursor:"pointer"}}
+                                        data-testid={`tray-input-row-${idx + 1}`}>
                                         <td>{idx+1}</td>
                                         <td 
-                                            className="numeric-cell" 
+                                            className="numeric-cell"
+                                            data-testid={`tray-collected-output-${idx + 1}`}
                                             style={{textAlign: "center"}}>
                                                 {value} {unit}
                                         </td>

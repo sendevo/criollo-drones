@@ -26,7 +26,9 @@ const ResultsProfile = ({inputs, outputs, productType}) => {
                     {expected_dose ? 
                         <tr>
                             <td style={fieldCellStyle}><b>Dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{expected_dose?.toFixed(2)} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"}</td>
+                            <td style={dataCellStyle} data-testid="distribution-expected-dose-output">
+                                {expected_dose?.toFixed(2)} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"}
+                            </td>
                         </tr>
                         : null
                     }
@@ -34,12 +36,16 @@ const ResultsProfile = ({inputs, outputs, productType}) => {
                         <>
                             <tr>
                                 <td style={fieldCellStyle}><b>Dosis efectiva:</b></td>
-                                <td style={dataCellStyle}>{effective_dose?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"} ({diffp_c} %)</td>
+                                <td style={dataCellStyle} data-testid="distribution-effective-dose-output">
+                                    {effective_dose?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "l/ha" : "kg/ha"} ({diffp_c} %)
+                                </td>
                             </tr>
                             { effective_work_width &&
                             <tr>
                                 <td style={fieldCellStyle}><b>Ancho de labor efectivo:</b></td>
-                                <td style={dataCellStyle}>{effective_work_width} m</td>
+                                <td style={dataCellStyle} data-testid="distribution-effective-work-width-output">
+                                    {effective_work_width} m
+                                </td>
                             </tr>
                             }
                         </>
@@ -47,11 +53,15 @@ const ResultsProfile = ({inputs, outputs, productType}) => {
                     }
                     <tr>
                         <td style={fieldCellStyle}><b>Promedio:</b></td>
-                        <td style={dataCellStyle}>{avg?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "ml" : "gr"}</td>
+                        <td style={dataCellStyle} data-testid="distribution-average-output">
+                            {avg?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "ml" : "gr"}
+                        </td>
                     </tr>                        
                     <tr>
                         <td style={fieldCellStyle}><b>Coef. variac.:</b></td>
-                        <td style={dataCellStyle}>{cv?.toFixed(2) || ''} %</td>
+                        <td style={dataCellStyle} data-testid="distribution-cv-output">
+                            {cv?.toFixed(2) || ''} %
+                        </td>
                     </tr>
                 </tbody>
             </table>

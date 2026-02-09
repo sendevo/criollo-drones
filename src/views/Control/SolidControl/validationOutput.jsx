@@ -17,14 +17,18 @@ const ValidationOutput = props => { // Resultado de verificacion de dosis
                     {effective_dose ? 
                         <tr>
                             <td style={fieldCellStyle}><b>Dosis efectiva:</b></td>
-                            <td style={dataCellStyle}>{effective_dose?.toFixed(2)} kg/ha</td>
+                            <td style={dataCellStyle} data-testid="solid-effective-dose-output">
+                                {effective_dose?.toFixed(2)} kg/ha
+                            </td>
                         </tr>
                         : null
                     }
                     {dose_diff ?
                         <tr>
                             <td style={fieldCellStyle}><b>Diferencia con dosis prevista:</b></td>
-                            <td style={dataCellStyle}>{dose_diff?.toFixed(2)} kg/ha ({dose_diff_p?.toFixed(2)}%)</td>
+                            <td style={dataCellStyle} data-testid="solid-dose-diff-output">
+                                {dose_diff?.toFixed(2)} kg/ha ({dose_diff_p?.toFixed(2)}%)
+                            </td>
                         </tr>
                         : null
                     }

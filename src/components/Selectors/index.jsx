@@ -18,12 +18,14 @@ const ProductTypeSelector = ({value, onChange}) => {
             <Row>
                 <Col style={{textAlign:"center"}}>
                     <Radio 
+                        data-test-id="product-type-solid-radio"
                         name="input-type" 
                         checked={value===PRODUCT_TYPES.SOLID} 
                         onChange={e=>setValue(e, PRODUCT_TYPES.SOLID)}/> Sólidos
                 </Col>
                 <Col style={{textAlign:"center"}}>
                     <Radio 
+                        data-test-id="product-type-liquid-radio"
                         name="input-type" 
                         checked={value===PRODUCT_TYPES.LIQUID} 
                         onChange={e=>setValue(e, PRODUCT_TYPES.LIQUID)}/> Líquidos

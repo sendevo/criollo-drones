@@ -36,7 +36,8 @@ const DistributionControl = props => {
 
             <Chart 
                 title="Distribución medida"
-                data={chartData} 
+                data={chartData}
+                dataTestId="distribution-chart"
                 tooltipSuffix={productType === PRODUCT_TYPES.LIQUID ? " gotas/cm²" : " kg/ha"}/>
 
             <Row style={{marginBottom:"15px", marginTop:"20px"}}>
@@ -45,7 +46,8 @@ const DistributionControl = props => {
                     <Button 
                         fill 
                         onClick={handleComputeProfile}
-                        style={{textTransform:"none"}}>
+                        style={{textTransform:"none"}}
+                        data-testid="compute-profile-btn">
                             Calcular perfil
                     </Button>
                 </Col>
@@ -58,7 +60,8 @@ const DistributionControl = props => {
                     <Button 
                         fill 
                         onClick={handleClearDistrForm}
-                        style={{textTransform:"none", backgroundColor:"red"}}>
+                        style={{textTransform:"none", backgroundColor:"red"}}
+                        data-testid="clear-distribution-form-btn">
                             Borrar formulario
                     </Button>
                 </Col>

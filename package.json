@@ -6,7 +6,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "playwright test --project=chromium --headed",
+    "test": "playwright test --project=chromium",
+    "test:local": "playwright test --project=chromium --headed",
+    "playwright": "playwright codegen http://localhost:5173",
     "postinstall": "sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' node_modules/@capacitor-community/keep-awake/android/build.gradle"
   },
   "dependencies": {

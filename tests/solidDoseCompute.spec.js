@@ -1,30 +1,29 @@
 import { test, expect } from '@playwright/test';
+import { fillParams } from './setup';
 
-test('loadSolidParams', async ({ page }) => {
+test.describe('Solid Dose Computation', () => {
+
+    const params = {
+        product_type: "solid",
+        lot_name: "Lote 1",
+        work_area: 30,
+        dose_solid: 80,
+        work_width: 7,
+        work_velocity: 30,
+        flight_altitude: 5
+    };
     
-    await page.goto('http://localhost:5173'); // Iniciar app
-    await page.getByTestId('home-params-btn').click(); // Ir a vista de parametros
-    
-    // Completar formulario
-    await page.getByRole('textbox').click();
-    await page.getByRole('textbox').fill('Lote 1');
-    await page.getByTestId('input-work-area').getByRole('spinbutton').click();
-    await page.getByTestId('input-work-area').getByRole('spinbutton').fill('30');
-    await page.getByTestId('input-dose-solid').getByRole('spinbutton').click();
-    await page.getByTestId('input-dose-solid').getByRole('spinbutton').fill('80');
-    await page.getByTestId('input-work-width').getByRole('spinbutton').click();
-    await page.getByTestId('input-work-width').getByRole('spinbutton').fill('7');
-    await page.getByTestId('input-work-velocity').getByRole('spinbutton').click();
-    await page.getByTestId('input-work-velocity').getByRole('spinbutton').fill('25');
-    await page.getByTestId('input-flight-altitude').getByRole('spinbutton').click();
-    await page.getByTestId('input-flight-altitude').getByRole('spinbutton').fill('3');
-    await page.getByTestId('save-params-btn').click(); // No hace nada, solo muestra un toast
-    await page.locator('[data-test-id="backbutton"]').click(); // Volver a home
+    test.beforeEach(async ({ page }) => {
+        await page.goto('http://localhost:5173'); // Iniciar app
+        await fillParams(page, params);
+    });
 
-    await page.getByTestId('home-control-btn').click(); // Ir a vista de control
-
-    // Verificar que los parámetros se muestran correctamente en el control
-    await expect(page.getByTestId('solid-dose-preview')).toHaveText('80.00 kg/ha');
-    await expect(page.getByTestId('work-width-preview')).toHaveText('7 m');
-    await expect(page.getByTestId('work-velocity-preview')).toHaveText('25 m/s');
+    test('Should preview params', async ({ page }) => {
+        // Verificar que los parámetros se muestran correctamente en el control
+        
+        await page.getByTestId('home-control-btn').click();
+        await expect(page.getByTestId('solid-dose-preview')).toHaveText(`${params.dose_solid.toFixed(2)} kg/ha`);
+        await expect(page.getByTestId('work-width-preview')).toHaveText(`${params.work_width} m`);
+        await expect(page.getByTestId('work-velocity-preview')).toHaveText(`${params.work_velocity} m/s`);
+    });
 });

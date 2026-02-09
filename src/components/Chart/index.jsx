@@ -30,7 +30,7 @@ const CustomTooltip = ({ active, payload, label, prefix, suffix }) => {
 };
 
 const Chart = props => (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%' }} data-testid={props.dataTestId}>
         <BlockTitle>
             <Typography sx={{ marginBottom: '10px'}}>
                 {props.title}
