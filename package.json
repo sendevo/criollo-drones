@@ -6,8 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "playwright test --project=chromium",
-    "test:local": "playwright test --project=chromium --headed",
+    "test:ui": "playwright test --project=chromium",
+    "test:unit": "vitest run",
     "playwright": "playwright codegen http://localhost:5173",
     "postinstall": "sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' node_modules/@capacitor-community/keep-awake/android/build.gradle"
   },
@@ -40,6 +40,7 @@
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "^1.3.0",
     "vite": "^6.3.5",
-    "vite-plugin-react-devtools": "^0.0.0-alpha.1"
+    "vite-plugin-react-devtools": "^0.0.0-alpha.1",
+    "vitest": "^4.0.18"
   }
 }

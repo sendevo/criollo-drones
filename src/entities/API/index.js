@@ -3,6 +3,7 @@ import { set2Decimals } from "../../utils";
 const isString = value => (typeof value === 'string' || value instanceof String) && value !== "";
 const isFloat = value => Number.isFinite(value);
 const isPositiveFloat = value => Number.isFinite(value) && value > 0;
+const isPositiveInteger = value => Number.isInteger(value) && value > 0;
 const toFloat = obj => Object.keys(obj)
     .reduce((acc, key) => {
         // Convert the value to a float if it's a string that can be parsed as a float, else keep it as is

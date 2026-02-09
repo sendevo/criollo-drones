@@ -1,4 +1,4 @@
-export async function fillParams(page, params) { // Completar formulario de parámetros sólidos
+export async function fillParamsForm(page, params) { // Completar formulario de parámetros sólidos
 
     const {
         product_type,
@@ -30,5 +30,20 @@ export async function fillParams(page, params) { // Completar formulario de par�
     await page.getByTestId('input-flight-altitude').getByRole('spinbutton').click();
     await page.getByTestId('input-flight-altitude').getByRole('spinbutton').fill(flight_altitude.toString());
     await page.getByTestId('save-params-btn').click(); // No hace nada, solo muestra un toast
+    
     await page.locator('[data-test-id="backbutton"]').click(); // Volver a home
+};
+
+export async function fillValidationForm(page, params) { // Completar formulario de validación de dosis sólidas
+
+    const {
+        timer_value,
+        collected_weight
+    } = params;
+
+    await page.getByTestId('home-control-btn').click(); // Ir a vista de control
+    await page.getByTestId('input-recolected-time').getByRole('spinbutton').click();
+    await page.getByTestId('input-recolected-time').getByRole('spinbutton').fill(timer_value.toString());
+    await page.getByTestId('input-recolected-weight').getByRole('spinbutton').click();
+    await page.getByTestId('input-recolected-weight').getByRole('spinbutton').fill(collected_weight.toString());
 };

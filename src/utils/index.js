@@ -20,6 +20,16 @@ export const getClosest = (array, attr, value) => {
     return array[index];
 };
 
+
+export const uniformRandom = (min, max) => {
+    return Math.random() * (max - min) + min;
+};
+
+export const selectRandomFromArray = (array) => {
+    const index = Math.floor(Math.random() * array.length);
+    return array[index];
+};
+
 export const importAll = r => {
     let images = {};
     r.keys().forEach(item => {
