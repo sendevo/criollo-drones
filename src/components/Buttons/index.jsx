@@ -64,6 +64,7 @@ export const AddButton = props => (
     <Block style={{textAlign: "right", margin:"0px", padding:"0px"}}>
         <Link 
             tooltip="Agregar producto" 
+            data-testid="add-product-btn"
             onClick={props.onClick}
             className={classes.RoundButton}
             style={{backgroundColor:"green", margin:"0px 0px 20px 0px"}}>

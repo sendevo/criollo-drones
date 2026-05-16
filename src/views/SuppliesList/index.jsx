@@ -77,7 +77,7 @@ const SuppliesList = props => {
                         </tr>
                         <tr>
                             <td><b>Cantidad de cargas:</b></td>
-                            <td>{loadsText}</td>
+                            <td data-testid="supplies-loads-text">{loadsText}</td>
                         </tr>
                     </tbody>
                 </table>

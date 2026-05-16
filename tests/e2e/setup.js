@@ -5,6 +5,7 @@ export async function fillParamsForm(page, params) { // Completar formulario de 
         lot_name,
         work_area,
         dose_solid,
+        dose_liquid,
         work_width,
         work_velocity,
         flight_altitude
@@ -21,8 +22,13 @@ export async function fillParamsForm(page, params) { // Completar formulario de 
     await page.getByRole('textbox').fill(lot_name);
     await page.getByTestId('input-work-area').getByRole('spinbutton').click();
     await page.getByTestId('input-work-area').getByRole('spinbutton').fill(work_area.toString());
-    await page.getByTestId('input-dose-solid').getByRole('spinbutton').click();
-    await page.getByTestId('input-dose-solid').getByRole('spinbutton').fill(dose_solid.toString());
+    if(product_type === "liquid"){
+        await page.getByTestId('input-dose-liquid').getByRole('spinbutton').click();
+        await page.getByTestId('input-dose-liquid').getByRole('spinbutton').fill((dose_liquid || 0).toString());
+    } else {
+        await page.getByTestId('input-dose-solid').getByRole('spinbutton').click();
+        await page.getByTestId('input-dose-solid').getByRole('spinbutton').fill((dose_solid || 0).toString());
+    }
     await page.getByTestId('input-work-width').getByRole('spinbutton').click();
     await page.getByTestId('input-work-width').getByRole('spinbutton').fill(work_width.toString());
     await page.getByTestId('input-work-velocity').getByRole('spinbutton').click();

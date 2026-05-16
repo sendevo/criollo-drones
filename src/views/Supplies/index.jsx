@@ -22,6 +22,7 @@ import { PresentationSelector } from '../../components/Selectors';
 import iconProduct from '../../assets/icons/calculador.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
+import iconVolume from '../../assets/icons/dropper.png';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconCapacity from '../../assets/icons/capacidad_carga.png';
@@ -37,10 +38,11 @@ const Supplies = props => {
         gpsEnabled: false, // Habilitar GPS
         lotCoordinates: model.lotCoordinates || [], // Ubicacion del lote
         loadBalancingEnabled: model.loadBalancingEnabled || true, // Habilitar balanceo de carga
+        workVolume: model.workVolume || model.doseLiquid || model.effectiveDose || model.doseSolid || '', // Volumen de aplicación (l/ha)
         tankCapacity: model.tankCapacity || '' // Capacidad carga
     });
 
-    const [products, setProducts] = useState(model.supplies || []);
+    const [products, setProducts] = useState(Array.isArray(model.products) ? model.products : []);
 
     const addProduct = () => {
         const temp = [...products];
@@ -50,15 +52,14 @@ const Supplies = props => {
             dose: '',
             presentation: 0 // 0: ml/ha, 1: gr/ha, 2: ml/100L, 3: gr/100L
         });
-        model.update("supplies", temp);        
+        model.update("products", temp);        
         setProducts(temp);
     };
 
     const removeProduct = index => {
         const temp = [...products];
         temp.splice(index, 1);
-        model.products = temp;
-        model.update("supplies", temp);
+        model.update("products", temp);
         setProducts(temp);
     };
 
@@ -96,10 +97,90 @@ const Supplies = props => {
     };
 
     const submit = () => {
-        console.log("Calculando insumos con los siguientes datos:");
-        console.log("Parámetros principales:", inputs);
-        console.log("Productos:", products);
-        Toast("info", "Función no disponible aún");
+        const parseNumeric = value => {
+            if (typeof value === 'number') return value;
+            if (typeof value === 'string') {
+                const normalized = value.trim().replace(',', '.');
+                return normalized === '' ? NaN : parseFloat(normalized);
+            }
+            return Number(value);
+        };
+
+        const workArea = parseNumeric(inputs.workArea);
+        const tankCapacity = parseNumeric(inputs.tankCapacity);
+
+        const workVolumeCandidates = [
+            inputs.workVolume,
+            model.workVolume,
+            model.doseLiquid,
+            model.effectiveDose,
+            model.doseSolid,
+            model.verificationOutput?.effectiveSprayVolume,
+            model.verificationOutput?.expectedSprayVolume
+        ]
+            .map(parseNumeric)
+            .filter(v => Number.isFinite(v) && v > 0);
+
+        const workVolume = workVolumeCandidates[0];
+
+        if (!Number.isFinite(workArea) || workArea <= 0) {
+            Toast('error', 'Superficie inválida', 2500, 'bottom');
+            return;
+        }
+
+        if (!Number.isFinite(tankCapacity) || tankCapacity <= 0) {
+            Toast('error', 'Capacidad de carga inválida', 2500, 'bottom');
+            return;
+        }
+
+        if (!Number.isFinite(workVolume) || workVolume <= 0) {
+            Toast('error', 'Volumen de aplicación inválido. Complete el campo "Volumen de aplicación"', 3500, 'bottom');
+            return;
+        }
+
+        if (!Array.isArray(products) || products.length === 0) {
+            Toast('error', 'Debe agregar al menos un insumo', 2500, 'bottom');
+            return;
+        }
+
+        const invalidProduct = products.find(prod => (
+            !prod ||
+            typeof prod.name !== 'string' ||
+            prod.name.trim().length === 0 ||
+            !Number.isFinite(Number(prod.dose)) ||
+            Number(prod.dose) <= 0 ||
+            !Number.isInteger(Number(prod.presentation))
+        ));
+
+        if (invalidProduct) {
+            Toast('error', 'Complete nombre, dosis y presentación válidos para cada insumo', 3000, 'bottom');
+            return;
+        }
+
+        const params = {
+            A: workArea,
+            T: tankCapacity,
+            Va: workVolume,
+            products
+        };
+
+        try {
+            const res = API.computeSuppliesList(params);
+            if (!res || !Number.isFinite(res.Nc) || !Number.isFinite(res.Ncc) || !Number.isFinite(res.Vf)) {
+                Toast('error', 'No se pudo calcular la cantidad de cargas e insumos', 3000, 'bottom');
+                return;
+            }
+
+            model.update({
+                supplies: res,
+                lotCoordinates: inputs.gpsEnabled ? inputs.lotCoordinates : null,
+                capacity: tankCapacity,
+                workVolume
+            });
+            props.f7router.navigate('/suppliesList/');
+        } catch (err) {
+            Toast('error', err.message, 3000, 'bottom');
+        }
     };
 
     return (
@@ -114,6 +195,7 @@ const Supplies = props => {
 
             <List form noHairlinesMd style={{marginBottom:"10px"}}>    
                 <Input
+                    data-testid="input-lot-name"
                     slot="list"
                     label="Lote"
                     name="lotName"
@@ -123,6 +205,7 @@ const Supplies = props => {
                     onChange={v=>setMainParams('lotName', v.target.value)}>
                 </Input>
                 <Input
+                    data-testid="input-work-area"
                     slot="list"
                     label="Superficie"
                     name="workArea"
@@ -156,6 +239,18 @@ const Supplies = props => {
 
             <List form noHairlinesMd style={{marginBottom:"10px"}}>
                 <Input
+                    data-testid="input-work-volume"
+                    slot="list"
+                    label="Volumen de aplicación"
+                    name="workVolume"
+                    type="number"
+                    unit="l/ha"
+                    icon={iconVolume}
+                    value={inputs.workVolume}
+                    onChange={v=>setMainParams('workVolume', parseFloat(v.target.value))}>
+                </Input>
+                <Input
+                    data-testid="input-tank-capacity"
                     slot="list"
                     label="Capacidad de carga"
                     name="tankCapacity"
@@ -195,6 +290,7 @@ const Supplies = props => {
                                 </span>
                                 <List form noHairlinesMd style={{marginBottom:"0px", marginTop: "0px"}}>
                                     <Input
+                                        data-testid={`product-name-${index}`}
                                         slot="list"
                                         label="Nombre"
                                         type="text" 
@@ -204,6 +300,7 @@ const Supplies = props => {
                                         onChange={v=>setProductParams(index, "name", v.target.value)}>
                                     </Input>
                                     <Input
+                                        data-testid={`product-dose-${index}`}
                                         slot="list"
                                         label="Dosis"
                                         type="number"
@@ -235,7 +332,7 @@ const Supplies = props => {
             <Row style={{marginBottom:"15px"}} className="help-target-supplies-results">
                 <Col width={20}></Col>
                 <Col width={60}>
-                    <Button fill onClick={submit} style={{textTransform:"none"}}>Calcular insumos</Button>
+                    <Button fill onClick={submit} data-testid="submit-supplies-btn" style={{textTransform:"none"}}>Calcular insumos</Button>
                 </Col>
                 <Col width={20}></Col>
             </Row>
