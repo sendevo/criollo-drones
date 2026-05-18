@@ -8,6 +8,7 @@ import Toast from './components/Toast';
 import { ModelProvider } from './context';
 import './index.css';
 import path from 'node:path';
+import CompatTimerAudioWatcher from './components/CompatTimerAudioWatcher';
 
 // Navegacion
 const pushState = page => window.history.pushState(null, null, page);
@@ -178,6 +179,7 @@ const Criollo = () => {
     return (
         <App {...f7params}>
             <ModelProvider>
+                <CompatTimerAudioWatcher />
                 {showBackground && (
                     <div
                         style={{

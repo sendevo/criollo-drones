@@ -112,6 +112,12 @@ const defaultFormParams = {
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado
     supplies: [], // Insumos y cantidades
 
+    compatTestSelectedSeconds: 30, // Tiempo seleccionado para prueba de compatibilidad (s)
+    compatTestCustomSeconds: '', // Tiempo personalizado de prueba de compatibilidad (s)
+    compatTestRunning: false, // Cronometro de prueba de compatibilidad en ejecucion
+    compatTestEndTs: '', // Timestamp de finalizacion del cronometro de compatibilidad
+    compatTestObservations: '', // Observaciones del test de compatibilidad
+
     currentReport: get_blank_report(),
     reports: [], // Lista de reportes
 };

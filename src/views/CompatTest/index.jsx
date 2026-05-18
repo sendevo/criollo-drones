@@ -1,51 +1,59 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Page, PageContent, Block, Navbar, BlockTitle, Row, Col, Radio, List } from 'framework7-react';
 import { NavbarTitle, BackButton } from '../../components/Buttons';
 import { PlayButton } from '../../components/Buttons';
 import Input from '../../components/Input';
 import Footer from '../../components/Footer';
-import Timer from '../../entities/Timer';
-import { useSound } from 'use-sound';
-import oneSfx from '../../assets/sounds/uno.mp3';
-import twoSfx from '../../assets/sounds/dos.mp3';
-import threeSfx from '../../assets/sounds/tres.mp3';
-import readySfx from '../../assets/sounds/listo.mp3';
+import { ModelCtx } from '../../context';
+import moment from 'moment';
 
 const PRESET_INTERVALS = [30, 60, 90];
 const defaultSeconds = 30;
-const timer = new Timer(defaultSeconds * 1000, true);
 
 const CompatTest = props => {
 
-    const [selectedSeconds, setSelectedSeconds] = useState(defaultSeconds);
-    const [customSeconds, setCustomSeconds] = useState('');
-    const [timeMs, setTimeMs] = useState(defaultSeconds * 1000);
-    const [running, setRunning] = useState(false);
-    const [observations, setObservations] = useState('');
+    const model = useContext(ModelCtx);
 
-    const [play3] = useSound(threeSfx);
-    const [play2] = useSound(twoSfx);
-    const [play1] = useSound(oneSfx);
-    const [play0] = useSound(readySfx);
+    const modelSelectedSeconds = Number(model.compatTestSelectedSeconds);
+    const initialSelectedSeconds = Number.isFinite(modelSelectedSeconds) && modelSelectedSeconds > 0
+        ? modelSelectedSeconds
+        : defaultSeconds;
 
-    const displayTime = useMemo(() => {
-        const seconds = Math.max(0, timeMs / 1000);
-        return `${seconds.toFixed(1)} s`;
-    }, [timeMs]);
+    const modelEndTs = Number(model.compatTestEndTs);
+    const modelRunning = Boolean(model.compatTestRunning) && Number.isFinite(modelEndTs) && modelEndTs > Date.now();
+    const initialTimeMs = modelRunning
+        ? Math.max(0, modelEndTs - Date.now())
+        : Math.round(initialSelectedSeconds * 1000);
 
-    const updateInterval = seconds => {
+    const [selectedSeconds, setSelectedSeconds] = useState(initialSelectedSeconds);
+    const [customSeconds, setCustomSeconds] = useState(model.compatTestCustomSeconds || '');
+    const [timeMs, setTimeMs] = useState(initialTimeMs);
+    const [running, setRunning] = useState(modelRunning);
+    const [endTs, setEndTs] = useState(modelRunning ? modelEndTs : '');
+    const [observations, setObservations] = useState(model.compatTestObservations || '');
+
+    const displayTime = useMemo(() => moment(Math.max(0, timeMs)).format('mm:ss:S'), [timeMs]);
+
+    const updateInterval = (seconds, customValue = customSeconds) => {
         const safeSeconds = Number.isFinite(seconds) && seconds > 0 ? seconds : defaultSeconds;
         const valueMs = Math.round(safeSeconds * 1000);
         setSelectedSeconds(safeSeconds);
         setTimeMs(valueMs);
-        timer.setInitial(valueMs);
-        timer.clear();
+        setRunning(false);
+        setEndTs('');
+        model.update({
+            compatTestSelectedSeconds: safeSeconds,
+            compatTestCustomSeconds: customValue,
+            compatTestRunning: false,
+            compatTestEndTs: '',
+            compatTestObservations: observations
+        });
     };
 
     const handlePresetChange = value => {
         if (running) return;
         setCustomSeconds('');
-        updateInterval(value);
+        updateInterval(value, '');
     };
 
     const handleCustomChange = event => {
@@ -54,40 +62,85 @@ const CompatTest = props => {
         setCustomSeconds(value);
         const seconds = parseFloat(value);
         if (Number.isFinite(seconds) && seconds > 0) {
-            updateInterval(seconds);
+            updateInterval(seconds, value);
+        } else {
+            model.update({ compatTestCustomSeconds: value });
         }
-    };
-
-    const handleTimeout = () => {
-        setRunning(false);
-        setTimeMs(Math.round(selectedSeconds * 1000));
     };
 
     const toggleRunning = () => {
         if (!running) {
-            const initialMs = Math.round(selectedSeconds * 1000);
-            timer.setInitial(initialMs);
-            timer.clear();
-            timer.onChange = setTimeMs;
-            timer.onTimeout = handleTimeout;
-            timer.start();
+            const durationMs = Math.round(selectedSeconds * 1000);
+            const endTimestamp = Date.now() + durationMs;
+            setTimeMs(durationMs);
+            setEndTs(endTimestamp);
             setRunning(true);
+            model.update({
+                compatTestRunning: true,
+                compatTestEndTs: endTimestamp,
+                compatTestSelectedSeconds: selectedSeconds,
+                compatTestCustomSeconds: customSeconds,
+                compatTestObservations: observations
+            });
         } else {
-            timer.stop();
-            timer.clear();
             setTimeMs(Math.round(selectedSeconds * 1000));
             setRunning(false);
+            setEndTs('');
+            model.update({
+                compatTestSelectedSeconds: selectedSeconds,
+                compatTestCustomSeconds: customSeconds,
+                compatTestRunning: false,
+                compatTestEndTs: '',
+                compatTestObservations: observations
+            });
         }
     };
 
-    if (running && timeMs === 3000) play3();
-    if (running && timeMs === 2000) play2();
-    if (running && timeMs === 1000) play1();
-    if (running && timeMs < 100) play0();
+    useEffect(() => {
+        if (!running || !Number.isFinite(Number(endTs))) {
+            return;
+        }
 
-    useEffect(() => () => {
-        timer.stop();
+        const endTimestamp = Number(endTs);
+
+        const tick = () => {
+            const remaining = Math.max(0, endTimestamp - Date.now());
+            setTimeMs(remaining);
+
+            if (remaining <= 0) {
+                setRunning(false);
+                setEndTs('');
+                model.update({
+                    compatTestSelectedSeconds: selectedSeconds,
+                    compatTestCustomSeconds: customSeconds,
+                    compatTestRunning: false,
+                    compatTestEndTs: '',
+                    compatTestObservations: observations
+                });
+            }
+        };
+
+        tick();
+        const id = setInterval(tick, 100);
+        return () => clearInterval(id);
+    }, [running, endTs]);
+
+    useEffect(() => {
+        if (!Boolean(model.compatTestRunning)) return;
+        const initialEndTs = Number(model.compatTestEndTs);
+        if (Number.isFinite(initialEndTs) && initialEndTs <= Date.now()) {
+            model.update({
+                compatTestRunning: false,
+                compatTestEndTs: ''
+            });
+        }
     }, []);
+
+    const handleObservationsChange = e => {
+        const value = e.target.value;
+        setObservations(value);
+        model.update({ compatTestObservations: value });
+    };
 
     return (
         <Page name="info">
@@ -136,7 +189,7 @@ const CompatTest = props => {
                         name="compatObservations"
                         type="textarea"
                         value={observations}
-                        onChange={e => setObservations(e.target.value)}
+                        onChange={handleObservationsChange}
                     />
                 </List>
             </PageContent>
