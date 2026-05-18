@@ -8,6 +8,7 @@ import Info from './Info';
 import About from './About';
 import Security from './Security';
 import Supplies from './Supplies';
+import CompatTest from './CompatTest';
 import SuppliesList from './SuppliesList';
 import Reports from './Reports';
 import ReportDetails from './ReportDetails';
@@ -23,6 +24,7 @@ export {
     About,
     Security,
     Supplies,
+    CompatTest,
     SuppliesList,
     Reports,
     ReportDetails

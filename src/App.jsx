@@ -7,6 +7,7 @@ import ReportsPanel from './components/ReportsPanel';
 import Toast from './components/Toast';
 import { ModelProvider } from './context';
 import './index.css';
+import path from 'node:path';
 
 // Navegacion
 const pushState = page => window.history.pushState(null, null, page);
@@ -96,6 +97,14 @@ const f7params = {
             path: '/supplies/',
             component: Views.Supplies,
             on:{pageInit: ()=>pushState("supplies")},
+            options: {
+                transition: "f7-cover"        
+            }
+        },
+        { // Test de compatibilidad
+            path: '/compatTest/',
+            component: Views.CompatTest,
+            on:{pageInit: ()=>pushState("compatTest")},
             options: {
                 transition: "f7-cover"        
             }

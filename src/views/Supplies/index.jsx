@@ -244,7 +244,7 @@ const Supplies = props => {
                     label="Volumen de aplicación"
                     name="workVolume"
                     type="number"
-                    unit="l/ha"
+                    unit={model.productType === "solido" ? "kg/ha" : "l/ha"}
                     icon={iconVolume}
                     value={inputs.workVolume}
                     onChange={v=>setMainParams('workVolume', parseFloat(v.target.value))}>
@@ -328,11 +328,32 @@ const Supplies = props => {
             <Block style={{margin:0}}>
                 <AddButton onClick={()=>addProduct()}/>
             </Block>
+
+            <Row style={{marginBottom:"15px"}} className="help-target-compat-test">
+                <Col width={20}></Col>
+                <Col width={60}>
+                    <Button 
+                        fill 
+                        onClick={() => props.f7router.navigate('/compatTest/')}
+                        data-testid="compat-test-btn" 
+                        color="green"
+                        style={{textTransform:"none"}}>
+                            Prueba de compatibilidad
+                    </Button>
+                </Col>
+                <Col width={20}></Col>
+            </Row>
                
             <Row style={{marginBottom:"15px"}} className="help-target-supplies-results">
                 <Col width={20}></Col>
                 <Col width={60}>
-                    <Button fill onClick={submit} data-testid="submit-supplies-btn" style={{textTransform:"none"}}>Calcular insumos</Button>
+                    <Button 
+                        fill 
+                        onClick={submit} 
+                        data-testid="submit-supplies-btn" 
+                        style={{textTransform:"none"}}>
+                            Calcular insumos
+                    </Button>
                 </Col>
                 <Col width={20}></Col>
             </Row>
