@@ -12,7 +12,7 @@ import moment from 'moment';
 import { ModelCtx } from "../../context";
 import { useSound } from "use-sound";
 import Input from "../../components/Input";
-import { PlayButton, NavbarTitle } from "../../components/Buttons";
+import { PlayButton, NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
 import { timerCollectedPrompt } from "../../components/Prompts";
 import { set2Decimals } from "../../utils";
 import { FaMinus } from 'react-icons/fa';
@@ -157,7 +157,7 @@ const Recolected = props => {
 
     return (
         <Page>
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>      
+            <Navbar style={NAVBAR_STYLE}>      
                 <NavbarTitle {...props} title="Cronómetro"/>
             </Navbar>
             <ElapsedSelector value={elapsed} disabled={running} onChange={v => updateElapsed(v)}/>

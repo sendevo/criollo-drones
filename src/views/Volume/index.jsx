@@ -1,6 +1,6 @@
 import { Page, Navbar, Block, List, Row, Col, Button, BlockTitle } from "framework7-react";
 import Input from "../../components/Input";
-import { NavbarTitle, BackButton } from "../../components/Buttons";
+import { NavbarTitle, BackButton, NAVBAR_STYLE } from "../../components/Buttons";
 import Toast from '../../components/Toast';
 import { useContext, useState } from "react";
 import { ModelCtx } from "../../context";
@@ -58,7 +58,7 @@ const View = props => { // View
 
     return (
         <Page>
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title="Ajuste por concentración"/>
             </Navbar>
             

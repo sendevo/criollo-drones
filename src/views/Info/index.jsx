@@ -1,5 +1,5 @@
 import { Page, Link, PageContent, Block, Navbar } from 'framework7-react';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import Footer from '../../components/Footer';
 import classes from '../style.module.css';
 
@@ -7,7 +7,7 @@ const Info = props => {
 
     return (
         <Page name="info" className={classes.InfoPage}>
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title={"Información y ayuda"}/>
             </Navbar>
             <PageContent>

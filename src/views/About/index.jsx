@@ -8,12 +8,12 @@ import {
     Link 
 } from 'framework7-react';
 import logoInta from '../../assets/logo_inta.png';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import { APP_NAME, VERSION_NAME } from '../../entities/Model';
 
 const About = props => (
     <Page name="about">
-        <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+        <Navbar style={NAVBAR_STYLE}>
             <NavbarTitle {...props} title={`Acerca de ${APP_NAME}`}/>
         </Navbar>
         <Block style={{marginTop: "0"}}>

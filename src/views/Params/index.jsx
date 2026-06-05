@@ -10,7 +10,7 @@ import {
     BlockTitle
 } from 'framework7-react';
 import { useContext, useEffect, useState } from 'react';
-import { NavbarTitle, BackButton, CalculatorButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, CalculatorButton, NAVBAR_STYLE } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
@@ -118,7 +118,7 @@ const Params = props => {
 
     return (
         <Page>            
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title="Parámetros de operación"/>
             </Navbar>
 

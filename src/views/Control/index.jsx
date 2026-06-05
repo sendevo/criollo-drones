@@ -1,6 +1,6 @@
 import { Navbar, Page } from 'framework7-react';
 import { useContext, useState, useEffect} from 'react';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import { ModelCtx } from '../../context';
 import { PRODUCT_TYPES } from '../../entities/Model';
 import LiquidControl from './LiquidControl';
@@ -34,7 +34,7 @@ const Control = props => {
     
     return (
         <Page>            
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title={`Verificación de prestación ${inputs.productType === PRODUCT_TYPES.LIQUID ? "(líquidos)" : "(sólidos)"}`}/>
             </Navbar>
 

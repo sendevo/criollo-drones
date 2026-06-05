@@ -1,7 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Page, PageContent, Block, Navbar, BlockTitle, Row, Col, Radio, List } from 'framework7-react';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
-import { PlayButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, PlayButton, NAVBAR_STYLE } from '../../components/Buttons';
 import Input from '../../components/Input';
 import Footer from '../../components/Footer';
 import { ModelCtx } from '../../context';
@@ -144,7 +143,7 @@ const CompatTest = props => {
 
     return (
         <Page name="info">
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title={"Prueba de compatibilidad"}/>
             </Navbar>
             <PageContent>

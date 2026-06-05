@@ -15,7 +15,7 @@ import classes from './style.module.css';
 import moment from 'moment';
 import Timer from "../../entities/Timer";
 import Toast from '../../components/Toast';
-import { PlayButton, NavbarTitle } from "../../components/Buttons";
+import { PlayButton, NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { set2Decimals } from "../../utils";
 
@@ -150,7 +150,7 @@ const Velocity = props => { // View
 
     return (
         <Page>
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>      
+            <Navbar style={NAVBAR_STYLE}>      
                 <NavbarTitle {...props} title="Cronómetro"/>
             </Navbar>
             <Block>

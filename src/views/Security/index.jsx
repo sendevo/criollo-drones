@@ -1,5 +1,5 @@
 import { Page, Navbar, Link } from 'framework7-react';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import pictogram from '../../assets/pictograma_seguridad.jpg';
 import infoIcon from '../../assets/icons/info.png';
 import classes from '../style.module.css';
@@ -18,7 +18,7 @@ const styles = {
 
 const Security = props => (
     <Page name="info">
-        <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+        <Navbar style={NAVBAR_STYLE}>
             <NavbarTitle {...props} title={"Seguridad y prevención"} />
         </Navbar>
         <div style={styles.container}>

@@ -11,6 +11,8 @@ import {
 import classes from './style.module.css';
 import Typography from '../Typography';
 
+export const NAVBAR_STYLE = { minHeight:"40px", marginBottom:"0px" };
+
 export const BackButton = props => (
     <Block className={classes.BackButtonContainer}>
         <Link tooltip="Volver" 

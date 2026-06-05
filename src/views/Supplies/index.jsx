@@ -13,7 +13,7 @@ import {
     CardContent
 } from 'framework7-react';
 import Input from '../../components/Input';
-import { NavbarTitle, DeleteButton, AddButton, BackButton } from '../../components/Buttons';
+import { NavbarTitle, DeleteButton, AddButton, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import * as API from '../../entities/API';
@@ -185,7 +185,7 @@ const Supplies = props => {
 
     return (
         <Page>            
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title={"Calculador de mezclas"} />
             </Navbar>   
 

@@ -1,6 +1,6 @@
 import { Navbar, Page, Block, Row, Col, Button, BlockTitle } from 'framework7-react';
 import { useContext } from 'react';
-import { NavbarTitle, BackButton } from '../../components/Buttons';
+import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import NozzlesTable from '../../components/NozzlesTable';
 import { SuppliesTable, PrescriptionTable } from '../../components/SuppliesTable';
 import { ModelCtx } from '../../context';
@@ -22,7 +22,7 @@ const ReportDetails = props => {
 
     return (
         <Page>            
-            <Navbar style={{maxHeight:"40px", marginBottom:"0px"}}>
+            <Navbar style={NAVBAR_STYLE}>
                 <NavbarTitle {...props} title={"Reporte de la labor"}/>
             </Navbar>
             
