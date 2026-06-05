@@ -11,7 +11,7 @@ import {
 import classes from './style.module.css';
 import Typography from '../Typography';
 
-export const NAVBAR_STYLE = { minHeight:"40px", marginBottom:"0px" };
+export const NAVBAR_STYLE = { minHeight:"40px", marginBottom:"0px", height:"auto" };
 
 export const BackButton = props => (
     <Block className={classes.BackButtonContainer}>
@@ -28,11 +28,22 @@ export const BackButton = props => (
 
 export const NavbarTitle = props => (
     <Link 
-        style={{color:"black", fontSize:"0.9em", padding:"0px 5px"}}
+        style={{
+            color:"black",
+            fontSize:"0.9em",
+            padding:"4px 5px",
+            display:"flex",
+            alignItems:"center",
+            width:"100%",
+            minHeight:"40px",
+            whiteSpace:"normal"
+        }}
         tooltip="Volver"
         onClick={() => props.f7router.back()}>
-        <FaArrowLeft />
-        <Typography variant="title" sx={{paddingLeft:"10px"}}>{props.title}</Typography>
+        <span style={{flexShrink:0}}>
+            <FaArrowLeft />
+        </span>
+        <Typography variant="title" sx={{paddingLeft:"10px", lineHeight:"1.1", whiteSpace:"normal"}}>{props.title}</Typography>
     </Link>
 );
 

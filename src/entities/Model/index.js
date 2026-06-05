@@ -84,6 +84,7 @@ const defaultFormParams = {
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
 
     nozzleCnt: '', // Cantidad de picos
+    controlNozzleCnt: '', // Cantidad de picos a controlar (jarreo)
     nozzleSeparation: '', // Separacion entre picos (m)
     recolectedData: [], // Datos de jarreo
     nozzleFlow: '', // Caudal de pico (l/min)

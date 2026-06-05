@@ -46,7 +46,8 @@ const LiquidControl = props => {
         doseLiquid: model.doseLiquid || '',
         workWidth: model.workWidth || '',
         workVelocity: model.workVelocity || '',
-        nozzleCnt: model.nozzleCnt || '',
+        nozzleCnt: model.controlNozzleCnt || model.nozzleCnt || '',
+        totalNozzleCnt: model.nozzleCnt || '',
         nozzleFlow: model.nozzleFlow || '',
         recolectedData: model.recolectedData || [],
         
@@ -137,7 +138,7 @@ const LiquidControl = props => {
         }
         model.update({
             recolectedData: temp,
-            nozzleCnt: e.target.value
+            controlNozzleCnt: e.target.value
         });
         setInputs({
             ...inputs,
@@ -169,16 +170,17 @@ const LiquidControl = props => {
 
         if(efAvg){
             try{
+                const totalNozzleCnt = parseFloat(inputs.totalNozzleCnt) || parseFloat(inputs.nozzleCnt);
                 const effectiveSprayVolume = API.computeSprayVolume({
                     Q: efAvg,
-                    d: inputs.workWidth/inputs.nozzleCnt,
+                    d: inputs.workWidth/totalNozzleCnt,
                     vel: inputs.workVelocity
                 });
                 const diff = effectiveSprayVolume - inputs.doseLiquid;
                 const diffp = inputs.doseLiquid > 0 ? diff/inputs.doseLiquid*100 : 0;
                 const result = {
                     efAvg, 
-                    totalEffectiveFlow: inputs.nozzleCnt ? efAvg*inputs.nozzleCnt : undefined,
+                    totalEffectiveFlow: totalNozzleCnt ? efAvg*totalNozzleCnt : undefined,
                     effectiveSprayVolume, 
                     expectedSprayVolume: inputs.doseLiquid, 
                     diff, 

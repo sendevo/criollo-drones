@@ -22,6 +22,7 @@ import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
 import iconFlightAltitude from '../../assets/icons/altitud_vuelo.png';
 import iconWidth from '../../assets/icons/ancho_faja.png';
+import iconNozzleCnt from '../../assets/icons/cant_picos2.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
 import { PRODUCT_TYPES } from '../../entities/Model';
@@ -42,6 +43,7 @@ const Params = props => {
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
         workWidth: model.workWidth || '',
+        nozzleCnt: model.nozzleCnt || '',
         workVelocity: model.workVelocity || '',
         flightAltitude: model.flightAltitude || ''
     });
@@ -212,6 +214,20 @@ const Params = props => {
                     value={inputs.workWidth}
                     onChange={v=>setMainParams('workWidth', Math.abs(parseFloat(v.target.value)))}>
                 </Input>
+
+                { inputs.productType === PRODUCT_TYPES.LIQUID &&
+                    <Input
+                        data-testid="input-nozzle-cnt"
+                        slot="list"
+                        label="Cantidad de picos"
+                        name="nozzleCnt"
+                        type="number"
+                        unit=""
+                        icon={iconNozzleCnt}
+                        value={inputs.nozzleCnt}
+                        onChange={v=>setMainParams('nozzleCnt', Math.abs(parseFloat(v.target.value)))}>
+                    </Input>
+                }
 
                 <Row slot="list">
                     <Col width="80">
