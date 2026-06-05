@@ -38,11 +38,11 @@ const Home = () => (
                 </Link>
                 <Link href="/control/" className={classes.MenuButton} data-testid="home-control-btn">
                     <img className={classes.HomeIcon} src={controlIcon} alt="control"/>
-                    <p>Verificación de <br/> prestación</p>
+                    <p>Verificación de <br/> prestaciones</p>
                 </Link>
                 <Link href="/supplies/" className={classes.MenuButton} data-testid="home-supplies-btn">
                     <img className={classes.HomeIcon} src={suppliesIcon} alt="supplies"/>
-                    <p>Calculador de <br/> mezcla</p>
+                    <p>Insumos y <br/> mezclas</p>
                 </Link>
                 <Link href="/security/" className={classes.MenuButton} data-testid="home-security-btn">
                     <img className={classes.HomeIcon} src={securityIcon} alt="security"/>

@@ -229,24 +229,26 @@ const SolidControl = () => {
         <div>
             <Block style={{marginTop:"0px", marginBottom:"0px"}}>
                 <BlockTitle>
-                    <Typography>Verificación de dosis</Typography>
+                    <Typography>Control de dosis</Typography>
                 </BlockTitle>
             </Block>
 
             <ParamsData {...model} />
 
             <List form noHairlinesMd style={{marginTop:"0px", marginBottom:"0px"}}>
-                <Input
-                    label={"Tiempo"}
-                    name="recolectedTime"
-                    type="number"
-                    unit={"seg"}
-                    icon={timeIcon}
-                    data-testid="input-recolected-time"
-                    value={inputs.recolectedTime}
-                    onChange={v=>handleSetRecolectedTime(Math.abs(parseFloat(v.target.value)))}>
-                </Input>
                 <Row slot="list">
+                    <Col width="80">
+                        <Input
+                            label={"Tiempo"}
+                            name="recolectedTime"
+                            type="number"
+                            unit={"seg"}
+                            icon={timeIcon}
+                            data-testid="input-recolected-time"
+                            value={inputs.recolectedTime}
+                            onChange={v=>handleSetRecolectedTime(Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+                    </Col>
                     <Col width="80">
                         <Input
                             label={"Peso recolectado"}
@@ -298,40 +300,50 @@ const SolidControl = () => {
             </Block>
 
             <List form noHairlinesMd style={{marginTop: "0px", marginBottom:"10px"}}>        
-                <Input
-                    slot="list"
-                    label="Superficie de bandeja"
-                    name="trayArea"
-                    type="number"
-                    unit="m²"
-                    icon={trayAreaIcon}
-                    data-testid="input-tray-area"
-                    value={inputs.trayArea}
-                    onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
-                </Input>
+                <Row slot="list">
+                    <Col width="80">
+                        <Input
+                            slot="list"
+                            label="Superficie de bandeja"
+                            name="trayArea"
+                            type="number"
+                            unit="m²"
+                            icon={trayAreaIcon}
+                            data-testid="input-tray-area"
+                            value={inputs.trayArea}
+                            onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+                    </Col>
+                    <Col width="80">
+                        <Input
+                            slot="list"
+                            label="Cantidad de bandejas"
+                            name="trayCount"
+                            type="number"
+                            icon={trayCountIcon}
+                            data-testid="input-tray-count"
+                            value={inputs.trayCount}
+                            onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
+                        </Input>
+                    </Col>
+                    <Col width="80">
+                        <Input
+                            slot="list"
+                            label="Separación entre bandejas"
+                            name="traySeparation"
+                            type="number"
+                            unit="m"
+                            icon={traySeparationIcon}
+                            data-testid="input-tray-separation"
+                            value={inputs.traySeparation}
+                            onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
+                        </Input>
+                    </Col>
+                </Row>
 
-                <Input
-                    slot="list"
-                    label="Cantidad de bandejas"
-                    name="trayCount"
-                    type="number"
-                    icon={trayCountIcon}
-                    data-testid="input-tray-count"
-                    value={inputs.trayCount}
-                    onChange={v=>setMainParams('trayCount', Math.abs(parseInt(v.target.value)))}>
-                </Input>
+                
 
-                <Input
-                    slot="list"
-                    label="Separación entre bandejas"
-                    name="traySeparation"
-                    type="number"
-                    unit="m"
-                    icon={traySeparationIcon}
-                    data-testid="input-tray-separation"
-                    value={inputs.traySeparation}
-                    onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
-                </Input>
+                
             </List>
 
             {inputs.trayData.length > 0 && inputs.trayArea > 0 && inputs.traySeparation > 0 &&

@@ -307,7 +307,7 @@ const LiquidControl = props => {
     };
 
     const handleComputeProfile = () => {
-        Toast("info", "Functionalidad en desarrollo", 2000);
+        Toast("info", "Funcionalidad en desarrollo", 2000);
     };
 
     const handleClearDistrForm = () => {

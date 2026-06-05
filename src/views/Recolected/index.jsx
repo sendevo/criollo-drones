@@ -61,7 +61,7 @@ const OutputBlock = props => ( // Bloque con resultado final a exportar
                 <Input
                     readOnly
                     value={props.output}
-                    label={`${props.productType === PRODUCT_TYPES.LIQUID ? "Peso":"Volumen"} recolectado promedio`}
+                    label={`${props.productType === PRODUCT_TYPES.LIQUID ? "Volumen":"Peso"} recolectado promedio`}
                     type="number"
                     unit={props.productType === PRODUCT_TYPES.LIQUID ? "L" : "kg"}
                     clearButton={false}
@@ -98,11 +98,11 @@ const Recolected = props => {
     const onTimeout = () => {        
         setRunning(false);        
         setTime(elapsed);        
-        timerCollectedPrompt( (value => {
+        timerCollectedPrompt((value) => {
             const temp = [...data];
             temp.push(parseFloat(value));
             setData(temp);
-        }, model.productType));
+        }, model.productType);
     };
 
     const popData = () => { // Quitar último dato medido

@@ -167,7 +167,7 @@ export const timerCollectedPrompt = (callback, productype) => {
     ];
 
     f7.dialog.create({
-        title: "Volumen recolectado",
+        title: productype === PRODUCT_TYPES.LIQUID ? "Volumen recolectado" : "Peso recolectado",
         content: content,
         buttons: buttons,
         destroyOnClose: true        

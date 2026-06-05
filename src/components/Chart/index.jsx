@@ -6,7 +6,8 @@ import {
     YAxis, 
     CartesianGrid, 
     Tooltip, 
-    ResponsiveContainer
+    ResponsiveContainer,
+    usePlotArea
 } from "recharts";
 import Typography from "../Typography";
 
@@ -29,6 +30,29 @@ const CustomTooltip = ({ active, payload, label, prefix, suffix }) => {
     return null;
 };
 
+const MidScaleLine = () => {
+    const plotArea = usePlotArea();
+
+    if (!plotArea || plotArea.width <= 0 || plotArea.height <= 0) {
+        return null;
+    }
+
+    const x = plotArea.x + (plotArea.width / 2);
+
+    return (
+        <line
+            x1={x}
+            x2={x}
+            y1={plotArea.y}
+            y2={plotArea.y + plotArea.height}
+            stroke="#666"
+            strokeDasharray="6 6"
+            strokeWidth={2.5}
+            opacity={0.9}
+        />
+    );
+};
+
 const Chart = props => (
     <div style={{ width: '100%' }} data-testid={props.dataTestId}>
         <BlockTitle>
@@ -40,6 +64,7 @@ const Chart = props => (
             <LineChart data={props.data}>
 
                 <CartesianGrid strokeDasharray="3 3" />
+                <MidScaleLine />
 
                 <XAxis dataKey="name" />
                 <YAxis />
