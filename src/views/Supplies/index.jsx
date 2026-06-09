@@ -16,6 +16,7 @@ import Input from '../../components/Input';
 import { NavbarTitle, DeleteButton, AddButton, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
+import { PRODUCT_TYPES } from '../../entities/Model';
 import * as API from '../../entities/API';
 import { generateId, getLocation } from '../../utils';
 import { PresentationSelector } from '../../components/Selectors';
@@ -50,7 +51,7 @@ const Supplies = props => {
             key: generateId(),
             name: '',
             dose: '',
-            presentation: 0 // 0: ml/ha, 1: gr/ha, 2: ml/100L, 3: gr/100L
+            presentation: 0
         });
         model.update("products", temp);        
         setProducts(temp);
@@ -143,14 +144,23 @@ const Supplies = props => {
             return;
         }
 
-        const invalidProduct = products.find(prod => (
-            !prod ||
-            typeof prod.name !== 'string' ||
-            prod.name.trim().length === 0 ||
-            !Number.isFinite(Number(prod.dose)) ||
-            Number(prod.dose) <= 0 ||
-            !Number.isInteger(Number(prod.presentation))
-        ));
+        const invalidProduct = products.find(prod => {
+            if (!prod || typeof prod.name !== 'string' || prod.name.trim().length === 0) {
+                return true;
+            }
+
+            const dose = Number(prod.dose);
+            const presentation = Number(prod.presentation);
+            if (!Number.isFinite(dose) || dose <= 0) {
+                return true;
+            }
+
+            if (model.productType === PRODUCT_TYPES.SOLID) {
+                return !Number.isFinite(presentation) || presentation < 0;
+            }
+
+            return !Number.isInteger(presentation);
+        });
 
         if (invalidProduct) {
             Toast('error', 'Complete nombre, dosis y presentación válidos para cada insumo', 3000, 'bottom');
@@ -161,6 +171,7 @@ const Supplies = props => {
             A: workArea,
             T: tankCapacity,
             Va: workVolume,
+            productType: model.productType,
             products
         };
 
@@ -304,8 +315,8 @@ const Supplies = props => {
                                         slot="list"
                                         label="Dosis"
                                         type="number"
-                                        unit={API.presentationUnits[p.presentation]}
-                                        icon={model.productType === "solido" ? iconDoseSol : iconDoseLiq}
+                                        unit={model.productType === PRODUCT_TYPES.SOLID ? "kg/ha" : API.getProductDoseUnit(p, model.productType)}
+                                        icon={model.productType === PRODUCT_TYPES.SOLID ? iconDoseSol : iconDoseLiq}
                                         value={p.dose || ''}
                                         onInputClear={()=>setProductParams(index, "dose", "")}
                                         onChange={v=>setProductParams(index, "dose", parseFloat(v.target.value))}>
@@ -313,7 +324,8 @@ const Supplies = props => {
                                 </List>
                                 <PresentationSelector 
                                     value={p.presentation} 
-                                    onChange={v=>{setProductParams(index, "presentation", v)}}/>
+                                    productType={model.productType}
+                                    onChange={value=>setProductParams(index, "presentation", value)}/>
                             </CardContent>                    
                         </Card>
                     ))

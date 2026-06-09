@@ -1,4 +1,5 @@
 import { set2Decimals } from "../../utils";
+import { PRODUCT_TYPES } from "../Model";
 
 const isString = value => (typeof value === 'string' || value instanceof String) && value !== "";
 const isFloat = value => Number.isFinite(value);
@@ -93,7 +94,7 @@ const schemas = { // Esquemas de validación de parametros
         A: v => isPositiveFloat(v),
         T: v => isPositiveFloat(v),
         Va: v => isPositiveFloat(v),
-        products: v => v?.length > 0 && v.every(x => isPositiveFloat(x.dose) && isString(x.name) && Number.isInteger(x.presentation))
+        products: v => v?.length > 0 && v.every(x => isPositiveFloat(x.dose) && isString(x.name) && isFloat(x.presentation))
     }
 };
 
@@ -104,6 +105,22 @@ export const presentationUnits = [
     "gr/100l", // 3
     "l/ha"
 ];
+
+export const getProductDoseUnit = (prod, productType = PRODUCT_TYPES.LIQUID) => {
+    if(productType === PRODUCT_TYPES.SOLID) {
+        return "kg/ha";
+    }
+
+    return presentationUnits[prod.presentation] || "";
+};
+
+export const getProductQuantityLabel = (prod, productType = PRODUCT_TYPES.LIQUID) => {
+    if(productType === PRODUCT_TYPES.SOLID) {
+        return prod.presentation > 0 ? `envases de ${prod.presentation} kg` : "kg";
+    }
+
+    return ["l", "kg", "l", "kg", "l"][prod.presentation] || "";
+};
 
 
 /** Validación de lista de parametros */
@@ -305,7 +322,12 @@ export const computeSprayVolume = params => {
     return set2Decimals(vol);
 };
 
-const computeProductVolume = (prod, vol, Va) => { // Cantidad de insumo (gr, ml o l) por volumen de agua
+const computeProductVolume = (prod, vol, Va, productType) => { // Cantidad de insumo por volumen de carga
+    if(productType === PRODUCT_TYPES.SOLID) {
+        const quantity = vol * prod.dose / Va;
+        return prod.presentation > 0 ? quantity / prod.presentation : quantity;
+    }
+
     switch(prod.presentation) {
         case 0: // ml/ha
         case 1: // ml/100L
@@ -394,20 +416,21 @@ export const computeDistributionProfile = params => {
 export const computeSuppliesList = params => { // Lista de insumos y cargas para mezcla   
     const p = toFloat(params);
     checkParams(schemas.computeSuppliesList, p);
-    const { A, T, Va, products } = p;
+    const { A, T, Va, products, productType = PRODUCT_TYPES.LIQUID } = p;
     const Nc = A*Va/T; // Cantidad de cargas
     const Ncc = Math.floor(Nc); // Cantidad de cargas completas
     const Vf = (Nc - Ncc)*T; // Volumen fraccional [L]
     const Ncb = Math.ceil(Nc); // Cantidad de cargas balanceadas
     const Vcb = A*Va/Ncb; // Volumen de cargas balanceadas
     const Vftl = Vf/T < 0.2; // Detectar volumen fraccional total menor a 20%
+    const normalizeQuantity = value => productType === PRODUCT_TYPES.SOLID ? value : value / 1000;
     // Calcular cantidades de cada producto
     const pr = products.map(prod => ({
         ...prod, // Por comodidad, dejar resto de los detalles en este arreglo
-        cpp: computeProductVolume(prod, T, Va)/1000, // Cantidad por carga completa [l o kg]
-        cfc: computeProductVolume(prod, Vf, Va)/1000, // Cantidad por carga fraccional [l o kg]
-        ceq: computeProductVolume(prod, Vcb, Va)/1000, // Cantidad por carga equilibrada [l o kg]
-        total: computeProductVolume(prod, T, Va)*Nc/1000, // Cantidad total de insumo [l o kg]
+        cpp: normalizeQuantity(computeProductVolume(prod, T, Va, productType)), // Cantidad por carga completa
+        cfc: normalizeQuantity(computeProductVolume(prod, Vf, Va, productType)), // Cantidad por carga fraccional
+        ceq: normalizeQuantity(computeProductVolume(prod, Vcb, Va, productType)), // Cantidad por carga equilibrada
+        total: normalizeQuantity(computeProductVolume(prod, T, Va, productType))*Nc, // Cantidad total de insumo
     }));
-    return {pr, Nc, Ncc, Vf, Ncb, Vcb, Vftl};
+    return {pr, Nc, Ncc, Vf, Ncb, Vcb, Vftl, productType};
 };

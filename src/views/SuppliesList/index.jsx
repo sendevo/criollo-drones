@@ -4,6 +4,7 @@ import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons'
 import Input from '../../components/Input';
 import { SuppliesTable, PrescriptionTable } from '../../components/SuppliesTable';
 import { ModelCtx } from '../../context';
+import { PRODUCT_TYPES } from '../../entities/Model';
 import { formatNumber } from '../../utils';
 import iconReport from '../../assets/icons/reportes.png';
 import classes from './style.module.css';
@@ -27,6 +28,7 @@ const SuppliesList = props => {
         model.addSuppliesToReport({
             loadsText,
             loadBalancingEnabled,
+            productType: supplies.productType,
             pr: supplies.pr,
             lotName,
             lotCoordinates,
@@ -38,10 +40,15 @@ const SuppliesList = props => {
         f7.panel.open();
     };
 
+    const isSolid = model.supplies?.productType === PRODUCT_TYPES.SOLID;
+    const capacityUnit = isSolid ? "kg" : "l";
+    const doseUnit = isSolid ? "kg/ha" : "l/ha";
+    const tankUnit = isSolid ? "kilos" : "litros";
+
     const loadsText = model.loadBalancingEnabled ? 
-        model.supplies.Ncb+" carga(s) de " +Math.round(model.supplies.Vcb)+ " litros " 
+        model.supplies.Ncb+" carga(s) de " +Math.round(model.supplies.Vcb)+ " " + capacityUnit 
         : 
-        model.supplies.Ncc+" carga(s) completa(s)"+(model.supplies.Vf > 0 ? " y 1 fracción de carga de " +Math.round(model.supplies.Vf)+ " litros" : "");
+        model.supplies.Ncc+" carga(s) completa(s)"+(model.supplies.Vf > 0 ? " y 1 fracción de carga de " +Math.round(model.supplies.Vf)+ " " + capacityUnit : "");
 
     return (
         <Page>
@@ -68,12 +75,12 @@ const SuppliesList = props => {
                             <td>{model.workArea} ha</td>
                         </tr>
                         <tr>
-                            <td><b>Volumen de pulverización:</b></td>
-                            <td>{formatNumber(model.workVolume)} l/ha</td>
+                            <td><b>Dosis:</b></td>
+                            <td>{formatNumber(model.workVolume)} {doseUnit}</td>
                         </tr>
                         <tr>
                             <td><b>Capacidad del tanque:</b></td>
-                            <td>{model.capacity} litros</td>
+                            <td>{model.capacity} {tankUnit}</td>
                         </tr>
                         <tr>
                             <td><b>Cantidad de cargas:</b></td>

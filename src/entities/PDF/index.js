@@ -3,7 +3,7 @@ import vfs from "pdfmake/build/vfs_fonts.js";
 import moment from 'moment';
 import Toast from '../../components/Toast';
 import { formatNumber, handleSaveReport } from "../../utils";
-import { presentationUnits } from "../API";
+import { getProductDoseUnit, getProductQuantityLabel } from "../API";
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
@@ -261,12 +261,13 @@ const PDFExport = async (report, share) => {
             text: "Superficie: " + formatNumber(report.supplies.workArea) + " ha",
             style: "text"
         });
+        const isSolid = report.supplies.productType === "solido";
         reportContent.push({
-            text: "Volumen pulverizado: " + formatNumber(report.supplies.workVolume) + " l/ha",
+            text: "Dosis: " + formatNumber(report.supplies.workVolume) + (isSolid ? " kg/ha" : " l/ha"),
             style: "text"
         });
         reportContent.push({
-            text: "Capacidad tanque: " + formatNumber(report.supplies.capacity, 0) + " litros",
+            text: "Capacidad tanque: " + formatNumber(report.supplies.capacity, 0) + (isSolid ? " kg" : " litros"),
             style: "text"
         });
         reportContent.push({
@@ -296,7 +297,7 @@ const PDFExport = async (report, share) => {
         report.supplies.pr.forEach(prod => {            
             rows1.push( [
                 prod.name,
-                formatNumber(prod.dose, 2) + " " + presentationUnits[prod.presentation]
+                formatNumber(prod.dose, 2) + " " + getProductDoseUnit(prod, report.supplies.productType)
             ]);
         });
 
@@ -355,17 +356,17 @@ const PDFExport = async (report, share) => {
         ];
 
         report.supplies.pr.forEach(prod => {
-            const literPresIndex = [0,2,4].includes(prod.presentation);
-            const unit = literPresIndex ? " l" : " kg";
+            const unit = getProductQuantityLabel(prod, report.supplies.productType);
+            const formatQuantity = value => prod.presentation > 0 && report.supplies.productType === "solido" ? Math.ceil(value) : formatNumber(value, 1);
             rows2.push( report.supplies.loadBalancingEnabled ? [
                 prod.name,
-                formatNumber(prod.ceq, 1) + unit,
-                formatNumber(prod.total, 1) + unit
+                formatQuantity(prod.ceq) + " " + unit,
+                formatQuantity(prod.total) + " " + unit
             ]:[
                 prod.name,
-                formatNumber(prod.cpp, 1) + unit,
-                formatNumber(prod.cfc, 1) + unit,
-                formatNumber(prod.total, 1) + unit
+                formatQuantity(prod.cpp) + " " + unit,
+                formatQuantity(prod.cfc) + " " + unit,
+                formatQuantity(prod.total) + " " + unit
             ]);
         });
 

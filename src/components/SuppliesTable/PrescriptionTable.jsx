@@ -1,5 +1,5 @@
 import { Card } from "framework7-react";
-import { presentationUnits } from "../../entities/API";
+import { getProductDoseUnit } from "../../entities/API";
 import classes from './style.module.css';
 import { formatNumber } from '../../utils';
 
@@ -18,7 +18,7 @@ const PrescriptionTable = props => (
                 props.supplies.pr?.map((prod, index) => (
                     <tr key={index}>
                         <td>{prod.name}</td>
-                        <td>{formatNumber(prod.dose)} {presentationUnits[prod.presentation]}</td>
+                        <td>{formatNumber(prod.dose)} {getProductDoseUnit(prod, props.supplies.productType)}</td>
                     </tr>
                 ))
             }

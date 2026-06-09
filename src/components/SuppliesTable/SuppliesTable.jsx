@@ -1,4 +1,5 @@
 import { Card } from "framework7-react";
+import { getProductQuantityLabel } from "../../entities/API";
 import classes from './style.module.css';
 import { formatNumber } from '../../utils';
 
@@ -18,21 +19,14 @@ const SuppliesTable = props => (
             <tbody>
             {
                 props.supplies.pr?.map((prod, index) => {
-                    const presentations = [
-                        'l',
-                        'kg',
-                        'l',
-                        'kg',
-                        'l'
-                    ];
-                    const unit = presentations[prod.presentation];
+                    const unit = getProductQuantityLabel(prod, props.supplies.productType);
                     return (
                         <tr key={index}>
                             <td>{prod.name}</td>
-                            {!props.loadBalancing && <td>{formatNumber(prod.cpp)} {unit}</td>}
-                            {!props.loadBalancing && <td>{formatNumber(prod.cfc)} {unit}</td>}
-                            {props.loadBalancing && <td>{formatNumber(prod.ceq)} {unit}</td>}
-                            <td>{formatNumber(prod.total)} {unit}</td>
+                            {!props.loadBalancing && <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.cpp) : formatNumber(prod.cpp)} {unit}</td>}
+                            {!props.loadBalancing && <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.cfc) : formatNumber(prod.cfc)} {unit}</td>}
+                            {props.loadBalancing && <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.ceq) : formatNumber(prod.ceq)} {unit}</td>}
+                            <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.total) : formatNumber(prod.total)} {unit}</td>
                         </tr>
                     )}
                 )

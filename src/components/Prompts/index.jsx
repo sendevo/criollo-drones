@@ -94,7 +94,7 @@ export const nozzleCollectedPrompt = (row, callback) => {
     }).open();
 };
 
-export const openRecipientSizePrompt = callback => { 
+export const openRecipientSizePrompt = (callback, unit = "l") => { 
     // Modal ingreso de tamanio de recipiente
 
     const elId = "recipientsizeinput"; // Id del input
@@ -105,7 +105,7 @@ export const openRecipientSizePrompt = callback => {
                 <Input
                     label="Capacidad"
                     type="number"
-                    unit="l"
+                    unit={unit}
                     inputId={elId}
                 ></Input>
             </Row>

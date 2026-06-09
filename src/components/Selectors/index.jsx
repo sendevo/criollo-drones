@@ -1,6 +1,7 @@
 import { Block, Radio, Row, Col, BlockTitle } from 'framework7-react';
 import Typography from '../Typography';
 import { PRODUCT_TYPES } from '../../entities/Model';
+import { openRecipientSizePrompt } from '../Prompts';
 
 const ProductTypeSelector = ({value, onChange}) => {
 
@@ -88,48 +89,92 @@ const label = {
     color: "#777777"
 };
 
-const PresentationSelector = props => (
-    <div>
-        <Row style={{fontSize:"0.8em", marginBottom: 5, marginTop: 10}}>
-            <Col width={50}>
-                <div style={label}>
-                    Líquidos
-                </div>
-            </Col>
-            <Col width={50}>
-                <div style={label}>
-                    Sólidos
-                </div>
-            </Col>
-        </Row>
-        <Row style={{fontSize:"0.7em"}}>
-            <Col  width={25}>
-                <Radio 
-                    name="input-type" 
-                    checked={props.value === 0} 
-                    onChange={e=>props.onChange(0)}/> ml/ha
-            </Col>
-            <Col width={25}>
-                <Radio 
-                    name="input-type" 
-                    checked={props.value === 2} 
-                    onChange={e=>props.onChange(2)}/> ml/100l
-            </Col>
-            <Col  width={25}>
-                <Radio 
-                    name="input-type" 
-                    checked={props.value === 1} 
-                    onChange={e=>props.onChange(1)}/> gr/ha
-            </Col>
-            <Col width={25}>
-                <Radio 
-                    name="input-type" 
-                    checked={props.value === 3} 
-                    onChange={e=>props.onChange(3)}/> gr/100l
-            </Col>
-        </Row>
-    </div>
-);
+const PresentationSelector = ({value, onChange, productType}) => {
+    const setLiquidValue = selectedValue => {
+        onChange(selectedValue);
+    };
+
+    const setBulkValue = checked => {
+        if(checked) {
+            onChange(0);
+        }
+    };
+
+    const openPackagePrompt = checked => {
+        if(checked) {
+            openRecipientSizePrompt(v => onChange(v), productType === PRODUCT_TYPES.SOLID ? "kg" : "l");
+        }
+    };
+
+    if(productType === PRODUCT_TYPES.SOLID) {
+        return (
+            <Row style={{fontSize:"0.8em", marginTop: 10}}>
+                <Col width={33}>
+                    <div style={label}>
+                        Presentación
+                    </div>
+                </Col>
+                <Col width={33} style={{textAlign:"center"}}>
+                    <Radio
+                        name="input-type"
+                        checked={value === 0}
+                        onChange={e=>setBulkValue(e.target.checked)}/> A granel
+                </Col>
+                <Col width={33} style={{textAlign:"center"}}>
+                    <Radio
+                        name="input-type"
+                        checked={value > 0}
+                        onChange={e=>openPackagePrompt(e.target.checked)}/> En envase
+                    {value > 0 ? <br/> : null}
+                    {value > 0 ? <span style={{color:"darkgray"}}> (de {value} kg)</span> : null}
+                </Col>
+            </Row>
+        );
+    }
+
+    return (
+        <div>
+            <Row style={{fontSize:"0.8em", marginBottom: 5, marginTop: 10}}>
+                <Col width={50}>
+                    <div style={label}>
+                        Líquidos
+                    </div>
+                </Col>
+                <Col width={50}>
+                    <div style={label}>
+                        Sólidos
+                    </div>
+                </Col>
+            </Row>
+            <Row style={{fontSize:"0.7em"}}>
+                <Col  width={25}>
+                    <Radio 
+                        name="input-type" 
+                        checked={value === 0} 
+                        onChange={e=>setLiquidValue(0)}/> ml/ha
+                </Col>
+                <Col width={25}>
+                    <Radio 
+                        name="input-type" 
+                        checked={value === 2} 
+                        onChange={e=>setLiquidValue(2)}/> ml/100l
+                </Col>
+                <Col  width={25}>
+                    <Radio 
+                        name="input-type" 
+                        checked={value === 1} 
+                        onChange={e=>setLiquidValue(1)}/> gr/ha
+                </Col>
+                <Col width={25}>
+                    <Radio 
+                        name="input-type" 
+                        checked={value === 3} 
+                        onChange={e=>setLiquidValue(3)}/> gr/100l
+                </Col>
+            </Row>
+        </div>
+    );
+};
 
 
 const ElapsedSelector = props => {
