@@ -236,7 +236,7 @@ const Params = props => {
                             label="Velocidad"
                             name="workVelocity"
                             type="number"
-                            unit="m/s"
+                            unit="km/h"
                             icon={iconVel}
                             value={inputs.workVelocity}
                             onChange={v=>setMainParams('workVelocity', Math.abs(parseFloat(v.target.value)))}>

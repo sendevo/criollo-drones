@@ -42,7 +42,7 @@ const ParamsData = props => { // Encabezado para mostrar los parámetros operati
                             <td 
                                 data-testid="work-velocity-preview"
                                 style={dataCellStyle}>
-                                    {workVelocity} m/s
+                                    {workVelocity} km/h
                             </td>
                         </tr>
                         : null

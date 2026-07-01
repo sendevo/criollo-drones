@@ -75,7 +75,7 @@ const defaultFormParams = {
     lotCoordinates: [], // Coordenadas del lote
     lotName: '', // Nombre del lote
     workArea: '', // Superficie a trabajar (ha)
-    workVelocity: '', // Velocidad de trabajo (m/s)
+    workVelocity: '', // Velocidad de trabajo (km/h)
     recolected: '', // Cantidad recolectada (kg o l)
     recolectedTime: '', // Tiempo de recolección (s)
     workWidth: '', // Ancho de trabajo (m)

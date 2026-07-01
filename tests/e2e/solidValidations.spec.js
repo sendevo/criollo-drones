@@ -32,7 +32,7 @@ test.describe('Solid Validations', () => {
         await page.getByTestId('home-control-btn').click();
         await expect(page.getByTestId('solid-dose-preview')).toHaveText(`${params.dose_solid.toFixed(2)} kg/ha`);
         await expect(page.getByTestId('work-width-preview')).toHaveText(`${params.work_width} m`);
-        await expect(page.getByTestId('work-velocity-preview')).toHaveText(`${params.work_velocity} m/s`);
+        await expect(page.getByTestId('work-velocity-preview')).toHaveText(`${params.work_velocity} km/h`);
     });
 
     test('Should compute effective dose and difference', async ({ page }) => {

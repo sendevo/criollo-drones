@@ -44,7 +44,7 @@ const DataTable = props => ( // Tabla de resultados parciales
             <tr>
                 <th>#</th>
                 <th>Tiempo</th>
-                <th>velocidad</th>
+                <th>velocidad (km/h)</th>
             </tr>
         </thead>
         <tbody>
@@ -53,7 +53,7 @@ const DataTable = props => ( // Tabla de resultados parciales
                 <tr key={idx}>
                     <td>{idx+1}</td>
                     <td>{d.time/1000} seg.</td>
-                    <td>{d.vel.toFixed(2)} m/s</td>
+                    <td>{d.vel.toFixed(2)} km/h</td>
                 </tr>
             ))
         }
@@ -71,7 +71,7 @@ const OutputBlock = props => ( // Bloque con resultado final a exportar
                     value={props.output}
                     label="Vel. promedio"
                     type="number"
-                    unit="m/s"
+                    unit="km/h"
                     clearButton={false}
                 ></Input>
             </Col>
@@ -113,7 +113,7 @@ const Velocity = props => { // View
             setDistance(d); // Distancia en m
             setData(data.map(v => ({
                 time: v.time, // Tiempo en ms
-                vel: d/v.time*1000 // Velocidad en m/s
+                vel: d/v.time*3600 // Velocidad en km/h
             })));
         }else
             Toast("error", "Ingrese un valor de distancia mayor que 0 m", 2000, "center");
@@ -124,7 +124,7 @@ const Velocity = props => { // View
             const temp = [...data];
             temp.push({
                 time: time,
-                vel: distance/time*1000 // Velocidad en m/s
+                vel: distance/time*3600 // Velocidad en km/h
             });        
             setData(temp);
             setPushEnabled(false);
