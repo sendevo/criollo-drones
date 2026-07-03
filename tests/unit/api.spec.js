@@ -77,6 +77,24 @@ describe('API calculations', () => {
 		const invalid = API.computeDose({ work_velocity: 2, recolected_time: 0 });
 		expect(invalid.status).toBe('error');
 		expect(invalid.wrong_keys).toContain('recolected_time');
+		expect(invalid.wrong_keys).toContain('recolected');
+		expect(invalid.wrong_keys).toContain('work_width');
+		expect(invalid.wrong_keys).toContain('expected_dose');
+	});
+
+	it('computes dose using velocity in km/h', () => {
+		const result = API.computeDose({
+			recolected: 10,
+			work_velocity: 3.6,
+			recolected_time: 10,
+			work_width: 2,
+			expected_dose: 5000
+		});
+
+		expect(result.status).toBe('success');
+		expect(result.dose).toBeCloseTo(5000, 5);
+		expect(result.diffkg).toBeCloseTo(0, 5);
+		expect(result.diffp).toBeCloseTo(0, 5);
 	});
 
 	it('computes density from recolected and handles invalid params', () => {

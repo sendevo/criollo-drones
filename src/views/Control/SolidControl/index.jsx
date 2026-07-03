@@ -23,6 +23,18 @@ import trayAreaIcon from '../../../assets/icons/sup_bandeja.png';
 import trayCountIcon from '../../../assets/icons/cant_bandejas.png';
 import traySeparationIcon from '../../../assets/icons/dist_bandejas.png';
 
+const doseParamNames = {
+    recolected: "peso recolectado",
+    recolected_time: "tiempo",
+    work_velocity: "velocidad de trabajo",
+    work_width: "ancho de trabajo",
+    expected_dose: "dosis prevista"
+};
+
+const formatDoseWrongKeys = wrongKeys => wrongKeys
+    .map(key => doseParamNames[key] || key)
+    .join(", ");
+
 
 const SolidControl = () => {
 
@@ -185,7 +197,7 @@ const SolidControl = () => {
         const result = computeDose(params);
 
         if(result.status === "error"){
-            Toast("error", "Error al calcular la dosis. Verifique los datos ingresados.");
+            Toast("error", `Error al calcular la dosis. Verifique: ${formatDoseWrongKeys(result.wrong_keys)}.`);
             console.log("Wrong keys:", result.wrong_keys);
             return;
         }

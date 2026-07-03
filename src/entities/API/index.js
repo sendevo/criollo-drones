@@ -75,8 +75,11 @@ const schemas = { // Esquemas de validación de parametros
         vel: v => isPositiveFloat(v)
     },
     computeDose: {
+        recolected: v => isPositiveFloat(v),
         recolected_time: v =>  isPositiveFloat(v),
-        work_velocity: v => isPositiveFloat(v)
+        work_velocity: v => isPositiveFloat(v),
+        work_width: v => isPositiveFloat(v),
+        expected_dose: v => isPositiveFloat(v)
     },
     computeDensityFromRecolected: {
         tray_area: v => isPositiveFloat(v),
@@ -150,7 +153,11 @@ const parameterNames = { // Al costado, notación de la documentación
     tray_distance: "Distancia entre bandejas",
     pass_number: "Número de pasadas",
     work_width: "Ancho de trabajo",
-    work_pattern: "Patrón de trabajo"
+    work_pattern: "Patrón de trabajo",
+    recolected: "Peso recolectado",
+    recolected_time: "Tiempo",
+    work_velocity: "Velocidad de trabajo",
+    expected_dose: "Dosis prevista"
 };
 
 const getParameterNames = paramList => paramList.map(key => parameterNames[key]).join(", ");
