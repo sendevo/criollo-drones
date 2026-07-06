@@ -93,6 +93,11 @@ const schemas = { // Esquemas de validación de parametros
         work_width: v => isPositiveFloat(v),
         work_pattern: v => isString(v) && (v === "circular" || v === "lineal")
     },
+    sweepDistributionProfile: {
+        tray_data: v => Array.isArray(v) && v.length > 0 && v.every(x => isFloat(x)),
+        tray_distance: v => isPositiveFloat(v),
+        pass_number: v => isPositiveFloat(v)
+    },
     computeSuppliesList: {
         A: v => isPositiveFloat(v),
         T: v => isPositiveFloat(v),
@@ -418,6 +423,60 @@ export const computeDistributionProfile = params => {
     const cv = avg === 0 ? 0 : dst/avg*100; // Coeficiente de variacion
 
     return {status: "success", solidProfile, avg, dst, cv};
+};
+
+export const sweepDistributionProfile = params => {
+    const p = toFloat(params);
+
+    const wrongKeys = checkParams(schemas.sweepDistributionProfile, p);
+    if(wrongKeys && wrongKeys.length > 0) {
+        return {
+            status: "error",
+            wrongKeys: parameterNames[wrongKeys[0]]
+        };
+    }
+
+    const {tray_data, tray_distance, pass_number} = p;
+    const workWidthMin = tray_distance;
+    const workWidthMax = tray_data.length * tray_distance;
+
+    const lineal = [];
+    const circular = [];
+
+    for(let work_width = workWidthMin; work_width <= workWidthMax + Number.EPSILON; work_width += tray_distance) {
+        lineal.push({
+            ...computeDistributionProfile({
+                tray_data,
+                tray_distance,
+                pass_number,
+                work_width,
+                work_pattern: "lineal"
+            }),
+            work_width
+        });
+
+        circular.push({
+            ...computeDistributionProfile({
+                tray_data,
+                tray_distance,
+                pass_number,
+                work_width,
+                work_pattern: "circular"
+            }),
+            work_width
+        });
+    }
+
+    return {
+        status: "success",
+        lineal,
+        circular,
+        wwRange: {
+            min: workWidthMin,
+            max: workWidthMax,
+            step: tray_distance
+        }
+    };
 };
 
 export const computeSuppliesList = params => { // Lista de insumos y cargas para mezcla   

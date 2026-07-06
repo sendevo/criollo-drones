@@ -15,8 +15,8 @@ import { ModelCtx } from '../../../context/index.js';
 import ParamsData from './paramsData.jsx';
 import ValidationOutput from './validationOutput.jsx';
 import DistributionControl from '../DistributionControl';
-import { computeDistributionProfile, computeDose } from '../../../entities/API/index.js';
-import { set2Decimals } from '../../../utils/index.js';
+import { computeDose, sweepDistributionProfile } from '../../../entities/API/index.js';
+import { getClosest, set2Decimals } from '../../../utils/index.js';
 import timeIcon from '../../../assets/icons/tiempo.png';
 import solidRecolectedIcon from '../../../assets/icons/peso_recolectado.png';
 import trayAreaIcon from '../../../assets/icons/sup_bandeja.png';
@@ -58,6 +58,8 @@ const SolidControl = () => {
         trayData: model.trayData || [],
 
         profileComputed: false,
+        profileSweep: null,
+        workPattern: model.workPattern || 'lineal',
         solidProfile: model.solidProfile || [],
         avgDist: model.avgDist || null,
         stdDist: model.stdDist || null,
@@ -108,6 +110,7 @@ const SolidControl = () => {
             setInputs(prevState => ({ 
                 ...prevState, 
                 profileComputed: false,
+                profileSweep: null,
                 avgDist: null,
                 stdDist: null,
                 cvDist: null,
@@ -124,6 +127,64 @@ const SolidControl = () => {
         setInputs(prevState => ({ ...prevState, trayData: updatedTrayData }));
     };
 
+    const getSelectedProfile = (profiles, preferredWidth) => {
+        if(!profiles || profiles.length === 0) {
+            return null;
+        }
+
+        const parsedWidth = parseFloat(preferredWidth);
+        if(!Number.isFinite(parsedWidth)) {
+            return profiles[0];
+        }
+
+        return getClosest(profiles, 'work_width', parsedWidth) || profiles[0];
+    };
+
+    const applyProfileSelection = (nextPattern, preferredWidth, sweepData = inputs.profileSweep) => {
+        const selectedPattern = nextPattern || inputs.workPattern;
+        const profiles = sweepData?.[selectedPattern] || [];
+        const selectedProfile = getSelectedProfile(profiles, preferredWidth);
+
+        if(!selectedProfile || selectedProfile.status === 'error') {
+            return;
+        }
+
+        const selectedWidth = selectedProfile.work_width;
+
+        setInputs(prevState => ({
+            ...prevState,
+            workPattern: selectedPattern,
+            workWidth: selectedWidth,
+            solidProfile: selectedProfile.solidProfile,
+            avgDist: selectedProfile.avg,
+            stdDist: selectedProfile.dst,
+            cvDist: selectedProfile.cv,
+            profileComputed: true
+        }));
+
+        setDistributionOutputs(prevState => ({
+            ...prevState,
+            effective_dose: selectedProfile.avg
+        }));
+
+        model.update({
+            workPattern: selectedPattern,
+            workWidth: selectedWidth,
+            solidProfile: selectedProfile.solidProfile,
+            avgDist: selectedProfile.avg,
+            stdDist: selectedProfile.dst,
+            cvDist: selectedProfile.cv
+        });
+    };
+
+    const handlePatternChange = pattern => {
+        applyProfileSelection(pattern, inputs.workWidth);
+    };
+
+    const handleWorkWidthChange = workWidth => {
+        applyProfileSelection(inputs.workPattern, workWidth);
+    };
+
     const handleComputeProfile = () => {
         if(inputs.trayData.length === 0){
             Toast("error", "No hay datos de bandejas para calcular el perfil");
@@ -133,29 +194,36 @@ const SolidControl = () => {
         const tray_data = inputs.trayData.map(tray => tray.collected);
         const tray_distance = inputs.traySeparation;
         const pass_number = 1;
-        const work_width = inputs.workWidth;
-        const work_pattern = "lineal"; // ida y vuelta (lineal) o circular
 
         try {
 
-            const result = computeDistributionProfile({
+            const result = sweepDistributionProfile({
                 tray_data,
                 tray_distance,
-                pass_number,
-                work_width,
-                work_pattern
+                pass_number
             });
 
             if(result.status === "error") {
                 Toast("error", `Error en parámetros: ${result.wrongKeys}`);
                 return;
             }else{
-                const {solidProfile, avg, std, cv} = result;
+                const workPattern = inputs.workPattern || 'lineal';
+                const selectedProfile = getSelectedProfile(result[workPattern], inputs.workWidth);
+
+                if(!selectedProfile || selectedProfile.status === 'error') {
+                    Toast("error", "No se pudo seleccionar un ancho de labor válido");
+                    return;
+                }
+
+                const {solidProfile, avg, dst, cv, work_width} = selectedProfile;
                 setInputs(prevState => ({ 
                     ...prevState, 
+                    profileSweep: result,
+                    workPattern,
+                    workWidth: work_width,
                     solidProfile: solidProfile,
                     avgDist: avg,
-                    stdDist: std,
+                    stdDist: dst,
                     cvDist: cv,
                     profileComputed: true
                 }));
@@ -164,9 +232,11 @@ const SolidControl = () => {
                     effective_dose: avg
                 }));
                 model.update({
+                    workPattern,
+                    workWidth: work_width,
                     solidProfile,
                     avgDist: avg,
-                    stdDist: std,
+                    stdDist: dst,
                     cvDist: cv
                 });
             }
@@ -219,12 +289,22 @@ const SolidControl = () => {
     const handleClearDistrForm = () => {
         setInputs(prevState => ({ 
             ...prevState, 
+            profileComputed: false,
+            profileSweep: null,
+            solidProfile: [],
+            avgDist: null,
+            stdDist: null,
+            cvDist: null,
             trayArea: '',
             trayCount: '',
             traySeparation: '',
             trayData: [] 
         }));
         model.update({
+            solidProfile: [],
+            avgDist: null,
+            stdDist: null,
+            cvDist: null,
             trayArea: '',
             trayCount: '',
             traySeparation: '',
@@ -233,8 +313,9 @@ const SolidControl = () => {
     };
 
     const chartData = inputs.trayData.map( (tray, index) => ({ 
-        name: `Band. ${index + 1}`, 
-        recolectado: set2Decimals(tray.collected * 10 / inputs.trayArea) // Convertir a kg/ha
+        name: `${index + 1}`, 
+        //recolectado: set2Decimals(tray.collected * 10 / inputs.trayArea) // Convertir a kg/ha
+        recolectado: set2Decimals(tray.collected)
     }));
 
     return (
@@ -364,7 +445,11 @@ const SolidControl = () => {
                     outputs={distributionOutputs}
                     chartData={chartData}
                     productType={inputs.productType}
+                    selectedWorkPattern={inputs.workPattern}
+                    workWidthOptions={inputs.profileSweep?.[inputs.workPattern] || []}
                     handleTrayAddCollected={handleTrayAddCollected}
+                    onPatternChange={handlePatternChange}
+                    onWorkWidthChange={handleWorkWidthChange}
                     handleComputeProfile={handleComputeProfile}
                     handleClearDistrForm={handleClearDistrForm}/>
             }

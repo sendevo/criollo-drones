@@ -54,7 +54,7 @@ const ResultsProfile = ({inputs, outputs, productType}) => {
                     <tr>
                         <td style={fieldCellStyle}><b>Promedio:</b></td>
                         <td style={dataCellStyle} data-testid="distribution-average-output">
-                            {avg?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "ml" : "gr"}
+                            {avg?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "gotas/cm²" : "gr"}
                         </td>
                     </tr>                        
                     <tr>

@@ -21,7 +21,7 @@ import Typography from "../../../components/Typography";
 import NozzlesTable from "../../../components/NozzlesTable";
 import Timer from "../../../entities/Timer";
 import * as API from '../../../entities/API/index.js';
-import { arrayAvg, formatNumber, set2Decimals } from "../../../utils";
+import { arrayAvg, formatNumber, getClosest, set2Decimals } from "../../../utils";
 import iconFlow from "../../../assets/icons/caudal.png";
 import iconNumber from "../../../assets/icons/cant_picos.png";
 import oneSfx from '../../../assets/sounds/uno.mp3';
@@ -56,7 +56,13 @@ const LiquidControl = props => {
         cardSeparation: model.cardSeparation || '',
         cardData: model.cardData || [],
         
-        profileComputed: false
+        profileComputed: false,
+        profileSweep: null,
+        workPattern: model.workPattern || 'lineal',
+        cardProfile: model.cardProfile || [],
+        avgDist: model.avgDist || null,
+        stdDist: model.stdDist || null,
+        cvDist: model.cvDist || null
     });
 
     const [firstRound, setFirstRound] = useState(true); // Muestra indicativo la primera vez
@@ -74,8 +80,8 @@ const LiquidControl = props => {
     });
 
     const [distributionOutputs, setDistributionOutputs] = useState({
-        expected_dose: model.doseSolid || '',
-        effective_dose: model.effectiveDose || '',
+        expected_dose: model.doseLiquid || '',
+        effective_dose: model.verificationOutput?.effectiveSprayVolume || '',
     });
     
     // Estado del timer
@@ -215,6 +221,13 @@ const LiquidControl = props => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        setDistributionOutputs({
+            expected_dose: inputs.doseLiquid || '',
+            effective_dose: outputs.effectiveSprayVolume || ''
+        });
+    }, [inputs.doseLiquid, outputs.effectiveSprayVolume]);
+
     const onTimeout = () => {
         KeepAwake.allowSleep();
         setRunning(false);        
@@ -308,19 +321,137 @@ const LiquidControl = props => {
         }));
     };
 
+    const getSelectedProfile = (profiles, preferredWidth) => {
+        if(!profiles || profiles.length === 0) {
+            return null;
+        }
+
+        const parsedWidth = parseFloat(preferredWidth);
+        if(!Number.isFinite(parsedWidth)) {
+            return profiles[0];
+        }
+
+        return getClosest(profiles, 'work_width', parsedWidth) || profiles[0];
+    };
+
+    const applyProfileSelection = (nextPattern, preferredWidth, sweepData = inputs.profileSweep) => {
+        const selectedPattern = nextPattern || inputs.workPattern;
+        const profiles = sweepData?.[selectedPattern] || [];
+        const selectedProfile = getSelectedProfile(profiles, preferredWidth);
+
+        if(!selectedProfile || selectedProfile.status === 'error') {
+            return;
+        }
+
+        const selectedWidth = selectedProfile.work_width;
+
+        setInputs(prevState => ({
+            ...prevState,
+            workPattern: selectedPattern,
+            workWidth: selectedWidth,
+            cardProfile: selectedProfile.solidProfile,
+            avgDist: selectedProfile.avg,
+            stdDist: selectedProfile.dst,
+            cvDist: selectedProfile.cv,
+            profileComputed: true
+        }));
+
+        model.update({
+            workPattern: selectedPattern,
+            workWidth: selectedWidth,
+            cardProfile: selectedProfile.solidProfile,
+            avgDist: selectedProfile.avg,
+            stdDist: selectedProfile.dst,
+            cvDist: selectedProfile.cv
+        });
+    };
+
+    const handlePatternChange = pattern => {
+        applyProfileSelection(pattern, inputs.workWidth);
+    };
+
+    const handleWorkWidthChange = workWidth => {
+        applyProfileSelection(inputs.workPattern, workWidth);
+    };
+
     const handleComputeProfile = () => {
-        Toast("info", "Funcionalidad en desarrollo", 2000);
+        if(inputs.cardData.length === 0){
+            Toast("error", "No hay datos de tarjetas para calcular el perfil");
+            return;
+        }
+
+        if(!inputs.cardArea || inputs.cardArea <= 0) {
+            Toast("error", "Indique una superficie de tarjeta válida");
+            return;
+        }
+
+        const cardDensityData = inputs.cardData.map(card => card.collected / inputs.cardArea);
+
+        try {
+            const result = API.sweepDistributionProfile({
+                tray_data: cardDensityData,
+                tray_distance: inputs.cardSeparation,
+                pass_number: 1
+            });
+
+            if(result.status === "error") {
+                Toast("error", `Error en parámetros: ${result.wrongKeys}`);
+                return;
+            }
+
+            const workPattern = inputs.workPattern || 'lineal';
+            const selectedProfile = getSelectedProfile(result[workPattern], inputs.workWidth);
+
+            if(!selectedProfile || selectedProfile.status === 'error') {
+                Toast("error", "No se pudo seleccionar un ancho de labor válido");
+                return;
+            }
+
+            const {solidProfile, avg, dst, cv, work_width} = selectedProfile;
+            setInputs(prevState => ({
+                ...prevState,
+                profileSweep: result,
+                workPattern,
+                workWidth: work_width,
+                cardProfile: solidProfile,
+                avgDist: avg,
+                stdDist: dst,
+                cvDist: cv,
+                profileComputed: true
+            }));
+
+            model.update({
+                workPattern,
+                workWidth: work_width,
+                cardProfile: solidProfile,
+                avgDist: avg,
+                stdDist: dst,
+                cvDist: cv
+            });
+        } catch (error) {
+            Toast("error", "Error al calcular el perfil de distribución");
+        }
     };
 
     const handleClearDistrForm = () => {
         setInputs(prevState => ({ 
             ...prevState, 
+            profileComputed: false,
+            profileSweep: null,
+            cardProfile: [],
+            avgDist: null,
+            stdDist: null,
+            cvDist: null,
             cardData: [],
             cardCount: '',
             cardArea: '',
             cardSeparation: ''
         }));
         model.update({
+            cardProfile: [],
+            avgDist: null,
+            stdDist: null,
+            cvDist: null,
             cardData: [],
             cardCount: '',
             cardArea: '',
@@ -354,6 +485,7 @@ const LiquidControl = props => {
             setInputs(prevState => ({ 
                 ...prevState, 
                 profileComputed: false,
+                profileSweep: null,
                 avgDist: null,
                 stdDist: null,
                 cvDist: null,
@@ -364,7 +496,7 @@ const LiquidControl = props => {
     };
 
     const chartData = inputs.cardData.map( (tray, index) => ({ 
-        name: `Tarj. ${index + 1}`, 
+        name: `${index + 1}`, 
         recolectado: set2Decimals(tray.collected / inputs.cardArea) // Convertir a gotas/cm2
     }));
 
@@ -485,7 +617,11 @@ const LiquidControl = props => {
                     outputs={distributionOutputs}
                     chartData={chartData}
                     productType={inputs.productType}
+                    selectedWorkPattern={inputs.workPattern}
+                    workWidthOptions={inputs.profileSweep?.[inputs.workPattern] || []}
                     handleTrayAddCollected={handleCardAddCollected}
+                    onPatternChange={handlePatternChange}
+                    onWorkWidthChange={handleWorkWidthChange}
                     handleComputeProfile={handleComputeProfile}
                     handleClearDistrForm={handleClearDistrForm}/>
             }

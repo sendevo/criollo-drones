@@ -143,6 +143,30 @@ describe('API calculations', () => {
 		expect(invalid.wrongKeys).toBeTypeOf('string');
 	});
 
+	it('sweeps distribution profile by work width and pattern', () => {
+		const result = API.sweepDistributionProfile({
+			tray_data: [10, 20, 30],
+			tray_distance: 1,
+			pass_number: 1
+		});
+
+		expect(result.status).toBe('success');
+		expect(result.wwRange).toEqual({ min: 1, max: 3, step: 1 });
+		expect(result.lineal).toHaveLength(3);
+		expect(result.circular).toHaveLength(3);
+		expect(result.lineal[2].work_width).toBe(3);
+		expect(result.lineal[2].solidProfile).toEqual([10, 20, 30]);
+
+		const invalid = API.sweepDistributionProfile({
+			tray_data: [],
+			tray_distance: 1,
+			pass_number: 1
+		});
+
+		expect(invalid.status).toBe('error');
+		expect(invalid.wrongKeys).toBeTypeOf('string');
+	});
+
 	it('computes supplies list', () => {
 		const result = API.computeSuppliesList({
 			A: 100,

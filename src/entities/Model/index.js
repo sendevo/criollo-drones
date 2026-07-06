@@ -98,6 +98,7 @@ const defaultFormParams = {
     trayCount: '', // Cantidad de bandejas
     traySeparation: '', // Separacion entre bandejas (m)
     trayData: [], // Datos de bandejas de muestreo
+    workPattern: 'lineal', // Patrón de trabajo para perfil de distribución
     solidProfile: [], // Perfil de distribucion (gr por bandeja)
     avgDist: '', // Promedio de distribucion (gr)
     stdDist: '', // Desviacion estandar de distribucion (gr)

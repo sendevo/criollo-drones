@@ -215,5 +215,42 @@ const ElapsedSelector = props => {
     );
 };
 
+const PatternSelector = props => {
 
-export { ProductTypeSelector, NozzleSeparationSelector, PresentationSelector, ElapsedSelector };
+    const setPattern = (el, value) => {
+        if(el.target.checked) {
+            props.onChange(value);
+        }
+    };
+
+    return (
+        <Block style={{margin:"0px"}}>
+            <BlockTitle>
+                <Typography variant='subtitle'>Patrón de fertilización</Typography>
+            </BlockTitle>
+            <Row>
+                <Col style={{textAlign:"center"}}>
+                    <Radio
+                        name="input-type"
+                        checked={props.pattern === "lineal"}
+                        onChange={e=>setPattern(e, "lineal")}/> Ida y vuelta
+                </Col>
+                <Col style={{textAlign:"center"}}>
+                    <Radio
+                        name="input-type"
+                        checked={props.pattern === "circular"}
+                        onChange={e=>setPattern(e, "circular")}/> En círculos
+                </Col>
+            </Row>
+        </Block>
+    );
+};
+
+
+export {
+    ProductTypeSelector,
+    NozzleSeparationSelector,
+    PresentationSelector,
+    ElapsedSelector,
+    PatternSelector
+};
