@@ -344,6 +344,7 @@ const LiquidControl = props => {
         }
 
         const selectedWidth = selectedProfile.work_width;
+        const effectiveDose = Number.isFinite(selectedProfile.avg) ? selectedProfile.avg : 0;
 
         setInputs(prevState => ({
             ...prevState,
@@ -356,13 +357,19 @@ const LiquidControl = props => {
             profileComputed: true
         }));
 
+        setDistributionOutputs(prevState => ({
+            ...prevState,
+            effective_dose: effectiveDose
+        }));
+
         model.update({
             workPattern: selectedPattern,
             workWidth: selectedWidth,
             cardProfile: selectedProfile.solidProfile,
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
-            cvDist: selectedProfile.cv
+            cvDist: selectedProfile.cv,
+            effectiveDose
         });
     };
 
@@ -495,10 +502,15 @@ const LiquidControl = props => {
         }
     };
 
-    const chartData = inputs.cardData.map( (tray, index) => ({ 
-        name: `${index + 1}`, 
-        recolectado: set2Decimals(tray.collected / inputs.cardArea) // Convertir a gotas/cm2
-    }));
+    const chartData = inputs.profileComputed && inputs.cardProfile?.length > 0
+        ? inputs.cardProfile.map((value, index) => ({
+            name: `${index + 1}`,
+            recolectado: set2Decimals(value)
+        }))
+        : inputs.cardData.map((tray, index) => ({ 
+            name: `${index + 1}`, 
+            recolectado: set2Decimals(tray.collected / inputs.cardArea) // Convertir a gotas/cm2
+        }));
 
     return (
         <div>

@@ -150,6 +150,7 @@ const SolidControl = () => {
         }
 
         const selectedWidth = selectedProfile.work_width;
+        const effectiveDose = Number.isFinite(selectedProfile.avg) ? selectedProfile.avg : 0;
 
         setInputs(prevState => ({
             ...prevState,
@@ -164,7 +165,7 @@ const SolidControl = () => {
 
         setDistributionOutputs(prevState => ({
             ...prevState,
-            effective_dose: selectedProfile.avg
+            effective_dose: effectiveDose
         }));
 
         model.update({
@@ -173,7 +174,8 @@ const SolidControl = () => {
             solidProfile: selectedProfile.solidProfile,
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
-            cvDist: selectedProfile.cv
+            cvDist: selectedProfile.cv,
+            effectiveDose
         });
     };
 
@@ -312,11 +314,16 @@ const SolidControl = () => {
         });
     };
 
-    const chartData = inputs.trayData.map( (tray, index) => ({ 
-        name: `${index + 1}`, 
-        //recolectado: set2Decimals(tray.collected * 10 / inputs.trayArea) // Convertir a kg/ha
-        recolectado: set2Decimals(tray.collected)
-    }));
+    const chartData = inputs.profileComputed && inputs.solidProfile?.length > 0
+        ? inputs.solidProfile.map((value, index) => ({
+            name: `${index + 1}`,
+            recolectado: set2Decimals(value)
+        }))
+        : inputs.trayData.map((tray, index) => ({ 
+            name: `${index + 1}`, 
+            //recolectado: set2Decimals(tray.collected * 10 / inputs.trayArea) // Convertir a kg/ha
+            recolectado: set2Decimals(tray.collected)
+        }));
 
     return (
         <div>
