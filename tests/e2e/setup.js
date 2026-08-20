@@ -18,8 +18,8 @@ export async function fillParamsForm(page, params) { // Completar formulario de 
     } else {
         await page.locator('[data-test-id="product-type-liquid-radio"] i').click();
     }
-    await page.getByRole('textbox').click();
-    await page.getByRole('textbox').fill(lot_name);
+    await page.getByTestId('input-lot-name').getByRole('textbox').click();
+    await page.getByTestId('input-lot-name').getByRole('textbox').fill(lot_name);
     await page.getByTestId('input-work-area').getByRole('spinbutton').click();
     await page.getByTestId('input-work-area').getByRole('spinbutton').fill(work_area.toString());
     if(product_type === "liquid"){
