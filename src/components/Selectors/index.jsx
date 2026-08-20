@@ -217,8 +217,8 @@ const ElapsedSelector = props => {
 
 const PatternSelector = props => {
 
-    const setPattern = (el, value) => {
-        if(el.target.checked) {
+    const setPattern = value => {
+        if (typeof props.onChange === 'function') {
             props.onChange(value);
         }
     };
@@ -233,13 +233,13 @@ const PatternSelector = props => {
                     <Radio
                         name="input-type"
                         checked={props.pattern === "lineal"}
-                        onChange={e=>setPattern(e, "lineal")}/> Ida y vuelta
+                        onChange={() => setPattern("lineal")}/> Ida y vuelta
                 </Col>
                 <Col style={{textAlign:"center"}}>
                     <Radio
                         name="input-type"
                         checked={props.pattern === "circular"}
-                        onChange={e=>setPattern(e, "circular")}/> En círculos
+                        onChange={() => setPattern("circular")}/> En círculos
                 </Col>
             </Row>
         </Block>

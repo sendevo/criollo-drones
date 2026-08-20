@@ -13,12 +13,18 @@ export const PRODUCT_TYPES = {
     LIQUID: "liquido"
 };
 
+export const SEEDING_DENSITY_UNITS = {
+    KG_HA: "Kg/ha",
+    SEM_HA: "Semillas/ha",
+    SEM_VBLES_HA: "Semillas viables/ha",
+    POBL_OBJ: "Pobl. objetivo (pl/ha)"
+};
+
 // Lista de versiones
 const DB_NAMES = [
     "criollo_drones_1"
     //"criollo_drones_2" // Descomentar para migraciones posteriores
 ];
-
 
 const migrationFunctions = [
     //oldData => oldData // Descomentar para migraciones posteriores
@@ -82,6 +88,16 @@ const defaultFormParams = {
     flightAltitude: '', // Altitud de vuelo (m)
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
+
+    seedVariety: '', // Variedad de semilla (para productos solidos)
+    seedName: '', // Nombre de semilla (para productos solidos)
+    seedP1000: '', // Peso de 1000 semillas (para productos solidos)
+    seedPurity: 100, // Pureza de semilla (para productos solidos)
+    seedPG: 100, // Poder germinativo de semilla (para productos solidos)
+    plantingEfficiency: 100, // Eficiencia de siembra (para productos solidos)
+
+    seedingDensity: '', // Densidad de siembra (semillas/ha) (para productos solidos)
+    seedingDensityUnit: 'Kg/ha', // Unidad de densidad de siembra (para productos solidos)
 
     nozzleCnt: '', // Cantidad de picos
     controlNozzleCnt: '', // Cantidad de picos a controlar (jarreo)
