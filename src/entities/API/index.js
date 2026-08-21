@@ -490,6 +490,14 @@ export const computeSuppliesList = params => { // Lista de insumos y cargas para
     const Vcb = A*Va/Ncb; // Volumen de cargas balanceadas
     const Vftl = Vf/T < 0.2; // Detectar volumen fraccional total menor a 20%
     const normalizeQuantity = value => productType === PRODUCT_TYPES.SOLID ? value : value / 1000;
+    const getLiquidVolume = (prod, volume) => {
+        if (prod.presentation === 2 || prod.presentation === 3) {
+            return 0;
+        }
+
+        return computeProductVolume(prod, volume, Va, productType) / 1000;
+    };
+    const getMixtureProductVolume = volume => products.reduce((acc, prod) => acc + getLiquidVolume(prod, volume), 0);
     // Calcular cantidades de cada producto
     const pr = products.map(prod => ({
         ...prod, // Por comodidad, dejar resto de los detalles en este arreglo
@@ -498,5 +506,22 @@ export const computeSuppliesList = params => { // Lista de insumos y cargas para
         ceq: normalizeQuantity(computeProductVolume(prod, Vcb, Va, productType)), // Cantidad por carga equilibrada
         total: normalizeQuantity(computeProductVolume(prod, T, Va, productType))*Nc, // Cantidad total de insumo
     }));
+
+    if (productType === PRODUCT_TYPES.LIQUID) {
+        const water = {
+            key: 'water',
+            name: 'Agua',
+            dose: 0,
+            presentation: 4,
+            cpp: set2Decimals(Math.max(0, T - getMixtureProductVolume(T))),
+            cfc: set2Decimals(Math.max(0, Vf - getMixtureProductVolume(Vf))),
+            ceq: set2Decimals(Math.max(0, Vcb - getMixtureProductVolume(Vcb))),
+            total: set2Decimals(Math.max(0, A * Va - getMixtureProductVolume(A * Va))),
+            isWater: true
+        };
+
+        pr.push(water);
+    }
+
     return {pr, Nc, Ncc, Vf, Ncb, Vcb, Vftl, productType};
 };

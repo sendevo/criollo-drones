@@ -118,9 +118,7 @@ const Supplies = props => {
             model.doseSolid,
             model.verificationOutput?.effectiveSprayVolume,
             model.verificationOutput?.expectedSprayVolume
-        ]
-            .map(parseNumeric)
-            .filter(v => Number.isFinite(v) && v > 0);
+        ].map(parseNumeric).filter(v => Number.isFinite(v) && v > 0);
 
         const workVolume = workVolumeCandidates[0];
 

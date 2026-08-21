@@ -294,7 +294,7 @@ const PDFExport = async (report, share) => {
             ]
         ];
 
-        report.supplies.pr.forEach(prod => {            
+        report.supplies.pr.filter(prod => !prod.isWater).forEach(prod => {            
             rows1.push( [
                 prod.name,
                 formatNumber(prod.dose, 2) + " " + getProductDoseUnit(prod, report.supplies.productType)

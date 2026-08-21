@@ -15,7 +15,7 @@ const PrescriptionTable = props => (
             
             <tbody>
             {
-                props.supplies.pr?.map((prod, index) => (
+                props.supplies.pr?.filter(prod => !prod.isWater).map((prod, index) => (
                     <tr key={index}>
                         <td>{prod.name}</td>
                         <td>{formatNumber(prod.dose)} {getProductDoseUnit(prod, props.supplies.productType)}</td>

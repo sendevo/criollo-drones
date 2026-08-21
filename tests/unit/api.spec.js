@@ -173,7 +173,8 @@ describe('API calculations', () => {
 			T: 200,
 			Va: 2,
 			products: [
-				{ name: 'Producto A', dose: 100, presentation: 0 }
+				{ name: 'Producto A', dose: 100, presentation: 0 },
+				{ name: 'Producto B', dose: 50, presentation: 2 }
 			]
 		});
 
@@ -183,10 +184,13 @@ describe('API calculations', () => {
 		expect(result.Ncb).toBe(1);
 		expect(result.Vcb).toBeCloseTo(200, 5);
 		expect(result.Vftl).toBe(true);
-		expect(result.pr).toHaveLength(1);
+		expect(result.pr).toHaveLength(3);
 		expect(result.pr[0].cpp).toBeCloseTo(10, 5);
 		expect(result.pr[0].cfc).toBeCloseTo(0, 5);
 		expect(result.pr[0].ceq).toBeCloseTo(10, 5);
 		expect(result.pr[0].total).toBeCloseTo(10, 5);
+		expect(result.pr[2].isWater).toBe(true);
+		expect(result.pr[2].cpp).toBeCloseTo(190, 5);
+		expect(result.pr[2].total).toBeCloseTo(190, 5);
 	});
 });
