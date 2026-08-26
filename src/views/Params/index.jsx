@@ -12,7 +12,7 @@ import {
     BlockTitle
 } from 'framework7-react';
 import { useContext, useEffect, useState } from 'react';
-import { NavbarTitle, BackButton, CalculatorButton, NAVBAR_STYLE } from '../../components/Buttons';
+import { NavbarTitle, BackButton, CalculatorButton, TimerButton, NAVBAR_STYLE } from '../../components/Buttons';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
@@ -245,7 +245,7 @@ const Params = props => {
                                         name="seedVariety"
                                         type="text"
                                         value={inputs.seedVariety}
-                                        onChange={v=>console.log(v)}>
+                                        onChange={v=>setMainParams('seedVariety', v.target.value)}>
                                     </Input>    
 
                                     <Row slot="list">
@@ -270,7 +270,7 @@ const Params = props => {
                                                 type="number"
                                                 unit="g"
                                                 value={inputs.seedP1000}
-                                                onChange={v=>console.log(v)}>
+                                                onChange={v=>setMainParams('seedP1000', Math.abs(parseFloat(v.target.value)))}>
                                             </Input>    
                                         </Col>
                                     </Row>
@@ -285,7 +285,7 @@ const Params = props => {
                                                 type="number"
                                                 unit="%"
                                                 value={inputs.seedPurity}
-                                                onChange={v=>console.log(v)}>
+                                                onChange={v=>setMainParams('seedPurity', Math.abs(parseFloat(v.target.value)))}>
                                             </Input>    
                                         </Col>
 
@@ -298,7 +298,7 @@ const Params = props => {
                                                 type="number"
                                                 unit="%"
                                                 value={inputs.seedPG}
-                                                onChange={v=>console.log(v)}>
+                                                onChange={v=>setMainParams('seedPG', Math.abs(parseFloat(v.target.value)))}>
                                             </Input>    
                                         </Col>
                                     </Row>
@@ -317,7 +317,7 @@ const Params = props => {
                                         type="number"
                                         unit="%"
                                         value={inputs.plantingEfficiency}
-                                        onChange={v=>console.log(v)}>
+                                        onChange={v=>setMainParams('plantingEfficiency', Math.abs(parseFloat(v.target.value)))}>
                                     </Input>    
                                 </List>
 
@@ -332,11 +332,11 @@ const Params = props => {
                                                 data-testid="input-seed-density"
                                                 slot="list"
                                                 label="Densidad de siembra"
-                                                name="seedDensity"
+                                                name="seedingDensity"
                                                 type="number"
                                                 icon={iconSeedingDensity}
-                                                value={inputs.seedDensity}
-                                                onChange={v=>console.log(v)}>
+                                                value={inputs.seedingDensity}
+                                                onChange={v=>setMainParams('seedingDensity', v.target.value === '' ? '' : Math.abs(parseFloat(v.target.value)))}>
                                             </Input>    
                                         </Col>
 
@@ -378,17 +378,24 @@ const Params = props => {
                         onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
                     </Input>
                     :
-                    <Input
-                        data-testid="input-dose-solid"
-                        slot="list"
-                        label="Dosis prevista"
-                        name="doseSolid"
-                        type="number"
-                        unit="kg/ha"
-                        icon={iconDoseSol}
-                        value={inputs.doseSolid}
-                        onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
-                    </Input>
+                    <Row>
+                        <Col width="80">
+                            <Input
+                                data-testid="input-dose-solid"
+                                slot="list"
+                                label="Dosis prevista"
+                                name="doseSolid"
+                                type="number"
+                                unit="kg/ha"
+                                icon={iconDoseSol}
+                                value={inputs.doseSolid}
+                                onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
+                            </Input>
+                        </Col>
+                        <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
+                            <CalculatorButton onClick={console.log}/>
+                        </Col>
+                    </Row>
                 }
 
                 <Input
@@ -431,7 +438,7 @@ const Params = props => {
                         </Input>
                     </Col>
                     <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                        <CalculatorButton href="/velocity/" tooltip="Medir velocidad"/>
+                        <TimerButton href="/velocity/" tooltip="Medir velocidad"/>
                     </Col>
                 </Row>
 

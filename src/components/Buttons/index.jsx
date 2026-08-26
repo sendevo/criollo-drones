@@ -48,17 +48,17 @@ export const NavbarTitle = props => (
 );
 
 export const CalculatorButton = props => (
-    <Block style={{textAlign: "center", margin:"0px", padding:"0px"}}>
+    <Block style={{textAlign: "center", margin:"0px", padding:"0px"}} onClick={props.onClick}>
         <Link {...props} className={classes.RoundButton} style={{backgroundColor:props.color}}>
-            <FaStopwatch size={20}/>
+            <FaCalculator size={20}/>
         </Link>
     </Block>   
 );
 
-export const VolumeCalculatorButton = props => (
+export const TimerButton = props => (
     <Block style={{textAlign: "center", margin:"0px", padding:"0px"}}>
         <Link {...props} className={classes.RoundButton} style={{backgroundColor:props.color}}>
-            <FaCalculator size={20}/>
+            <FaStopwatch size={20}/>
         </Link>
     </Block>   
 );
