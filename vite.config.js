@@ -1,12 +1,78 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import devtools from 'vite-plugin-react-devtools'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
+import { readFileSync } from "node:fs";
 
-// https://vitejs.dev/config/
+const pkg = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8")
+);
+
+function versionToCode(version) {
+  const [major = "0", minor = "0", patch = "0"] = String(version)
+    .split("-")[0]
+    .split(".");
+  return String(Number(major) * 10000 + Number(minor) * 100 + Number(patch));
+}
+
+const appVersion = pkg.version || "1.0.0";
+const appVersionCode = pkg.versionCode || versionToCode(appVersion);
+
 export default defineConfig({
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),
+    "import.meta.env.VITE_APP_VERSION_CODE": JSON.stringify(appVersionCode),
+    "import.meta.env.VITE_APP_BUILD_DATE": JSON.stringify(
+      new Date().toISOString().split("T")[0]
+    ),
+  },
+  test: {
+    globals: true,
+    environment: "node",
+    include: ["src/**/*.test.js"],
+  },
   plugins: [
-    react()
+    react(),
+    VitePWA({
+      injectRegister: false,
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-192x192.png", "pwa-512x512.png"],
+      manifest: {
+        name: "Criollo Drones",
+        short_name: "Criollo Drones",
+        description: "Calculadora de parámetros para drones agrícolas",
+        theme_color: "#2c4cdb",
+        background_color: "#ffffff",
+        display: "standalone",
+        orientation: "portrait",
+        scope: "/",
+        start_url: "/",
+        icons: [
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: "CacheFirst",
+            options: { cacheName: "google-fonts-cache" },
+          },
+        ],
+      },
+    }),
   ],
-  base: "",
-  root: "./"
-})
+  server: {
+    open: true,
+  },
+});
