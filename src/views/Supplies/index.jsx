@@ -12,13 +12,14 @@ import {
     Card, 
     CardContent
 } from 'framework7-react';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 import Input from '../../components/Input';
-import { NavbarTitle, DeleteButton, AddButton, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
+import { NavbarTitle, ActionButton, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import { PRODUCT_TYPES } from '../../entities/Model';
 import * as API from '../../entities/API';
-import { generateId, getLocation } from '../../utils';
+import { generateId, getLocation, parseNonNegativeNumber } from '../../utils';
 import { PresentationSelector } from '../../components/Selectors';
 import iconProduct from '../../assets/icons/calculador.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
@@ -99,12 +100,8 @@ const Supplies = props => {
 
     const submit = () => {
         const parseNumeric = value => {
-            if (typeof value === 'number') return value;
-            if (typeof value === 'string') {
-                const normalized = value.trim().replace(',', '.');
-                return normalized === '' ? NaN : parseFloat(normalized);
-            }
-            return Number(value);
+            if (value === '' || value === null || value === undefined) return NaN;
+            return parseNonNegativeNumber(value);
         };
 
         const workArea = parseNumeric(inputs.workArea);
@@ -222,7 +219,7 @@ const Supplies = props => {
                     unit="ha"
                     icon={iconArea}
                     value={inputs.workArea}
-                    onChange={v=>setMainParams('workArea', Math.abs(parseFloat(v.target.value)))}>
+                    onChange={v=>setMainParams('workArea', parseNonNegativeNumber(v.target.value))}>
                 </Input>
                 <div 
                     slot="list" 
@@ -256,7 +253,7 @@ const Supplies = props => {
                     unit={model.productType === "solido" ? "kg/ha" : "l/ha"}
                     icon={iconVolume}
                     value={inputs.workVolume}
-                    onChange={v=>setMainParams('workVolume', parseFloat(v.target.value))}>
+                    onChange={v=>setMainParams('workVolume', parseNonNegativeNumber(v.target.value))}>
                 </Input>
                 <Input
                     data-testid="input-tank-capacity"
@@ -267,7 +264,7 @@ const Supplies = props => {
                     unit={model.productType === "solido" ? "kg" : "l"}
                     icon={iconCapacity}
                     value={inputs.tankCapacity}
-                    onChange={v=>setMainParams('tankCapacity', parseFloat(v.target.value))}>
+                    onChange={v=>setMainParams('tankCapacity', parseNonNegativeNumber(v.target.value))}>
                 </Input>
                 <div 
                     slot="list" 
@@ -291,7 +288,17 @@ const Supplies = props => {
                     products.map((p, index) =>(
                         <Card key={p.key} style={{margin:"0px 0px 10px 0px"}}>
                             
-                            <DeleteButton onClick={()=>removeProduct(index)}/>
+                            <ActionButton
+                                icon={FaTrash}
+                                round={false}
+                                align="right"
+                                tooltip="Quitar"
+                                iconColor="darkred"
+                                size={15}
+                                onClick={()=>removeProduct(index)}
+                                containerStyle={{ textAlign: "right", padding: "5px", height: "5px" }}
+                                buttonStyle={{ color: "darkred", width: "auto", height: "auto", padding: "0px" }}
+                            />
                             
                             <CardContent style={{paddingTop: 10}}>
                                 <span style={{color:"gray"}}>
@@ -317,7 +324,7 @@ const Supplies = props => {
                                         icon={model.productType === PRODUCT_TYPES.SOLID ? iconDoseSol : iconDoseLiq}
                                         value={p.dose || ''}
                                         onInputClear={()=>setProductParams(index, "dose", "")}
-                                        onChange={v=>setProductParams(index, "dose", parseFloat(v.target.value))}>
+                                        onChange={v=>setProductParams(index, "dose", parseNonNegativeNumber(v.target.value))}>
                                     </Input>
                                 </List>
                                 <PresentationSelector 
@@ -336,7 +343,14 @@ const Supplies = props => {
             </Block>
             
             <Block style={{margin:0}}>
-                <AddButton onClick={()=>addProduct()}/>
+                <ActionButton
+                    icon={FaPlus}
+                    color="green"
+                    tooltip="Agregar producto"
+                    data-testid="add-product-btn"
+                    onClick={()=>addProduct()}
+                    buttonStyle={{ margin: "0px 0px 20px 0px" }}
+                />
             </Block>
 
             <Row style={{marginBottom:"15px"}} className="help-target-compat-test">

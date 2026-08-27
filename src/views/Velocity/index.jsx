@@ -15,8 +15,8 @@ import classes from './style.module.css';
 import moment from 'moment';
 import Timer from "../../entities/Timer";
 import Toast from '../../components/Toast';
-import { PlayButton, NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
-import { FaPlus, FaMinus } from 'react-icons/fa';
+import { ActionButton, NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
+import { FaPlus, FaMinus, FaPlay, FaStop } from 'react-icons/fa';
 import { set2Decimals } from "../../utils";
 
 
@@ -145,7 +145,7 @@ const Velocity = props => { // View
     const exportData = () => {           
         //model.work_velocity = set2Decimals(dataAvg());
         model.update("workVelocity", set2Decimals(dataAvg()));
-        props.f7router.back();        
+        props.f7router.back();
     };
 
     return (
@@ -159,7 +159,7 @@ const Velocity = props => { // View
             </Block>
             <Block style={{marginTop:"60px", textAlign:"center"}}>
                 <p style={{fontSize:"50px", margin:"0px"}}>{getTime()}</p>
-                <PlayButton onClick={toggleRunning} running={running} />
+                <ActionButton variant="span" icon={running ? FaStop : FaPlay} iconColor={running ? "red" : "green"} size={40} onClick={toggleRunning} containerStyle={{ minHeight: 50 }} />
             </Block>
             <Block style={{marginBottom: "0px",textAlign:"center"}}>
                 <Row style={{alignItems:"center"}}>
@@ -186,7 +186,14 @@ const Velocity = props => { // View
             <Block style={{textAlign:"center"}}>
                 <Row>
                     <Col width={20}></Col>
-                    <Col width={60}><Button disabled={data.length===0} fill onClick={exportData}>Exportar</Button></Col>
+                    <Col width={60}>
+                        <Button 
+                            disabled={data.length===0} 
+                            fill 
+                            onClick={exportData}>
+                                Exportar
+                        </Button>
+                    </Col>
                     <Col width={20}></Col>
                 </Row>
             </Block>

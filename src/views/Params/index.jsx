@@ -4,7 +4,6 @@ import {
     Page, 
     List,
     ListItem,
-    AccordionContent,
     Checkbox,
     Row,
     Col,
@@ -12,7 +11,9 @@ import {
     BlockTitle
 } from 'framework7-react';
 import { useContext, useEffect, useState } from 'react';
-import { NavbarTitle, BackButton, CalculatorButton, TimerButton, NAVBAR_STYLE } from '../../components/Buttons';
+import { FaCalculator, FaStopwatch } from 'react-icons/fa';
+import { NavbarTitle, BackButton, ActionButton, NAVBAR_STYLE } from '../../components/Buttons';
+import { parseNonNegativeNumber } from '../../utils';
 import { ProductTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
@@ -28,25 +29,13 @@ import iconWidth from '../../assets/icons/ancho_faja.png';
 import iconNozzleCnt from '../../assets/icons/cant_picos2.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
-import iconSeedingDensity from '../../assets/icons/dens_siembra.png';
-import pmsData from '../../assets/pms.json';
-import { PRODUCT_TYPES, SEEDING_DENSITY_UNITS } from '../../entities/Model';
+
+import { PRODUCT_TYPES } from '../../entities/Model';
 
 
 const Params = props => {
 
     const model = useContext(ModelCtx);
-    const seedingDensityUnitOptions = Object.values(SEEDING_DENSITY_UNITS).map(value => ({
-        value,
-        text: value
-    }));
-    const seedPresetOptions = [
-        { value: '', text: 'Seleccione' },
-        ...pmsData.map(({ variedad, pms }) => ({
-            value: variedad,
-            text: variedad
-        }))
-    ];
 
     const [inputs, setInputs] = useState({
         productType: model.productType,
@@ -55,16 +44,6 @@ const Params = props => {
         workArea: model.workArea || '',
         lotCoordinates: model.lotCoordinates || [],
         gpsEnabled: false,
-
-        seedVariety: model.seedVariety || '',
-        seedName: model.seedName || '',
-        seedP1000: model.seedP1000 || '',
-        seedPurity: model.seedPurity || '',
-        seedPG: model.seedPG || '',
-        plantingEfficiency: model.plantingEfficiency || '',
-
-        seedingDensity: model.seedingDensity || '',
-        seedingDensityUnit: model.seedingDensityUnit || 'Kg/ha',
 
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
@@ -77,9 +56,10 @@ const Params = props => {
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
         setInputs({
             ...inputs,
-            workVelocity: model.workVelocity || ''
+            workVelocity: model.workVelocity || '',
+            doseSolid: model.doseSolid || ''
         });
-    }, [model.workVelocity]);
+    }, [model.workVelocity, model.doseSolid]);
 
 
     const handleProductTypeChange = (value) => {
@@ -198,7 +178,7 @@ const Params = props => {
                     unit="ha"
                     icon={iconArea}
                     value={inputs.workArea}
-                    onChange={v=>setMainParams('workArea', Math.abs(parseFloat(v.target.value)))}>
+                    onChange={v=>setMainParams('workArea', parseNonNegativeNumber(v.target.value))}>
                 </Input>
                 <div 
                     slot="list" 
@@ -219,146 +199,6 @@ const Params = props => {
                 </div>
             </List>
 
-            {inputs.productType === PRODUCT_TYPES.SOLID && (
-                <List accordionList style={{
-                        marginTop: "0", 
-                        marginBottom: "10px", 
-                        margin: "0px 10px",
-                        padding: "0 10px",
-                        "--f7-list-border-color": "transparent",
-                        "--f7-list-item-border-color": "transparent",
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "10px"
-                    }}>
-                    <ListItem accordionItem title="Siembra">
-                        <AccordionContent>
-                            <div>
-                                <BlockTitle style={{marginBottom:0, marginTop: 10}}>
-                                    <Typography>Semilla</Typography>
-                                </BlockTitle>
-
-                                <List form noHairlinesMd>
-                                    <Input
-                                        data-testid="input-seed-variety"
-                                        slot="list"
-                                        label="Híbrido o variedad"
-                                        name="seedVariety"
-                                        type="text"
-                                        value={inputs.seedVariety}
-                                        onChange={v=>setMainParams('seedVariety', v.target.value)}>
-                                    </Input>    
-
-                                    <Row slot="list">
-                                        <Col>
-                                            <Select
-                                                data-testid="input-seed-name"
-                                                slot="list"
-                                                label="Valor predefinido"
-                                                name="seedName"
-                                                value={inputs.seedName}
-                                                options={seedPresetOptions}
-                                                onChange={v => setMainParams('seedName', v.target.value)}>
-                                            </Select>
-                                        </Col>
-                                    
-                                        <Col>
-                                            <Input
-                                                data-testid="input-seed-p1000"
-                                                slot="list"
-                                                label="P1000"
-                                                name="seedP1000"
-                                                type="number"
-                                                unit="g"
-                                                value={inputs.seedP1000}
-                                                onChange={v=>setMainParams('seedP1000', Math.abs(parseFloat(v.target.value)))}>
-                                            </Input>    
-                                        </Col>
-                                    </Row>
-
-                                    <Row slot="list">
-                                        <Col>
-                                            <Input
-                                                data-testid="input-seed-purity"
-                                                slot="list"
-                                                label="Pureza"
-                                                name="seedPurity"
-                                                type="number"
-                                                unit="%"
-                                                value={inputs.seedPurity}
-                                                onChange={v=>setMainParams('seedPurity', Math.abs(parseFloat(v.target.value)))}>
-                                            </Input>    
-                                        </Col>
-
-                                        <Col>
-                                            <Input
-                                                data-testid="input-seed-pg"
-                                                slot="list" 
-                                                label="PG"
-                                                name="seedPG"
-                                                type="number"
-                                                unit="%"
-                                                value={inputs.seedPG}
-                                                onChange={v=>setMainParams('seedPG', Math.abs(parseFloat(v.target.value)))}>
-                                            </Input>    
-                                        </Col>
-                                    </Row>
-                                </List>
-
-                                <BlockTitle style={{marginBottom:0}}>
-                                    <Typography>Estimación de logro</Typography>
-                                </BlockTitle>
-
-                                <List form noHairlinesMd>
-                                    <Input
-                                        data-testid="input-planting-efficiency"
-                                        slot="list" 
-                                        label="Eficiencia de implantación"
-                                        name="plantingEfficiency"
-                                        type="number"
-                                        unit="%"
-                                        value={inputs.plantingEfficiency}
-                                        onChange={v=>setMainParams('plantingEfficiency', Math.abs(parseFloat(v.target.value)))}>
-                                    </Input>    
-                                </List>
-
-                                <BlockTitle style={{marginBottom:0}}>
-                                    <Typography>Densidad de siembra</Typography>
-                                </BlockTitle>
-
-                                <List form noHairlinesMd>
-                                    <Row slot="list">
-                                        <Col>
-                                            <Input
-                                                data-testid="input-seed-density"
-                                                slot="list"
-                                                label="Densidad de siembra"
-                                                name="seedingDensity"
-                                                type="number"
-                                                icon={iconSeedingDensity}
-                                                value={inputs.seedingDensity}
-                                                onChange={v=>setMainParams('seedingDensity', v.target.value === '' ? '' : Math.abs(parseFloat(v.target.value)))}>
-                                            </Input>    
-                                        </Col>
-
-                                        <Col>
-                                            <Select
-                                                data-testid="input-seeding-density-unit"
-                                                slot="list"
-                                                label="Unidad"
-                                                name="seedingDensityUnit"
-                                                value={inputs.seedingDensityUnit}
-                                                options={seedingDensityUnitOptions}
-                                                onChange={v => setMainParams('seedingDensityUnit', v.target.value)}>
-                                            </Select>
-                                        </Col>
-                                    </Row>
-                                </List>
-                            </div>
-                        </AccordionContent>
-                    </ListItem>
-                </List>
-            )}
-
             <BlockTitle>
                 <Typography>Parámetros de labor</Typography>
             </BlockTitle>
@@ -375,7 +215,7 @@ const Params = props => {
                         unit="L/ha"
                         icon={iconDoseLiq}
                         value={inputs.doseLiquid}
-                        onChange={v=>setMainParams('doseLiquid', Math.abs(parseFloat(v.target.value)))}>
+                        onChange={v=>setMainParams('doseLiquid', parseNonNegativeNumber(v.target.value))}>
                     </Input>
                     :
                     <Row>
@@ -389,11 +229,11 @@ const Params = props => {
                                 unit="kg/ha"
                                 icon={iconDoseSol}
                                 value={inputs.doseSolid}
-                                onChange={v=>setMainParams('doseSolid', Math.abs(parseFloat(v.target.value)))}>
+                                onChange={v=>setMainParams('doseSolid', parseNonNegativeNumber(v.target.value))}>
                             </Input>
                         </Col>
                         <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                            <CalculatorButton onClick={console.log}/>
+                            <ActionButton icon={FaCalculator} href="/dose/" tooltip="Calcular dosis" />
                         </Col>
                     </Row>
                 }
@@ -407,7 +247,7 @@ const Params = props => {
                     unit="m"
                     icon={iconWidth}
                     value={inputs.workWidth}
-                    onChange={v=>setMainParams('workWidth', Math.abs(parseFloat(v.target.value)))}>
+                    onChange={v=>setMainParams('workWidth', parseNonNegativeNumber(v.target.value))}>
                 </Input>
 
                 { inputs.productType === PRODUCT_TYPES.LIQUID &&
@@ -420,7 +260,7 @@ const Params = props => {
                         unit=""
                         icon={iconNozzleCnt}
                         value={inputs.nozzleCnt}
-                        onChange={v=>setMainParams('nozzleCnt', Math.abs(parseFloat(v.target.value)))}>
+                        onChange={v=>setMainParams('nozzleCnt', parseNonNegativeNumber(v.target.value))}>
                     </Input>
                 }
 
@@ -434,11 +274,11 @@ const Params = props => {
                             unit="km/h"
                             icon={iconVel}
                             value={inputs.workVelocity}
-                            onChange={v=>setMainParams('workVelocity', Math.abs(parseFloat(v.target.value)))}>
+                            onChange={v=>setMainParams('workVelocity', parseNonNegativeNumber(v.target.value))}>
                         </Input>
                     </Col>
                     <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                        <TimerButton href="/velocity/" tooltip="Medir velocidad"/>
+                        <ActionButton icon={FaStopwatch} href="/velocity/" tooltip="Medir velocidad" />
                     </Col>
                 </Row>
 
@@ -451,7 +291,7 @@ const Params = props => {
                     unit="m"
                     icon={iconFlightAltitude}
                     value={inputs.flightAltitude}
-                    onChange={v=>setMainParams('flightAltitude', Math.abs(parseFloat(v.target.value)))}>
+                    onChange={v=>setMainParams('flightAltitude', parseNonNegativeNumber(v.target.value))}>
                 </Input>
             </List>
 

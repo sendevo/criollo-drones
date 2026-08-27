@@ -9,7 +9,9 @@ import {
 } from 'framework7-react';
 import logoInta from '../../assets/logo_inta.png';
 import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons';
-import { APP_NAME, VERSION_NAME } from '../../entities/Model';
+import { APP_NAME } from '../../entities/Model';
+
+const VERSION_NAME = import.meta.env.VITE_APP_VERSION;
 
 const About = props => (
     <Page name="about">

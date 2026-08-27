@@ -61,6 +61,14 @@ const f7params = {
                 transition: "f7-cover"        
             }
         },
+        { // Seccion de dosis
+            path: '/dose/',
+            component: Views.Dose,
+            on:{pageInit: ()=>pushState("dose")},
+            options: {
+                transition: "f7-cover"        
+            }
+        },
         { // Ajuste de caudal
             path: '/volume/',
             component: Views.Volume,

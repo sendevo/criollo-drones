@@ -12,10 +12,10 @@ import moment from 'moment';
 import { ModelCtx } from "../../context";
 import { useSound } from "use-sound";
 import Input from "../../components/Input";
-import { PlayButton, NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
+import { ActionButton, NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
 import { timerCollectedPrompt } from "../../components/Prompts";
 import { set2Decimals } from "../../utils";
-import { FaMinus } from 'react-icons/fa';
+import { FaMinus, FaPlay, FaStop } from 'react-icons/fa';
 import classes from './style.module.css';
 import Timer from "../../entities/Timer";
 import Toast from "../../components/Toast";
@@ -163,7 +163,7 @@ const Recolected = props => {
             <ElapsedSelector value={elapsed} disabled={running} onChange={v => updateElapsed(v)}/>
             <Block style={{marginTop:"20px", textAlign:"center"}}>
                 <p style={{fontSize:"50px", margin:"0px"}}>{getTime()}</p>
-                <PlayButton onClick={toggleRunning} running={running} />
+                <ActionButton variant="span" icon={running ? FaStop : FaPlay} iconColor={running ? "red" : "green"} size={40} onClick={toggleRunning} containerStyle={{ minHeight: 50 }} />
             </Block>
             <Block style={{marginBottom: "0px",textAlign:"center"}}>
                 {data.length > 0 &&

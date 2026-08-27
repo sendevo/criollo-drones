@@ -2,11 +2,7 @@ import { generateId } from "../../utils";
 import { Preferences } from '@capacitor/preferences';
 import { Capacitor } from "@capacitor/core";
 
-// A partir de version 1.0.0, se agrega modelo de migraciones
 export const APP_NAME = "Criollo Drones";
-export const ANDROID_VERSION_CODE = "1"; // Para app store
-export const VERSION_NAME = "0.0.1"; // Version visible para el usuario
-export const BUILD_DATE = 1766405960722; // 22-12-2025 9:19hs
 
 export const PRODUCT_TYPES = {
     SOLID: "solido",

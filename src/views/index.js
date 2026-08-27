@@ -1,6 +1,7 @@
 import Home from './Home';
 import Params from './Params';
 import Control from './Control';
+import Dose from './Dose';
 import Volume from './Volume';
 import Velocity from './Velocity';
 import Recolected from './Recolected';
@@ -17,6 +18,7 @@ export {
     Home,
     Params,
     Control,
+    Dose,
     Volume,
     Velocity,
     Recolected,

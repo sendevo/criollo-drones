@@ -47,52 +47,113 @@ export const NavbarTitle = props => (
     </Link>
 );
 
+export const ActionButton = ({
+    icon: Icon,
+    children,
+    tooltip,
+    onClick,
+    color = "rgba(10, 10, 250, .7)",
+    size = 20,
+    iconColor,
+    round = true,
+    align = "center",
+    containerStyle,
+    buttonStyle,
+    className,
+    variant = "link",
+    ...props
+}) => {
+    const testId = props["data-testid"];
+    const content = children ?? (Icon ? <Icon size={size} color={iconColor} /> : null);
+    const buttonClassName = round ? [classes.RoundButton, className].filter(Boolean).join(" ") : className;
+
+    if (variant === "span") {
+        return (
+            <span
+                {...props}
+                role="button"
+                tabIndex={0}
+                onClick={onClick}
+                onKeyDown={event => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onClick?.(event);
+                    }
+                }}
+                style={{
+                    minHeight: 50,
+                    display: "inline-block",
+                    cursor: "pointer",
+                    ...containerStyle
+                }}>
+                {content}
+            </span>
+        );
+    }
+
+    return (
+        <Block style={{ textAlign: align, margin: "0px", padding: "0px", ...containerStyle }}>
+            <Link
+                {...props}
+                tooltip={tooltip}
+                data-testid={testId}
+                onClick={onClick}
+                className={buttonClassName}
+                style={{
+                    backgroundColor: round ? color : "transparent",
+                    color: round ? "white" : iconColor || color,
+                    width: round ? undefined : "auto",
+                    height: round ? undefined : "auto",
+                    padding: round ? undefined : "0px",
+                    ...buttonStyle
+                }}>
+                {content}
+            </Link>
+        </Block>
+    );
+};
+
 export const CalculatorButton = props => (
-    <Block style={{textAlign: "center", margin:"0px", padding:"0px"}} onClick={props.onClick}>
-        <Link {...props} className={classes.RoundButton} style={{backgroundColor:props.color}}>
-            <FaCalculator size={20}/>
-        </Link>
-    </Block>   
+    <ActionButton icon={FaCalculator} {...props} />
 );
 
 export const TimerButton = props => (
-    <Block style={{textAlign: "center", margin:"0px", padding:"0px"}}>
-        <Link {...props} className={classes.RoundButton} style={{backgroundColor:props.color}}>
-            <FaStopwatch size={20}/>
-        </Link>
-    </Block>   
+    <ActionButton icon={FaStopwatch} {...props} />
 );
 
 export const DeleteButton = props => (
-    <div style={{textAlign:"right", padding:"5px", height:"5px"}}>
-        <Link
-            tooltip="Quitar" 
-            onClick={props.onClick}>
-            <FaTrash size={15} color={"darkred"}/>
-        </Link>   
-    </div>
+    <ActionButton
+        {...props}
+        icon={FaTrash}
+        round={false}
+        align="right"
+        tooltip="Quitar"
+        iconColor="darkred"
+        size={15}
+        containerStyle={{ textAlign: "right", padding: "5px", height: "5px" }}
+        buttonStyle={{ color: "darkred", width: "auto", height: "auto", padding: "0px" }}
+    />
 );
 
 export const AddButton = props => (
-    <Block style={{textAlign: "right", margin:"0px", padding:"0px"}}>
-        <Link 
-            tooltip="Agregar producto" 
-            data-testid="add-product-btn"
-            onClick={props.onClick}
-            className={classes.RoundButton}
-            style={{backgroundColor:"green", margin:"0px 0px 20px 0px"}}>
-            <FaPlus size={20}/>
-        </Link>
-    </Block>   
+    <ActionButton
+        {...props}
+        icon={FaPlus}
+        color="green"
+        tooltip="Agregar producto"
+        data-testid="add-product-btn"
+        buttonStyle={{ margin: "0px 0px 20px 0px" }}
+    />
 );
 
-export const PlayButton = props => ( // Boton de control del cronometro
-    <span style={{minHeight:50}} onClick={props.onClick}>
-        {
-            props.running ? 
-                <FaStop color="red" size={40}/>
-            :
-                <FaPlay color="green" size={40}/>
-        }
-    </span>
+export const PlayButton = ({ running, ...props }) => (
+    <ActionButton
+        {...props}
+        variant="span"
+        icon={running ? FaStop : FaPlay}
+        iconColor={running ? "red" : "green"}
+        size={40}
+        containerStyle={{ minHeight: 50 }}
+        buttonStyle={{ color: running ? "red" : "green" }}
+    />
 );

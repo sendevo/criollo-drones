@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Page, PageContent, Block, Navbar, BlockTitle, Row, Col, Radio, List } from 'framework7-react';
-import { NavbarTitle, BackButton, PlayButton, NAVBAR_STYLE } from '../../components/Buttons';
+import { FaPlay, FaStop } from 'react-icons/fa';
+import { NavbarTitle, BackButton, ActionButton, NAVBAR_STYLE } from '../../components/Buttons';
 import Input from '../../components/Input';
 import Footer from '../../components/Footer';
 import { ModelCtx } from '../../context';
@@ -178,7 +179,14 @@ const CompatTest = props => {
 
                 <Block style={{marginTop:"20px", textAlign:"center"}}>
                     <p style={{fontSize:"50px", margin:"0px"}}>{displayTime}</p>
-                    <PlayButton onClick={toggleRunning} running={running} />
+                    <ActionButton
+                        variant="span"
+                        icon={running ? FaStop : FaPlay}
+                        iconColor={running ? "red" : "green"}
+                        size={40}
+                        onClick={toggleRunning}
+                        containerStyle={{ minHeight: 50 }}
+                    />
                 </Block>
 
                 <List form noHairlinesMd style={{ marginTop: '0px', marginBottom: '10px' }}>

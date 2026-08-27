@@ -7,16 +7,17 @@ import {
     Row,
     List
 } from 'framework7-react';
+import { FaCalculator } from 'react-icons/fa';
 import Typography from '../../../components/Typography';
 import Input from '../../../components/Input';
 import Toast from '../../../components/Toast';
-import { CalculatorButton } from '../../../components/Buttons';
+import { ActionButton } from '../../../components/Buttons';
 import { ModelCtx } from '../../../context/index.js';
 import ParamsData from './paramsData.jsx';
 import ValidationOutput from './validationOutput.jsx';
 import DistributionControl from '../DistributionControl';
 import { computeDose, sweepDistributionProfile } from '../../../entities/API/index.js';
-import { getClosest, set2Decimals } from '../../../utils/index.js';
+import { getClosest, parseNonNegativeNumber, set2Decimals } from '../../../utils/index.js';
 import timeIcon from '../../../assets/icons/tiempo.png';
 import solidRecolectedIcon from '../../../assets/icons/peso_recolectado.png';
 import trayAreaIcon from '../../../assets/icons/sup_bandeja.png';
@@ -346,7 +347,7 @@ const SolidControl = () => {
                             icon={timeIcon}
                             data-testid="input-recolected-time"
                             value={inputs.recolectedTime}
-                            onChange={v=>handleSetRecolectedTime(Math.abs(parseFloat(v.target.value)))}>
+                            onChange={v=>handleSetRecolectedTime(parseNonNegativeNumber(v.target.value))}>
                         </Input>
                     </Col>
                     <Col width="80">
@@ -358,15 +359,16 @@ const SolidControl = () => {
                             icon={solidRecolectedIcon}
                             data-testid="input-recolected-weight"
                             value={inputs.recolected}
-                            onChange={v=>handleSetRecolected(Math.abs(parseFloat(v.target.value)))}>
+                            onChange={v=>handleSetRecolected(parseNonNegativeNumber(v.target.value))}>
                         </Input>
                     </Col>
                     <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                        <CalculatorButton
+                        <ActionButton
+                            icon={FaCalculator}
                             href="/recolected/"
-                            tooltip="Cronómetro"
+                            tooltip="Calcular"
                             color="teal"
-                            data-testid="recolected-timer-btn"/>
+                            data-testid="recolected-timer-btn" />
                     </Col>
                 </Row>
             </List>
@@ -411,7 +413,7 @@ const SolidControl = () => {
                             icon={trayAreaIcon}
                             data-testid="input-tray-area"
                             value={inputs.trayArea}
-                            onChange={v=>setMainParams('trayArea', Math.abs(parseFloat(v.target.value)))}>
+                            onChange={v=>setMainParams('trayArea', parseNonNegativeNumber(v.target.value))}>
                         </Input>
                     </Col>
                     <Col width="80">
@@ -436,7 +438,7 @@ const SolidControl = () => {
                             icon={traySeparationIcon}
                             data-testid="input-tray-separation"
                             value={inputs.traySeparation}
-                            onChange={v=>setMainParams('traySeparation', Math.abs(parseFloat(v.target.value)))}>
+                            onChange={v=>setMainParams('traySeparation', parseNonNegativeNumber(v.target.value))}>
                         </Input>
                     </Col>
                 </Row>

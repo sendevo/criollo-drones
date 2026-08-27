@@ -15,13 +15,14 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 import DistributionControl from '../DistributionControl';
 import Input from "../../../components/Input";
 import Toast from "../../../components/Toast";
-import { PlayButton } from "../../../components/Buttons";
+import { FaPlay, FaStop } from 'react-icons/fa';
+import { ActionButton } from "../../../components/Buttons";
 import { ElapsedSelector } from "../../../components/Selectors";
 import Typography from "../../../components/Typography";
 import NozzlesTable from "../../../components/NozzlesTable";
 import Timer from "../../../entities/Timer";
 import * as API from '../../../entities/API/index.js';
-import { arrayAvg, formatNumber, getClosest, set2Decimals } from "../../../utils";
+import { arrayAvg, formatNumber, getClosest, parseNonNegativeNumber, set2Decimals } from "../../../utils";
 import iconFlow from "../../../assets/icons/caudal.png";
 import iconNumber from "../../../assets/icons/cant_picos.png";
 import oneSfx from '../../../assets/sounds/uno.mp3';
@@ -102,7 +103,7 @@ const LiquidControl = props => {
     };
 
     const handleNozzleFlowChange = e => { // Al cambiar el valor de caudal, actualizar datos de 
-        const wf = parseFloat(e.target.value);
+        const wf = parseNonNegativeNumber(e.target.value);
         if(wf){ // Actualizar tabla, solo con valor de caudal valido            
             try{
                 const temp = inputs.recolectedData.map(row => ({
@@ -547,7 +548,7 @@ const LiquidControl = props => {
             }
 
             <Block style={{marginTop:"20px", textAlign:"center"}}>
-                <p style={{fontSize:"50px", margin:"0px"}}>{getTime()} <PlayButton onClick={toggleRunning} running={running} /></p>
+                <p style={{fontSize:"50px", margin:"0px"}}>{getTime()} <ActionButton variant="span" icon={running ? FaStop : FaPlay} iconColor={running ? "red" : "green"} size={40} onClick={toggleRunning} containerStyle={{ minHeight: 50 }} /></p>
             </Block>
 
             <Block style={{marginBottom: "20px",textAlign:"center"}}>
@@ -598,7 +599,7 @@ const LiquidControl = props => {
                     unit="cm²"
                     icon={cardAreaIcon}
                     value={inputs.cardArea}
-                    onChange={v=>setMainParams('cardArea', Math.abs(parseFloat(v.target.value)))}>
+                    onChange={v=>setMainParams('cardArea', parseNonNegativeNumber(v.target.value))}>
                 </Input>
 
                 <Input
@@ -619,7 +620,7 @@ const LiquidControl = props => {
                     unit="m"
                     icon={cardSeparationIcon}
                     value={inputs.cardSeparation}
-                    onChange={v=>setMainParams('cardSeparation', Math.abs(parseFloat(v.target.value)))}>
+                    onChange={v=>setMainParams('cardSeparation', parseNonNegativeNumber(v.target.value))}>
                 </Input>
             </List>
 

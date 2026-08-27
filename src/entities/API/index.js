@@ -1,5 +1,5 @@
 import { set2Decimals } from "../../utils";
-import { PRODUCT_TYPES } from "../Model";
+import { PRODUCT_TYPES, SEEDING_DENSITY_UNITS } from "../Model";
 
 const isString = value => (typeof value === 'string' || value instanceof String) && value !== "";
 const isFloat = value => Number.isFinite(value);
@@ -80,6 +80,22 @@ const schemas = { // Esquemas de validación de parametros
         work_velocity: v => isPositiveFloat(v),
         work_width: v => isPositiveFloat(v),
         expected_dose: v => isPositiveFloat(v)
+    },
+    densToKgHa: {
+        unit: v => isString(v) && Object.values(SEEDING_DENSITY_UNITS).includes(v),
+        dens: v => isPositiveFloat(v),
+        seedP1000: v => isPositiveFloat(v),
+        seedPurity: v => isPositiveFloat(v) && v <= 100, // Pureza
+        seedPG: v => isPositiveFloat(v) && v <= 100, // Poder germinativo
+        plantingEfficiency: v => isPositiveFloat(v) && v <= 100, // Logro
+    },
+    densFromKgHa: {
+        unit: v => isString(v) && Object.values(SEEDING_DENSITY_UNITS).includes(v),
+        kg_ha: v => isPositiveFloat(v),
+        seedP1000: v => isPositiveFloat(v),
+        seedPurity: v => isPositiveFloat(v) && v <= 100,
+        seedPG: v => isPositiveFloat(v) && v <= 100,
+        plantingEfficiency: v => isPositiveFloat(v) && v <= 100
     },
     computeDensityFromRecolected: {
         tray_area: v => isPositiveFloat(v),
@@ -364,6 +380,68 @@ export const computeDose = params => {
     const diffkg = dose-expected_dose;
     const diffp = diffkg/expected_dose*100;
     return { status: "success", dose, diffkg, diffp };
+};
+
+export const densToKgHa = params => {
+    const wrong_keys = validate(schemas.densToKgHa, params);
+    if(wrong_keys.length > 0) return {status: "error", wrong_keys};
+
+    const { 
+        unit, 
+        dens,
+        seedP1000, 
+        seedPurity, 
+        seedPG, 
+        plantingEfficiency 
+    } = params;
+
+    let kg_ha = 0;
+    switch(unit) {
+        case SEEDING_DENSITY_UNITS.POBL_OBJ:
+            kg_ha = dens*seedP1000/seedPurity/seedPG/plantingEfficiency;  
+            break;
+        case SEEDING_DENSITY_UNITS.SEM_HA:
+            kg_ha = dens*seedP1000/seedPurity/10000;
+            break;
+        case SEEDING_DENSITY_UNITS.SEM_VBLES_HA:
+            kg_ha = dens*seedP1000/seedPG/10000;
+            break;
+        default:
+            return {status: "error", wrong_keys: ["unit"]};
+    }
+
+    return { status: "success", kg_ha };
+}
+
+export const densFromKgHa = params => {
+    const wrong_keys = validate(schemas.densFromKgHa, params);
+    if(wrong_keys.length > 0) return {status: "error", wrong_keys};
+
+    const { 
+        unit, 
+        kg_ha,
+        seedP1000, 
+        seedPurity, 
+        seedPG, 
+        plantingEfficiency 
+    } = params;
+
+    let dens = 0;
+    switch(unit) {
+        case SEEDING_DENSITY_UNITS.POBL_OBJ:
+            dens = kg_ha*seedPurity*seedPG*plantingEfficiency/seedP1000;  
+            break;
+        case SEEDING_DENSITY_UNITS.SEM_HA:
+            dens = kg_ha*seedPurity/seedP1000*10000;
+            break;
+        case SEEDING_DENSITY_UNITS.SEM_VBLES_HA:
+            dens = kg_ha*seedPG/seedP1000*10000;
+            break;
+        default:
+            return {status: "error", wrong_keys: ["unit"]};
+    }
+
+    return { status: "success", dens };
 };
 
 export const computeDensityFromRecolected = params => { 

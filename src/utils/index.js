@@ -5,6 +5,71 @@ import { Geolocation } from '@capacitor/geolocation';
 
 export const set2Decimals = value => Math.round(value * 100) / 100;
 
+export const parseNumericValue = value => {
+    if (value === '' || value === null || value === undefined) return '';
+
+    const text = String(value).trim();
+    if (!text) return '';
+
+    const sign = text.startsWith('-') ? -1 : 1;
+    const sanitized = text.replace(/-/g, '').replace(/\s/g, '');
+
+    if (sanitized.includes(',') && sanitized.includes('.')) {
+        const decimalIndex = Math.max(sanitized.lastIndexOf(','), sanitized.lastIndexOf('.'));
+        const integerPart = sanitized.slice(0, decimalIndex).replace(/[.]/g, '').replace(/[,]/g, '');
+        const fractionPart = sanitized.slice(decimalIndex + 1).replace(/[.]/g, '').replace(/[,]/g, '');
+        const normalized = `${integerPart}.${fractionPart}`;
+        const parsed = Number(normalized);
+        return Number.isFinite(parsed) ? parsed * sign : '';
+    }
+
+    if (sanitized.includes(',')) {
+        const parsed = Number(sanitized.replace(/\./g, '').replace(',', '.'));
+        return Number.isFinite(parsed) ? parsed * sign : '';
+    }
+
+    if (sanitized.includes('.')) {
+        const parts = sanitized.split('.');
+
+        if (parts.length > 2) {
+            const parsed = Number(parts.join(''));
+            return Number.isFinite(parsed) ? parsed * sign : '';
+        }
+
+        const [integerPart, decimalPart] = parts;
+        if (decimalPart && decimalPart.length <= 2 && integerPart.length > 0) {
+            const parsed = Number(sanitized);
+            return Number.isFinite(parsed) ? parsed * sign : '';
+        }
+
+        const parsed = Number(integerPart + decimalPart);
+        return Number.isFinite(parsed) ? parsed * sign : '';
+    }
+
+    const parsed = Number(sanitized);
+    return Number.isFinite(parsed) ? parsed * sign : '';
+};
+
+export const parseNonNegativeNumber = value => {
+    const parsed = parseNumericValue(value);
+    if (parsed === '') return '';
+    return Math.abs(parsed);
+};
+
+export const formatNumericValue = value => {
+    if (value === '' || value === null || value === undefined) return '';
+
+    const number = typeof value === 'number' ? value : parseNumericValue(value);
+    if (number === '' || !Number.isFinite(number)) return '';
+
+    const rounded = Number(number.toFixed(10));
+    const [integerPart, decimalPart = ''] = rounded.toString().split('.');
+    const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const trimmedDecimal = decimalPart.replace(/0+$/, '');
+
+    return trimmedDecimal ? `${groupedInteger},${trimmedDecimal}` : groupedInteger;
+};
+
 export const formatNumber = (value, decimals = 2) => {
     const v = value === "number" ? value : parseFloat(value);
     return v.toFixed(decimals).replace('.', ',');
