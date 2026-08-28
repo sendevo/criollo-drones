@@ -97,45 +97,6 @@ const Params = props => {
             }
         }
 
-        if(attr === "seedName"){
-            const selectedSeed = pmsData.find(({ variedad }) => variedad === value);
-            if(selectedSeed) {
-                setInputs(prevState => ({
-                    ...prevState,
-                    seedName: value,
-                    seedP1000: selectedSeed.pms
-                }));
-                model.update("seedName", value);
-                model.update("seedP1000", selectedSeed.pms);
-                return;
-            }
-            setInputs(prevState => ({
-                ...prevState,
-                seedName: value,
-                seedP1000: ''
-            }));
-            model.update("seedName", value);
-            model.update("seedP1000", '');
-            return;
-        }
-
-        if(attr === "trayCount"){ // Actualizar array de datos de bandejas
-            const trayCount = isNaN(value) ? 0 : parseInt(value);
-            const newTrayData = [];
-            for(let i=0; i < trayCount; i++){
-                if(inputs.trayData[i]){
-                    newTrayData.push(inputs.trayData[i]);
-                }else{
-                    newTrayData.push({collected: 0});
-                }
-            }
-            setInputs(prevState => ({ 
-                ...prevState, 
-                trayData: newTrayData
-            }));
-            model.update("trayData", newTrayData);
-        }
-
         setInputs(prevState => ({ ...prevState, [attr]: value }));
         if(attr !== "gpsEnabled") // gpsEnabled no forma parte del modelo
             model.update(attr, value); 

@@ -5,49 +5,45 @@ import { Geolocation } from '@capacitor/geolocation';
 
 export const set2Decimals = value => Math.round(value * 100) / 100;
 
-export const parseNumericValue = value => {
+
+export const sanitizeTypedValue = raw => {
+    // Sanitizes text as-you-type, preserving intermediate states like
+    // "0," or "1.000,0" instead of collapsing them.
+
+    if (raw === '') return '';
+
+    let cleaned = raw.replace(/[^\d.,]/g, '');
+
+    const firstComma = cleaned.indexOf(',');
+    if (firstComma !== -1) {
+        cleaned = cleaned.slice(0, firstComma + 1) + cleaned.slice(firstComma + 1).replace(/,/g, '');
+    }
+
+    const [intPartRaw, decPartRaw] = cleaned.split(',');
+    const intDigits = intPartRaw.replace(/\./g, '').replace(/^0+(?=\d)/, '');
+    const groupedInt = intDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    if (decPartRaw === undefined) return groupedInt;
+    return `${groupedInt || '0'},${decPartRaw}`;
+};
+
+export const parseNumericValue = (value) => {
+    // "1.234.567,89" -> 1234567.89  ("." = thousands, "," = decimal)
     if (value === '' || value === null || value === undefined) return '';
+    if (typeof value === 'number') return Number.isFinite(value) ? value : '';
 
-    const text = String(value).trim();
-    if (!text) return '';
+    const str = String(value).trim();
+    if (str === '') return '';
 
-    const sign = text.startsWith('-') ? -1 : 1;
-    const sanitized = text.replace(/-/g, '').replace(/\s/g, '');
+    const [rawInt = '', rawDec = ''] = str.split(',');
+    const integerDigits = rawInt.replace(/[^\d]/g, '');
+    const decimalDigits = rawDec.replace(/[^\d]/g, '');
 
-    if (sanitized.includes(',') && sanitized.includes('.')) {
-        const decimalIndex = Math.max(sanitized.lastIndexOf(','), sanitized.lastIndexOf('.'));
-        const integerPart = sanitized.slice(0, decimalIndex).replace(/[.]/g, '').replace(/[,]/g, '');
-        const fractionPart = sanitized.slice(decimalIndex + 1).replace(/[.]/g, '').replace(/[,]/g, '');
-        const normalized = `${integerPart}.${fractionPart}`;
-        const parsed = Number(normalized);
-        return Number.isFinite(parsed) ? parsed * sign : '';
-    }
+    if (integerDigits === '' && decimalDigits === '') return '';
 
-    if (sanitized.includes(',')) {
-        const parsed = Number(sanitized.replace(/\./g, '').replace(',', '.'));
-        return Number.isFinite(parsed) ? parsed * sign : '';
-    }
-
-    if (sanitized.includes('.')) {
-        const parts = sanitized.split('.');
-
-        if (parts.length > 2) {
-            const parsed = Number(parts.join(''));
-            return Number.isFinite(parsed) ? parsed * sign : '';
-        }
-
-        const [integerPart, decimalPart] = parts;
-        if (decimalPart && decimalPart.length <= 2 && integerPart.length > 0) {
-            const parsed = Number(sanitized);
-            return Number.isFinite(parsed) ? parsed * sign : '';
-        }
-
-        const parsed = Number(integerPart + decimalPart);
-        return Number.isFinite(parsed) ? parsed * sign : '';
-    }
-
-    const parsed = Number(sanitized);
-    return Number.isFinite(parsed) ? parsed * sign : '';
+    const normalized = `${integerDigits || '0'}${decimalDigits ? `.${decimalDigits}` : ''}`;
+    const parsed = parseFloat(normalized);
+    return Number.isFinite(parsed) ? parsed : '';
 };
 
 export const parseNonNegativeNumber = value => {
@@ -57,6 +53,8 @@ export const parseNonNegativeNumber = value => {
 };
 
 export const formatNumericValue = value => {
+    // 1234.5 -> "1.234,5"  (for display of a *committed* value)
+
     if (value === '' || value === null || value === undefined) return '';
 
     const number = typeof value === 'number' ? value : parseNumericValue(value);

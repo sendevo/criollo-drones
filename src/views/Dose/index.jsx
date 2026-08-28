@@ -14,10 +14,12 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Typography from '../../components/Typography';
 import { NavbarTitle, NAVBAR_STYLE } from "../../components/Buttons";
+import Toast from "../../components/Toast";
 import iconSeedingDensity from '../../assets/icons/dens_siembra.png';
 import { PRODUCT_TYPES, SEEDING_DENSITY_UNITS } from '../../entities/Model';
 import pmsData from '../../assets/pms.json';
 import { parseNonNegativeNumber, set2Decimals } from "../../utils";
+import { densToKgHa, densFromKgHa } from "../../entities/API";
 
 const Dose = props => {
 
@@ -78,7 +80,23 @@ const Dose = props => {
     };
 
     const handleExport = () => {
-        model.update("doseSolid", set2Decimals(42)); // placeholder
+        const result = densToKgHa({
+            unit: inputs.seedingDensityUnit,
+            dens: inputs.seedingDensity,
+            seedP1000: inputs.seedP1000,
+            seedPurity: inputs.seedPurity,
+            seedPG: inputs.seedPG,
+            plantingEfficiency: inputs.plantingEfficiency
+        });
+
+        if (result.status === "error") {
+            // e.g. surface which fields are invalid/missing
+            console.warn("Invalid dose params:", result.wrong_keys);
+            Toast("error", `Error en parámetros: ${result.wrong_keys.join(', ')}`);
+            return;
+        }
+        
+        model.update("doseSolid", set2Decimals(result.kg_ha));
         props.f7router.back();
     };
 
