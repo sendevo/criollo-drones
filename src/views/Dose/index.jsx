@@ -19,7 +19,7 @@ import iconSeedingDensity from '../../assets/icons/dens_siembra.png';
 import { PRODUCT_TYPES, SEEDING_DENSITY_UNITS } from '../../entities/Model';
 import pmsData from '../../assets/pms.json';
 import { parseNonNegativeNumber, set2Decimals } from "../../utils";
-import { densToKgHa, densFromKgHa } from "../../entities/API";
+import { densToKgHa, densFromKgHa, getParameterNames } from "../../entities/API";
 
 const Dose = props => {
 
@@ -92,10 +92,10 @@ const Dose = props => {
         if (result.status === "error") {
             // e.g. surface which fields are invalid/missing
             console.warn("Invalid dose params:", result.wrong_keys);
-            Toast("error", `Error en parámetros: ${result.wrong_keys.join(', ')}`);
+            Toast("error", `Error en parámetros: ${getParameterNames(result.wrong_keys)}`);
             return;
         }
-        
+
         model.update("doseSolid", set2Decimals(result.kg_ha));
         props.f7router.back();
     };

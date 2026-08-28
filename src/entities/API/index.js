@@ -179,18 +179,18 @@ const parameterNames = { // Al costado, notación de la documentación
     recolected_time: "Tiempo",
     work_velocity: "Velocidad de trabajo",
     expected_dose: "Dosis prevista",
-    seedVariety: "Variedad de semilla",
+    seedVariety: "Variedad",
     seedName: "Nombre de semilla",
-    seedP1000: "P1000 de semilla",
-    seedPurity: "Pureza de semilla",
-    seedPG: "PG de semilla",
+    seedP1000: "P1000",
+    seedPurity: "Pureza",
+    seedPG: "PG",
     plantingEfficiency: "Eficiencia de siembra",
     seedingDensity: "Densidad de siembra",
     seedingDensityUnit: "Unidad de densidad de siembra",
     doseSolid: "Dosis de sólidos"
 };
 
-const getParameterNames = paramList => paramList.map(key => parameterNames[key]).join(", ");
+export const getParameterNames = paramList => paramList.map(key => parameterNames[key]).join(", ");
 
 const checkParams = (schema, params) => { // Valida parametros y genera mensaje de error
     const wrongKeys = validate(schema, params);
