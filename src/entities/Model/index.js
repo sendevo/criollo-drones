@@ -85,13 +85,13 @@ const defaultFormParams = {
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
 
+    seedMode: false,
     seedVariety: '', // Variedad de semilla (para productos solidos)
     seedName: '', // Nombre de semilla (para productos solidos)
     seedP1000: '', // Peso de 1000 semillas (para productos solidos)
     seedPurity: 100, // Pureza de semilla (para productos solidos)
     seedPG: 100, // Poder germinativo de semilla (para productos solidos)
     plantingEfficiency: 100, // Eficiencia de siembra (para productos solidos)
-
     seedingDensity: '', // Densidad de siembra (semillas/ha) (para productos solidos)
     seedingDensityUnit: 'Kg/ha', // Unidad de densidad de siembra (para productos solidos)
 

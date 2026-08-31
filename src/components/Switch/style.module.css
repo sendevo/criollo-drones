@@ -1,0 +1,16 @@
+.Container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.Label {
+    font-size: 14px;
+    color: #8e8e93;
+    transition: color 0.3s ease;
+}
+
+.ActiveLabel {
+    color: #000000;
+    font-weight: 600;
+}

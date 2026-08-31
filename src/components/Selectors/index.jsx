@@ -36,6 +36,34 @@ const ProductTypeSelector = ({value, onChange}) => {
     );
 };
 
+
+const SolidTypeSelector = ({value, onChange}) => {
+    return(
+        <Block style={{marginTop:"0px", marginBottom:"20px"}}>
+            <BlockTitle>
+                <Typography variant='subtitle'>Tipo de sólido</Typography>
+            </BlockTitle>
+
+            <Row>
+                <Col style={{textAlign:"center"}}>
+                    <Radio 
+                        data-test-id="solid-type-fertilizer-radio"
+                        name="input-type" 
+                        checked={!value} 
+                        onChange={e=>onChange(!e.target.checked)}/> Fertilización
+                </Col>
+                <Col style={{textAlign:"center"}}>
+                    <Radio 
+                        data-test-id="Solid-type-seed-radio"
+                        name="input-type" 
+                        checked={value} 
+                        onChange={e=>onChange(e.target.checked)}/> Siembra
+                </Col>
+            </Row>
+        </Block>
+    );
+};
+
 const NozzleSeparationSelector = props => {
 
     const setValue = (el, value) => {
@@ -249,6 +277,7 @@ const PatternSelector = props => {
 
 export {
     ProductTypeSelector,
+    SolidTypeSelector,
     NozzleSeparationSelector,
     PresentationSelector,
     ElapsedSelector,

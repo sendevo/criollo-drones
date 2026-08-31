@@ -14,10 +14,11 @@ import { useContext, useEffect, useState } from 'react';
 import { FaCalculator, FaStopwatch } from 'react-icons/fa';
 import { NavbarTitle, BackButton, ActionButton, NAVBAR_STYLE } from '../../components/Buttons';
 import { parseNonNegativeNumber } from '../../utils';
-import { ProductTypeSelector } from '../../components/Selectors';
+import { ProductTypeSelector, SolidTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
+import TextSwitch from '../../components/Switch';
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
@@ -45,6 +46,7 @@ const Params = props => {
         lotCoordinates: model.lotCoordinates || [],
         gpsEnabled: false,
 
+        seedMode: model.seedMode || false,
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
         workWidth: model.workWidth || '',
@@ -60,7 +62,6 @@ const Params = props => {
             doseSolid: model.doseSolid || ''
         });
     }, [model.workVelocity, model.doseSolid]);
-
 
     const handleProductTypeChange = (value) => {
         if(Object.values(PRODUCT_TYPES).includes(value)){
@@ -115,6 +116,10 @@ const Params = props => {
 
             <ProductTypeSelector value={inputs.productType} onChange={handleProductTypeChange}/>
 
+            {inputs.productType === PRODUCT_TYPES.SOLID && (
+                <SolidTypeSelector value={inputs.seedMode} onChange={v=>setMainParams('seedMode', v)}/>
+            )}
+            
             <BlockTitle>
                 <Typography>Datos del lote</Typography>
             </BlockTitle>
@@ -180,7 +185,7 @@ const Params = props => {
                     </Input>
                     :
                     <Row>
-                        <Col width="80">
+                        <Col width={inputs.seedMode ? "80" : "100"}>
                             <Input
                                 data-testid="input-dose-solid"
                                 slot="list"
@@ -193,9 +198,11 @@ const Params = props => {
                                 onChange={v=>setMainParams('doseSolid', parseNonNegativeNumber(v.target.value))}>
                             </Input>
                         </Col>
-                        <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
-                            <ActionButton icon={FaCalculator} href="/dose/" tooltip="Calcular dosis" />
-                        </Col>
+                        {inputs.seedMode &&
+                            <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
+                                <ActionButton icon={FaCalculator} href="/dose/" tooltip="Calcular dosis" />
+                            </Col>
+                        }
                     </Row>
                 }
 

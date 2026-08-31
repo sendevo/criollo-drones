@@ -79,7 +79,7 @@ const SuppliesList = props => {
                             <td>{formatNumber(model.workVolume)} {doseUnit}</td>
                         </tr>
                         <tr>
-                            <td><b>Capacidad del tanque:</b></td>
+                            <td><b>Capacidad de carga:</b></td>
                             <td>{model.capacity} {tankUnit}</td>
                         </tr>
                         <tr>
