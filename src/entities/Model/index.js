@@ -93,7 +93,7 @@ const defaultFormParams = {
     seedPG: 100, // Poder germinativo de semilla (para productos solidos)
     plantingEfficiency: 100, // Eficiencia de siembra (para productos solidos)
     seedingDensity: '', // Densidad de siembra (semillas/ha) (para productos solidos)
-    seedingDensityUnit: 'Kg/ha', // Unidad de densidad de siembra (para productos solidos)
+    seedingDensityUnit: SEEDING_DENSITY_UNITS.KG_HA, // Unidad de densidad de siembra (para productos solidos)
 
     nozzleCnt: '', // Cantidad de picos
     controlNozzleCnt: '', // Cantidad de picos a controlar (jarreo)
@@ -229,7 +229,18 @@ export default class CriolloModel {
 
     /// Reportes
     addParamsToReport(params) {
-        this.currentReport.params = params;
+        this.currentReport.params = {
+            ...params,
+            seedMode: this.seedMode,
+            seedVariety: this.seedVariety,
+            seedName: this.seedName,
+            seedP1000: this.seedP1000,
+            seedPurity: this.seedPurity,
+            seedPG: this.seedPG,
+            seedEfficiency: this.plantingEfficiency,
+            seedDensity: this.seedingDensity,
+            seedDensityUnit: this.seedingDensityUnit
+        };
         this.currentReport.completed.params = true;
     }
 

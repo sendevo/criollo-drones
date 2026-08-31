@@ -86,6 +86,53 @@ const SuppliesList = props => {
                             <td><b>Cantidad de cargas:</b></td>
                             <td data-testid="supplies-loads-text">{loadsText}</td>
                         </tr>
+                        {
+                            model.seedMode && 
+                            <>
+                                {model.seedVariety &&
+                                    <tr>
+                                        <td><b>Híbrido o variedad:</b></td>
+                                        <td>{model.seedVariety}</td>
+                                    </tr>
+                                }
+                                {model.seedName &&
+                                    <tr>
+                                        <td><b>Semilla:</b></td>
+                                        <td>{model.seedName}</td>
+                                    </tr>
+                                }
+                                {model.seedP1000 &&
+                                    <tr>
+                                        <td><b>Peso de 1000 semillas:</b></td>
+                                        <td>{model.seedP1000}</td>
+                                    </tr>
+                                }
+                                {model.seedPurity &&
+                                    <tr>
+                                        <td><b>Pureza:</b></td>
+                                        <td>{model.seedPurity} %</td>
+                                    </tr>
+                                }
+                                {model.seedPG &&
+                                    <tr>
+                                        <td><b>Poder germinativo:</b></td>
+                                        <td>{model.seedPG} gr</td>
+                                    </tr>
+                                }
+                                {model.seedEfficiency &&
+                                    <tr>
+                                        <td><b>Eficiencia de implantación:</b></td>
+                                        <td>{model.seedEfficiency}</td>
+                                    </tr>
+                                }
+                                {model.seedDensity && model.seedDensityUnit !== "Kg/ha" &&
+                                    <tr>
+                                        <td><b>Densidad de siembra:</b></td>
+                                        <td>{`${model.seedDensity} ${model.seedDensityUnit}`}</td>
+                                    </tr>
+                                }
+                            </>
+                        }
                     </tbody>
                 </table>
             </Row>

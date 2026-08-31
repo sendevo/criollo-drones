@@ -2,10 +2,11 @@ import pdfMake from "pdfmake";
 import vfs from "pdfmake/build/vfs_fonts.js";
 import moment from 'moment';
 import Toast from '../../components/Toast';
-import { formatNumber, handleSaveReport } from "../../utils";
+import { formatNumber, handleSaveReport, sanitizeTypedValue } from "../../utils";
 import { getProductDoseUnit, getProductQuantityLabel } from "../API";
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { PRODUCT_TYPES } from "../Model";
 
 import { logoCriollo, membreteCriollo } from '../../assets/base64';
 
@@ -62,6 +63,8 @@ const reportFooter = {
 
 const PDFExport = async (report, share) => {
 
+    const getProductTypeLabel = productType => productType === PRODUCT_TYPES.LIQUID ? "Líquidos" : "Sólidos";
+
     const reportContent = [ // Composicion de todo el documento
         {
             text: "Criollo Drones",
@@ -82,86 +85,113 @@ const PDFExport = async (report, share) => {
     ];
 
     if(report.completed.params) {
+        
         reportContent.push({
             text: "Parámetros de aplicación",
-            style: "section"
-        });
-        reportContent.push({
-            text: "Producto a aplicar: " + report.params.productType,
-            style: "text"
-        });
-        reportContent.push({
-            text: "Pico",
             style: "subsection"
-        });
-        reportContent.push({
-            layout: 'lightHorizontalLines',
-            table: {
-                headerRows: 0,
-                widths: ['*', '*'],
-                body: [
-                    [{
-                        text: "Pico seleccionado:",
-                        style: "tableHeader"
-                    }, report.params.nozzleName ? report.params.nozzleName : "Otro"],
-                    [{
-                        text: "Caudal nominal:",
-                        style: "tableHeader"
-                    }, formatNumber(report.params.nominalFlow) + " l/min"],
-                    [{
-                        text: "Presión nominal:",
-                        style: "tableHeader"
-                    }, formatNumber(report.params.nominalPressure) + " bar"]
-                ]
-            },
-            margin: [0, 0, 0, 15]
         });
 
         reportContent.push({
-            text: "Parámetros de pulverización",
-            style: "subsection"
-        });
-        reportContent.push({
             layout: 'lightHorizontalLines',
             table: {
                 headerRows: 0,
                 widths: ['*', '*'],
                 body: [
                     [{
-                        text: "Distancia entre picos:",
+                        text: "Producto a aplicar:",
                         style: "tableHeader"
-                    }, formatNumber(report.params.nozzleSeparation)+" m"],
+                    }, getProductTypeLabel(report.params.productType)],
+                    [{
+                        text: "Ancho de faja:",
+                        style: "tableHeader"
+                    }, formatNumber(report.params.workWidth) + " m"],
                     [{
                         text: "Velocidad de trabajo:",
                         style: "tableHeader"
                     }, formatNumber(report.params.workVelocity) + " km/h"],
                     [{
-                        text: "Presión de trabajo:",
+                        text: "Altura de vuelo:",
                         style: "tableHeader"
-                    }, formatNumber(report.params.workPressure) + " bar"],
-                    [{
-                        text: "Volumen de aplicación:",
-                        style: "tableHeader"
-                    }, formatNumber(report.params.workVolume) + " l/ha"]
+                    }, formatNumber(report.params.flightAltitude) + " m"]
                 ]
             },
             margin: [0, 0, 0, 15]
         });
-        if(report.params.waterEqSprayFlow && report.params.productType === "fertilizante") {
+
+        if(report.params.nozzleCnt){
             reportContent[reportContent.length - 1].table.body.push(
                 [{
-                    text: "Caudal equivalente en agua",
+                    text: "Cantidad de picos",
                     style: "tableHeader"
-                }, formatNumber(report.params.waterEqSprayFlow) + " l/ha"]
+                }, report.params.nozzleCnt]
             );
         }
-        if(report.params.dropletSizeLabel){
-            reportContent[reportContent.length - 1].table.body.push(
-                [{
-                    text: "Tamaño de gota",
-                    style: "tableHeader"
-                }, report.params.dropletSizeLabel]
-            );
+
+        const seedData = report.params?.seedMode ? report.params : null;
+
+        if(seedData?.seedMode) {
+            const seedRows = [];
+
+            if(seedData.seedVariety) {
+                seedRows.push([
+                    {
+                        text: "Híbrido o variedad:",
+                        style: "tableHeader"
+                    }, seedData.seedVariety
+                ]);
+            }
+            if(seedData.seedName) {
+                seedRows.push([
+                    {
+                        text: "Semilla:",
+                        style: "tableHeader"
+                    }, seedData.seedName
+                ]);
+            }
+            if(seedData.seedP1000) {
+                seedRows.push([
+                    {
+                        text: "Peso de 1000 semillas:",
+                        style: "tableHeader"
+                    }, seedData.seedP1000
+                ]);
+            }
+            if(seedData.seedPurity) {
+                seedRows.push([
+                    {
+                        text: "Pureza:",
+                        style: "tableHeader"
+                    }, seedData.seedPurity + " %"
+                ]);
+            }
+            if(seedData.seedPG) {
+                seedRows.push([
+                    {
+                        text: "Poder germinativo:",
+                        style: "tableHeader"
+                    }, seedData.seedPG + " gr"
+                ]);
+            }
+            if(seedData.seedEfficiency) {
+                seedRows.push([
+                    {
+                        text: "Eficiencia de implantación:",
+                        style: "tableHeader"
+                    }, seedData.seedEfficiency+" %"
+                ]);
+            }
+            if(seedData.seedDensity && seedData.seedDensityUnit !== "Kg/ha") {
+                seedRows.push([
+                    {
+                        text: "Densidad de siembra:",
+                        style: "tableHeader"
+                    }, sanitizeTypedValue(seedData.seedDensity.toString()) + " " + seedData.seedDensityUnit
+                ]);
+            }
+
+            if(seedRows.length > 0) {
+                reportContent[reportContent.length - 1].table.body.push(...seedRows);    
+            }
         }
         if(report.params.productDensity){
             reportContent[reportContent.length - 1].table.body.push(
@@ -174,6 +204,51 @@ const PDFExport = async (report, share) => {
     }
 
     if(report.completed.control) {
+        const controlRows = [
+            [{
+                text: "Caudal ef. promedio:",
+                style: "tableHeader"
+            }, formatNumber(report.control.efAvg)+" l/min"]
+        ];
+
+        if(report.control.totalEffectiveFlow) {
+            controlRows.push([
+                {
+                    text: "Caudal pulverizado efectivo:",
+                    style: "tableHeader"
+                }, formatNumber(report.control.totalEffectiveFlow)+" l/min"
+            ]);
+        }
+
+        controlRows.push([
+            {
+                text: "Volumen pulverizado efectivo:",
+                style: "tableHeader"
+            }, formatNumber(report.control.effectiveSprayVolume) + " l/ha"
+        ]);
+
+        if(report.control.expectedSprayVolume) {
+            controlRows.push(
+                [{
+                    text: "Volumen previsto:",
+                    style: "tableHeader"
+                }, formatNumber(report.control.expectedSprayVolume) + " l/ha"],
+                [{
+                    text: "Diferencia:",
+                    style: "tableHeader"
+                }, formatNumber(report.control.diff) + " l/ha, " + formatNumber(report.control.diffp)+" %"]
+            );
+        }
+
+        if(report.control.comments) {
+            controlRows.push([
+                {
+                    text: "Comentarios: ",
+                    style: "tableHeader"
+                }, report.control.comments
+            ]);
+        }
+
         reportContent.push({
             text: "Verificación de picos",
             style: "section"
@@ -183,28 +258,7 @@ const PDFExport = async (report, share) => {
             table: {
                 headerRows: 0,
                 widths: ['*', '*'],
-                body: [
-                    [{
-                        text: "Caudal ef. promedio:",
-                        style: "tableHeader"
-                    }, formatNumber(report.control.efAvg)+" l/min"],
-                    [{
-                        text: "Volumen pulverizado:",
-                        style: "tableHeader"
-                    }, formatNumber(report.control.effectiveSprayVolume) + " l/ha"],
-                    [{
-                        text: "Volumen previsto:",
-                        style: "tableHeader"
-                    }, formatNumber(report.control.expectedSprayVolume) + " l/ha"],
-                    [{
-                        text: "Diferencia:",
-                        style: "tableHeader"
-                    }, formatNumber(report.control.diff) + " l/ha, " + formatNumber(report.control.diffp)+" %"],
-                    [{
-                        text: "Comentarios: ",
-                        style: "tableHeader"
-                    }, report.control.comments ? report.control.comments : " - "]
-                ]
+                body: controlRows
             },
             margin: [0, 0, 0, 15]
         });
@@ -248,6 +302,9 @@ const PDFExport = async (report, share) => {
     }
 
     if (report.completed.supplies) {
+        const isSolid = report.supplies.productType === PRODUCT_TYPES.SOLID;
+        const doseUnit = isSolid ? "kg/ha" : "l/ha";
+        const capacityUnit = isSolid ? "kg" : "l";
 
         reportContent.push({
             text: "Parámetros de mezcla",
@@ -257,17 +314,22 @@ const PDFExport = async (report, share) => {
             text: "Lote: " + report.supplies.lotName,
             style: "text"
         });
+        if(report.supplies.lotCoordinates) {
+            reportContent.push({
+                text: "Ubicación: " + (report.supplies.lotCoordinates.length > 0 ? "lat: " + report.supplies.lotCoordinates.join(', long:') : " - "),
+                style: "text"
+            });
+        }
         reportContent.push({
             text: "Superficie: " + formatNumber(report.supplies.workArea) + " ha",
             style: "text"
         });
-        const isSolid = report.supplies.productType === "solido";
         reportContent.push({
-            text: "Dosis: " + formatNumber(report.supplies.workVolume) + (isSolid ? " kg/ha" : " l/ha"),
+            text: "Dosis: " + formatNumber(report.supplies.workVolume) + " " + doseUnit,
             style: "text"
         });
         reportContent.push({
-            text: "Capacidad tanque: " + formatNumber(report.supplies.capacity, 0) + (isSolid ? " kg" : " litros"),
+            text: "Capacidad tanque: " + formatNumber(report.supplies.capacity, 0) + " " + capacityUnit,
             style: "text"
         });
         reportContent.push({

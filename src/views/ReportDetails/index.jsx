@@ -4,7 +4,7 @@ import { NavbarTitle, BackButton, NAVBAR_STYLE } from '../../components/Buttons'
 import NozzlesTable from '../../components/NozzlesTable';
 import { SuppliesTable, PrescriptionTable } from '../../components/SuppliesTable';
 import { ModelCtx } from '../../context';
-import { formatNumber } from '../../utils';
+import { formatNumber, sanitizeTypedValue } from '../../utils';
 import moment from 'moment';
 import { Capacitor } from '@capacitor/core';
 import PDFExport from '../../entities/PDF';
@@ -30,38 +30,69 @@ const ReportDetails = props => {
                 <p style={{margin:0, padding:0}}><b>Nombre: </b>{report.name}</p>
                 <p style={{margin:0, padding:0}}><b>Fecha y hora: </b>{moment(report.timestamp).format("DD/MM/YYYY - HH:mm")}</p>
             </div>
-            
+
             {report.completed.params &&
                 <Block className={classes.SectionBlock}>
                     <h3 style={{marginBottom:"5px"}}>Parámetros de aplicación</h3>
-                    {report.params.productType && 
-                        <table>
-                            <tbody>
+                    <table className={classes.Table}>
+                        <tbody>
+                            {report.params.productType && 
                                 <tr>
                                     <td><b>Producto a aplicar:</b></td>
-                                    <td>{report.params.productType === PRODUCT_TYPES.LIQUID ? "Líquidos" : "Sólidos"}</td>
+                                    <td className={classes.DataCell}>{report.params.productType === PRODUCT_TYPES.LIQUID ? "Líquidos" : "Sólidos"}</td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    }
-
-                    <p style={{marginTop: "5px",marginBottom:0, padding:0}}>Título</p>
-                    <table className={classes.Table}>
-                        <tbody>
-                            <tr>
-                                <td><b>Parámetro ejemplo:</b></td>
-                                <td className={classes.DataCell}>{formatNumber(1.23)} l/min</td>
-                            </tr>
-                            <tr></tr>
-                        </tbody>
-                    </table>    
-                    <p style={{marginTop:"5px", marginBottom:0, padding:0}}>Parámetros de pulverización</p>
-                    <table className={classes.Table}>
-                        <tbody>
+                            }
                             <tr>
                                 <td><b>Velocidad de trabajo:</b></td>
                                 <td className={classes.DataCell}>{formatNumber(report.params.workVelocity)} km/h</td>
                             </tr>
+                            {
+                                report.params.seedMode && 
+                                <>
+                                    {report.params.seedVariety &&
+                                        <tr>
+                                            <td><b>Híbrido o variedad:</b></td>
+                                            <td className={classes.DataCell}>{report.params.seedVariety}</td>
+                                        </tr>
+                                    }
+                                    {report.params.seedName &&
+                                        <tr>
+                                            <td><b>Semilla:</b></td>
+                                            <td className={classes.DataCell}>{report.params.seedName}</td>
+                                        </tr>
+                                    }
+                                    {report.params.seedP1000 &&
+                                        <tr>
+                                            <td><b>Peso de 1000 semillas:</b></td>
+                                            <td className={classes.DataCell}>{report.params.seedP1000}</td>
+                                        </tr>
+                                    }
+                                    {report.params.seedPurity &&
+                                        <tr>
+                                            <td><b>Pureza:</b></td>
+                                            <td className={classes.DataCell}>{report.params.seedPurity} %</td>
+                                        </tr>
+                                    }
+                                    {report.params.seedPG &&
+                                        <tr>
+                                            <td><b>Poder germinativo:</b></td>
+                                            <td className={classes.DataCell}>{report.params.seedPG} gr</td>
+                                        </tr>
+                                    }
+                                    {report.params.seedEfficiency &&
+                                        <tr>
+                                            <td><b>Eficiencia de implantación:</b></td>
+                                            <td className={classes.DataCell}>{report.params.seedEfficiency} %</td>
+                                        </tr>
+                                    }
+                                    {report.params.seedDensity && report.params.seedDensityUnit !== "Kg/ha" &&
+                                        <tr>
+                                            <td><b>Densidad de siembra:</b></td>
+                                            <td className={classes.DataCell}>{`${sanitizeTypedValue(report.params.seedDensity.toString())} ${report.params.seedDensityUnit}`}</td>
+                                        </tr>
+                                    }
+                                </>
+                            }
                         </tbody>
                     </table>
                 </Block>
