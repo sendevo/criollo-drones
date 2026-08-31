@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "playwright": "playwright codegen http://localhost:5173",
     "postinstall": "sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' node_modules/@capacitor-community/keep-awake/android/build.gradle"
   },
   "dependencies": {
@@ -33,7 +32,6 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^4.8.2",
-    "@playwright/test": "^1.58.2",
     "@types/node": "^25.2.2",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
