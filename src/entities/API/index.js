@@ -173,7 +173,7 @@ const parameterNames = { // Al costado, notación de la documentación
     tray_data: "Datos de bandejas",
     tray_distance: "Distancia entre bandejas",
     pass_number: "Número de pasadas",
-    work_width: "Ancho de trabajo",
+    work_width: "Ancho de faja",
     work_pattern: "Patrón de trabajo",
     recolected: "Peso recolectado",
     recolected_time: "Tiempo",

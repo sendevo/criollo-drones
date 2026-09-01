@@ -28,7 +28,7 @@ const doseParamNames = {
     recolected: "peso recolectado",
     recolected_time: "tiempo",
     work_velocity: "velocidad de trabajo",
-    work_width: "ancho de trabajo",
+    work_width: "ancho de faja",
     expected_dose: "dosis prevista"
 };
 
@@ -48,6 +48,7 @@ const SolidControl = () => {
         workArea: model.workArea || '',
         workVelocity: model.workVelocity || '',
         recolected: model.recolected || '',
+        recolectedTime: model.recolectedTime || '',
         workWidth: model.workWidth || '',
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
@@ -79,10 +80,10 @@ const SolidControl = () => {
     });
 
     useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
-        setInputs({
-            ...inputs,
+        setInputs(prevState => ({
+            ...prevState,
             recolected: model.recolected || ''
-        });
+        }));
     }, [model.recolected]);
 
     const setMainParams = (attr, value) => {
@@ -275,12 +276,17 @@ const SolidControl = () => {
             return;
         }
 
-        setValidationOutputs ({
-            ...validationOutputs,
+        setValidationOutputs(prevState => ({
+            ...prevState,
             effective_dose: result.dose,
             dose_diff: result.diffkg,
             dose_diff_p: result.diffp,
-        });
+        }));
+
+        setDistributionOutputs(prevState => ({
+            ...prevState,
+            effective_dose: result.dose,
+        }));
         
         model.update({
             effectiveDose: result.dose,

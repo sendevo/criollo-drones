@@ -197,7 +197,7 @@ const Dose = props => {
 
                 <List form noHairlinesMd>
                     <Row slot="list">
-                        <Col>
+                        <Col width="100" medium="60">
                             <Input
                                 data-testid="input-seed-density"
                                 slot="list"
@@ -211,7 +211,7 @@ const Dose = props => {
                             </Input>    
                         </Col>
 
-                        <Col>
+                        <Col width="100" medium="40">
                             <Select
                                 data-testid="input-seeding-density-unit"
                                 slot="list"
