@@ -69,12 +69,14 @@ const Chart = props => (
                 <XAxis dataKey="name" />
                 <YAxis />
 
+                {/*
                 <Tooltip 
                     content={<CustomTooltip 
                         prefix={props.tooltipPrefix || ""} 
                         suffix={props.tooltipSuffix || ""} 
                     />}
                 />
+                */}
 
                 <Line type="monotone" dataKey="recolectado" stroke="#8884d8" activeDot={{ r: 8 }} />
             </LineChart>

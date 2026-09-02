@@ -103,6 +103,7 @@ const defaultFormParams = {
 
     samplingTimeMs: '', // Tiempo de muestreo verif. picos (ms)
     effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
+    adjustedDose: '', // Dosis ajustada
     doseDiff: '', // Diferencia con dosis prevista (kg/ha o l/ha)
     doseDiffP: '', // Diferencia con dosis prevista (%)
     downloadRate: '', // Tasa de descarga (kg/min)
