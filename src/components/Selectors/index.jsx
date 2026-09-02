@@ -254,7 +254,7 @@ const PatternSelector = props => {
     return (
         <Block style={{margin:"0px"}}>
             <BlockTitle>
-                <Typography variant='subtitle'>Patrón de fertilización</Typography>
+                <Typography variant='subtitle'>{props.seedMode ? "Patrón de siembra" : "Patrón de fertilización"}</Typography>
             </BlockTitle>
             <Row>
                 <Col style={{textAlign:"center"}}>

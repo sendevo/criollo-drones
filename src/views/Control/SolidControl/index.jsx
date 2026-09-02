@@ -54,7 +54,6 @@ const SolidControl = () => {
         doseLiquid: model.doseLiquid || '',
         gpsEnabled: false,
 
-        trayArea: model.trayArea || '',
         trayCount: model.trayCount || '',
         traySeparation: model.traySeparation || '',
         trayData: model.trayData || [],
@@ -71,12 +70,15 @@ const SolidControl = () => {
     const [validationOutputs, setValidationOutputs] = useState({
         effective_dose: model.effectiveDose || '',
         dose_diff: model.doseDiff || '',
-        dose_diff_p: model.doseDiffP || ''
+        dose_diff_p: model.doseDiffP || '',
+        download_rate: model.downloadRate || '',
+        treated_area: model.treatedArea || ''
     });
 
     const [distributionOutputs, setDistributionOutputs] = useState({
         expected_dose: model.doseSolid || '',
         effective_dose: model.effectiveDose || '',
+        adjusted_dose: ''
     });
 
     useEffect(() => { // Actualizar input de peso recolectado por si se mide con cronometro
@@ -85,6 +87,10 @@ const SolidControl = () => {
             recolected: model.recolected || ''
         }));
     }, [model.recolected]);
+
+    useEffect(() => {
+        handleComputeProfile();
+    }, [inputs.trayData, inputs.traySeparation, inputs.workWidth]);
 
     const setMainParams = (attr, value) => {
         if(attr === "trayCount"){ // Actualizar array de datos de bandejas
@@ -108,7 +114,7 @@ const SolidControl = () => {
             });
         }
 
-        if(attr === "trayArea" || attr === "traySeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
+        if(attr === "traySeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
             setInputs(prevState => ({ 
                 ...prevState, 
                 profileComputed: false,
@@ -153,6 +159,7 @@ const SolidControl = () => {
 
         const selectedWidth = selectedProfile.work_width;
         const effectiveDose = Number.isFinite(selectedProfile.avg) ? selectedProfile.avg : 0;
+        const adjustedDose = effectiveDose*inputs.workWidth/selectedWidth;
 
         setInputs(prevState => ({
             ...prevState,
@@ -167,7 +174,8 @@ const SolidControl = () => {
 
         setDistributionOutputs(prevState => ({
             ...prevState,
-            effective_dose: effectiveDose
+            effective_dose: effectiveDose,
+            adjusted_dose: adjustedDose
         }));
 
         model.update({
@@ -177,7 +185,8 @@ const SolidControl = () => {
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
             cvDist: selectedProfile.cv,
-            effectiveDose
+            effectiveDose,
+            adjustedDose
         });
     };
 
@@ -191,7 +200,7 @@ const SolidControl = () => {
 
     const handleComputeProfile = () => {
         if(inputs.trayData.length === 0){
-            Toast("error", "No hay datos de bandejas para calcular el perfil");
+            //Toast("error", "No hay datos de bandejas para calcular el perfil");
             return;
         }
 
@@ -208,7 +217,7 @@ const SolidControl = () => {
             });
 
             if(result.status === "error") {
-                Toast("error", `Error en parámetros: ${result.wrongKeys}`);
+                //Toast("error", `Error en parámetros: ${result.wrongKeys}`);
                 return;
             }else{
                 const workPattern = inputs.workPattern || 'lineal';
@@ -281,11 +290,14 @@ const SolidControl = () => {
             effective_dose: result.dose,
             dose_diff: result.diffkg,
             dose_diff_p: result.diffp,
+            download_rate: result.dr,
+            treated_area: result.ta
         }));
 
         setDistributionOutputs(prevState => ({
             ...prevState,
             effective_dose: result.dose,
+            adjusted_dose: result.dose // computed when user adjust work width
         }));
         
         model.update({
@@ -304,7 +316,6 @@ const SolidControl = () => {
             avgDist: null,
             stdDist: null,
             cvDist: null,
-            trayArea: '',
             trayCount: '',
             traySeparation: '',
             trayData: [] 
@@ -314,7 +325,6 @@ const SolidControl = () => {
             avgDist: null,
             stdDist: null,
             cvDist: null,
-            trayArea: '',
             trayCount: '',
             traySeparation: '',
             trayData: [] 
@@ -328,7 +338,6 @@ const SolidControl = () => {
         }))
         : inputs.trayData.map((tray, index) => ({ 
             name: `${index + 1}`, 
-            //recolectado: set2Decimals(tray.collected * 10 / inputs.trayArea) // Convertir a kg/ha
             recolectado: set2Decimals(tray.collected)
         }));
 
@@ -409,6 +418,7 @@ const SolidControl = () => {
 
             <List form noHairlinesMd style={{marginTop: "0px", marginBottom:"10px"}}>        
                 <Row slot="list">
+                    {/*
                     <Col width="80">
                         <Input
                             slot="list"
@@ -422,6 +432,7 @@ const SolidControl = () => {
                             onChange={v=>setMainParams('trayArea', parseNonNegativeNumber(v.target.value))}>
                         </Input>
                     </Col>
+                    */}
                     <Col width="80">
                         <Input
                             slot="list"
@@ -448,14 +459,12 @@ const SolidControl = () => {
                         </Input>
                     </Col>
                 </Row>
-
-                
-
                 
             </List>
 
-            {inputs.trayData.length > 0 && inputs.trayArea > 0 && inputs.traySeparation > 0 &&
+            {inputs.trayData.length > 0 && inputs.traySeparation > 0 &&
                 <DistributionControl 
+                    seedMode={model.seedMode}
                     inputs={inputs}
                     outputs={distributionOutputs}
                     chartData={chartData}
@@ -465,7 +474,6 @@ const SolidControl = () => {
                     handleTrayAddCollected={handleTrayAddCollected}
                     onPatternChange={handlePatternChange}
                     onWorkWidthChange={handleWorkWidthChange}
-                    handleComputeProfile={handleComputeProfile}
                     handleClearDistrForm={handleClearDistrForm}/>
             }
         </div>

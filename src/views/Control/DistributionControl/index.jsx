@@ -13,12 +13,12 @@ import WorkWidthPicker from './workWidthPicker.jsx';
 const DistributionControl = props => {
 
     const {
+        seedMode,
         productType,
         inputs,
         outputs,
         chartData,
         handleTrayAddCollected,
-        handleComputeProfile,
         handleClearDistrForm,
         workWidthOptions = [],
         selectedWorkPattern,
@@ -35,6 +35,7 @@ const DistributionControl = props => {
 
             {inputs.profileComputed &&
                 <ResultsProfile 
+                    seedMode={seedMode}
                     productType={productType}
                     inputs={inputs}
                     outputs={outputs}/>
@@ -48,6 +49,7 @@ const DistributionControl = props => {
 
             {inputs.profileComputed && workWidthOptions.length > 0 &&
                 <PatternSelector
+                    seedMode={seedMode}
                     pattern={selectedWorkPattern}
                     onChange={onPatternChange}/>
             }
@@ -59,6 +61,7 @@ const DistributionControl = props => {
                     onChange={onWorkWidthChange}/>
             }
 
+            {/*
             <Row style={{marginBottom:"15px", marginTop:"20px"}}>
                 <Col width={20}></Col>
                 <Col width={60}>
@@ -72,8 +75,9 @@ const DistributionControl = props => {
                 </Col>
                 <Col width={20}></Col>
             </Row>
+            */}
 
-            <Row style={{marginBottom:"15px"}}>
+            <Row style={{marginTop:"20px", marginBottom:"15px"}}>
                 <Col width={20}></Col>
                 <Col width={60}>
                     <Button 

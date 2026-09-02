@@ -388,7 +388,9 @@ export const computeDose = params => {
     const dose = recolected/distance/work_width*10000;
     const diffkg = dose-expected_dose;
     const diffp = diffkg/expected_dose*100;
-    return { status: "success", dose, diffkg, diffp };
+    const dr = recolected/recolected_time*60;
+    const ta = work_width*work_velocity/6000;
+    return { status: "success", dose, diffkg, diffp, dr, ta };
 };
 
 export const densToKgHa = params => {

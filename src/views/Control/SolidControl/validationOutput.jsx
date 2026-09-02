@@ -8,6 +8,8 @@ const ValidationOutput = props => { // Resultado de verificacion de dosis
         effective_dose,
         dose_diff,
         dose_diff_p,
+        download_rate,
+        treated_area
     } = props;
 
     return (
@@ -16,8 +18,8 @@ const ValidationOutput = props => { // Resultado de verificacion de dosis
                 <tbody>
                     {effective_dose ? 
                         <tr>
-                            <td style={fieldCellStyle}><b>Dosis efectiva:</b></td>
-                            <td style={dataCellStyle} data-testid="solid-effective-dose-output">
+                            <td style={{...fieldCellStyle, fontSize:"14px"}}><b>Dosis efectiva:</b></td>
+                            <td style={{...dataCellStyle, fontSize:"14px"}} data-testid="solid-effective-dose-output">
                                 {effective_dose?.toFixed(2)} kg/ha
                             </td>
                         </tr>
@@ -31,6 +33,25 @@ const ValidationOutput = props => { // Resultado de verificacion de dosis
                             </td>
                         </tr>
                         : null
+                    }
+                    {download_rate ?
+                        <tr>
+                            <td style={fieldCellStyle}><b>Tasa de descarga:</b></td>
+                            <td style={dataCellStyle} data-testid="solid-download-rate-output">
+                                {download_rate?.toFixed(2)} kg/min
+                            </td>
+                        </tr>
+                        : null
+                    }
+                    {treated_area ?
+                        <tr>
+                            <td style={fieldCellStyle}><b>Superficie tratada:</b></td>
+                            <td style={dataCellStyle} data-testid="solid-treated-area-output">
+                                {treated_area?.toFixed(2)} ha/min
+                            </td>
+                        </tr>
+                        : null
+
                     }
                 </tbody>
             </table>

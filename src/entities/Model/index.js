@@ -105,6 +105,8 @@ const defaultFormParams = {
     effectiveDose: '', // Dosis efectiva (kg/ha o l/ha)
     doseDiff: '', // Diferencia con dosis prevista (kg/ha o l/ha)
     doseDiffP: '', // Diferencia con dosis prevista (%)
+    downloadRate: '', // Tasa de descarga (kg/min)
+    treatedArea: '', // Superficie tratada (ha/min)
 
     trayArea: '', // Superficie de bandejas (m²)
     trayCount: '', // Cantidad de bandejas
