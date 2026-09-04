@@ -87,7 +87,7 @@ const SuppliesList = props => {
                             <td data-testid="supplies-loads-text">{loadsText}</td>
                         </tr>
                         {
-                            model.seedMode && 
+                            PRODUCT_TYPES.SEED && model.seedMode && 
                             <>
                                 {model.seedVariety &&
                                     <tr>
