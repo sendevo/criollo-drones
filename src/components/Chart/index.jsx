@@ -54,7 +54,7 @@ const MidScaleLine = () => {
 };
 
 const Chart = props => (
-    <div style={{ width: '100%' }} data-testid={props.dataTestId}>
+    <div style={{ width: '100%', paddingRight: '16px', boxSizing: 'border-box' }} data-testid={props.dataTestId}>
         <BlockTitle>
             <Typography sx={{ marginBottom: '10px'}}>
                 {props.title}
@@ -78,7 +78,7 @@ const Chart = props => (
                 />
                 */}
 
-                <Line type="monotone" dataKey="recolectado" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="recolectado" stroke="#0066ff" strokeWidth={3} activeDot={{ r: 8 }} />
             </LineChart>
         </ResponsiveContainer>
     </div>

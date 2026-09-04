@@ -419,16 +419,27 @@ const PDFExport = async (report, share) => {
 
         report.supplies.pr.forEach(prod => {
             const unit = getProductQuantityLabel(prod, report.supplies.productType);
-            const formatQuantity = value => prod.presentation > 0 && report.supplies.productType === "solido" ? Math.ceil(value) : formatNumber(value, 1);
+            const formatQuantity = value => {
+                if(report.supplies.productType === "solido") {
+                    const hasPackages = Number.isFinite(prod?.packageSize) && prod.packageSize > 0;
+                    const base = formatNumber(value, 1) + " kg";
+                    if(!hasPackages) return base;
+
+                    const packages = value / prod.packageSize;
+                    return base + " (" + formatNumber(packages, 1) + " envases de " + formatNumber(prod.packageSize, 1) + " kg)";
+                }
+
+                return formatNumber(value, 1) + " " + unit;
+            };
             rows2.push( report.supplies.loadBalancingEnabled ? [
                 prod.name,
-                formatQuantity(prod.ceq) + " " + unit,
-                formatQuantity(prod.total) + " " + unit
+                formatQuantity(prod.ceq),
+                formatQuantity(prod.total)
             ]:[
                 prod.name,
-                formatQuantity(prod.cpp) + " " + unit,
-                formatQuantity(prod.cfc) + " " + unit,
-                formatQuantity(prod.total) + " " + unit
+                formatQuantity(prod.cpp),
+                formatQuantity(prod.cfc),
+                formatQuantity(prod.total)
             ]);
         });
 

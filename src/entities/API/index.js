@@ -130,20 +130,87 @@ export const presentationUnits = [
     "l/ha"
 ];
 
+const LIQUID_DOSE_MODES = {
+    ML_HA: "ml_ha",
+    ML_100L: "ml_100l",
+    G_HA: "g_ha",
+    G_100L: "g_100l",
+    L_HA: "l_ha"
+};
+
+const LEGACY_PRESENTATION_TO_MODE = {
+    0: LIQUID_DOSE_MODES.ML_HA,
+    1: LIQUID_DOSE_MODES.G_HA,
+    2: LIQUID_DOSE_MODES.ML_100L,
+    3: LIQUID_DOSE_MODES.G_100L,
+    4: LIQUID_DOSE_MODES.L_HA
+};
+
+// Optional compatibility for newer explicit numeric dose-unit mappings.
+const NUMERIC_DOSE_UNIT_TO_MODE = {
+    0: LIQUID_DOSE_MODES.ML_HA,
+    1: LIQUID_DOSE_MODES.ML_100L,
+    2: LIQUID_DOSE_MODES.G_HA,
+    3: LIQUID_DOSE_MODES.G_100L,
+    4: LIQUID_DOSE_MODES.L_HA
+};
+
+const normalizeDoseUnitToken = token => {
+    if(typeof token !== "string") return "";
+    return token
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/á/g, "a");
+};
+
+const resolveLiquidDoseMode = prod => {
+    if(Number.isInteger(prod?.doseUnit) && NUMERIC_DOSE_UNIT_TO_MODE[prod.doseUnit]) {
+        return NUMERIC_DOSE_UNIT_TO_MODE[prod.doseUnit];
+    }
+
+    const token = normalizeDoseUnitToken(prod?.doseUnit);
+    if(token === "ml/ha") return LIQUID_DOSE_MODES.ML_HA;
+    if(token === "ml/100l") return LIQUID_DOSE_MODES.ML_100L;
+    if(token === "gr/ha" || token === "g/ha") return LIQUID_DOSE_MODES.G_HA;
+    if(token === "gr/100l" || token === "g/100l") return LIQUID_DOSE_MODES.G_100L;
+    if(token === "l/ha") return LIQUID_DOSE_MODES.L_HA;
+
+    return LEGACY_PRESENTATION_TO_MODE[prod?.presentation] || LIQUID_DOSE_MODES.ML_HA;
+};
+
+const getLiquidDoseUnitLabel = prod => {
+    const mode = resolveLiquidDoseMode(prod);
+    switch(mode) {
+        case LIQUID_DOSE_MODES.ML_HA:
+            return "ml/ha";
+        case LIQUID_DOSE_MODES.ML_100L:
+            return "ml/100l";
+        case LIQUID_DOSE_MODES.G_HA:
+            return "gr/ha";
+        case LIQUID_DOSE_MODES.G_100L:
+            return "gr/100l";
+        case LIQUID_DOSE_MODES.L_HA:
+            return "l/ha";
+        default:
+            return presentationUnits[prod?.presentation] || "";
+    }
+};
+
 export const getProductDoseUnit = (prod, productType = PRODUCT_TYPES.LIQUID) => {
     if(productType === PRODUCT_TYPES.SOLID) {
         return "kg/ha";
     }
 
-    return presentationUnits[prod.presentation] || "";
+    return getLiquidDoseUnitLabel(prod);
 };
 
 export const getProductQuantityLabel = (prod, productType = PRODUCT_TYPES.LIQUID) => {
     if(productType === PRODUCT_TYPES.SOLID) {
-        return prod.presentation > 0 ? `envases de ${prod.presentation} kg` : "kg";
+        return "kg";
     }
 
-    return ["l", "kg", "l", "kg", "l"][prod.presentation] || "";
+    const mode = resolveLiquidDoseMode(prod);
+    return [LIQUID_DOSE_MODES.ML_HA, LIQUID_DOSE_MODES.ML_100L, LIQUID_DOSE_MODES.L_HA].includes(mode) ? "l" : "kg";
 };
 
 
@@ -359,24 +426,63 @@ export const computeSprayVolume = params => {
     return set2Decimals(vol);
 };
 
-const computeProductVolume = (prod, vol, Va, productType) => { // Cantidad de insumo por volumen de carga
+const computeProductQuantityForLoad = (prod, loadQuantity, Va, productType) => { // Cantidad de insumo por carga
     if(productType === PRODUCT_TYPES.SOLID) {
-        const quantity = vol * prod.dose / Va;
-        return prod.presentation > 0 ? quantity / prod.presentation : quantity;
+        return loadQuantity * prod.dose / Va;
     }
 
-    switch(prod.presentation) {
-        case 0: // ml/ha
-        case 1: // ml/100L
-            return vol*prod.dose/Va;
-        case 2: // gr/ha
-        case 3: // gr/100L
-            return vol*prod.dose/100;
-        case 4: // L/ha
-            return vol*prod.dose/Va*1000;
+    const mode = resolveLiquidDoseMode(prod);
+    switch(mode) {
+        case LIQUID_DOSE_MODES.ML_HA:
+            return loadQuantity * prod.dose / Va;
+        case LIQUID_DOSE_MODES.ML_100L:
+            return loadQuantity * prod.dose / 100;
+        case LIQUID_DOSE_MODES.G_HA:
+            return loadQuantity * prod.dose / Va;
+        case LIQUID_DOSE_MODES.G_100L:
+            return loadQuantity * prod.dose / 100;
+        case LIQUID_DOSE_MODES.L_HA:
+            return loadQuantity * prod.dose / Va * 1000;
         default:
             return 0;
-    }   
+    }
+};
+
+const computeProductTotalForLot = (prod, area, applicationRate, totalApplication, productType) => {
+    if(productType === PRODUCT_TYPES.SOLID) {
+        return area * prod.dose;
+    }
+
+    const mode = resolveLiquidDoseMode(prod);
+    switch(mode) {
+        case LIQUID_DOSE_MODES.ML_HA:
+            return area * prod.dose;
+        case LIQUID_DOSE_MODES.ML_100L:
+            return totalApplication * prod.dose / 100;
+        case LIQUID_DOSE_MODES.G_HA:
+            return area * prod.dose;
+        case LIQUID_DOSE_MODES.G_100L:
+            return totalApplication * prod.dose / 100;
+        case LIQUID_DOSE_MODES.L_HA:
+            return area * prod.dose * 1000;
+        default:
+            return 0;
+    }
+};
+
+const isLiquidVolumeMode = prod => {
+    const mode = resolveLiquidDoseMode(prod);
+    return mode === LIQUID_DOSE_MODES.ML_HA || mode === LIQUID_DOSE_MODES.ML_100L || mode === LIQUID_DOSE_MODES.L_HA;
+};
+
+const getLiquidVolumeLitersForLoad = (prod, loadQuantity, applicationRate) => {
+    if(!isLiquidVolumeMode(prod)) return 0;
+    return computeProductQuantityForLoad(prod, loadQuantity, applicationRate, PRODUCT_TYPES.LIQUID) / 1000;
+};
+
+const getLiquidVolumeLitersForTotal = (prod, area, applicationRate, totalApplication) => {
+    if(!isLiquidVolumeMode(prod)) return 0;
+    return computeProductTotalForLot(prod, area, applicationRate, totalApplication, PRODUCT_TYPES.LIQUID) / 1000;
 };
 
 export const computeDose = params => { 
@@ -572,45 +678,85 @@ export const computeSuppliesList = params => { // Lista de insumos y cargas para
     const p = toFloat(params);
     checkParams(schemas.computeSuppliesList, p);
     const { A, T, Va, products, productType = PRODUCT_TYPES.LIQUID } = p;
-    const Nc = A*Va/T; // Cantidad de cargas
-    const Ncc = Math.floor(Nc); // Cantidad de cargas completas
-    const Vf = (Nc - Ncc)*T; // Volumen fraccional [L]
-    const Ncb = Math.ceil(Nc); // Cantidad de cargas balanceadas
-    const Vcb = A*Va/Ncb; // Volumen de cargas balanceadas
-    const Vftl = Vf/T < 0.2; // Detectar volumen fraccional total menor a 20%
-    const normalizeQuantity = value => productType === PRODUCT_TYPES.SOLID ? value : value / 1000;
-    const getLiquidVolume = (prod, volume) => {
-        if (prod.presentation === 2 || prod.presentation === 3) {
-            return 0;
-        }
+    const totalApplication = A * Va;
+    const Nc = totalApplication / T; // Cantidad teórica de cargas
+    const Ncc = Math.floor(Nc); // Cargas completas
+    const Vf = Math.max(0, totalApplication - Ncc * T); // Carga fraccional
+    const Ncb = Math.ceil(Nc); // Cargas equilibradas
+    const Vcb = Ncb > 0 ? totalApplication / Ncb : 0; // Tamaño de carga equilibrada
+    const Vftl = Vf > 0 && Vf / T < 0.2; // Carga fraccional menor al 20%
 
-        return computeProductVolume(prod, volume, Va, productType) / 1000;
-    };
-    const getMixtureProductVolume = volume => products.reduce((acc, prod) => acc + getLiquidVolume(prod, volume), 0);
-    // Calcular cantidades de cada producto
-    const pr = products.map(prod => ({
-        ...prod, // Por comodidad, dejar resto de los detalles en este arreglo
-        cpp: normalizeQuantity(computeProductVolume(prod, T, Va, productType)), // Cantidad por carga completa
-        cfc: normalizeQuantity(computeProductVolume(prod, Vf, Va, productType)), // Cantidad por carga fraccional
-        ceq: normalizeQuantity(computeProductVolume(prod, Vcb, Va, productType)), // Cantidad por carga equilibrada
-        total: normalizeQuantity(computeProductVolume(prod, T, Va, productType))*Nc, // Cantidad total de insumo
-    }));
+    const normalizeQuantity = value => productType === PRODUCT_TYPES.SOLID ? value : value / 1000;
+
+    // Calcular cantidades por carga y total por producto.
+    const pr = products.map(prod => {
+        const quantityPerFullLoad = computeProductQuantityForLoad(prod, T, Va, productType);
+        const quantityPerFractionalLoad = computeProductQuantityForLoad(prod, Vf, Va, productType);
+        const quantityPerBalancedLoad = computeProductQuantityForLoad(prod, Vcb, Va, productType);
+        const quantityTotalLot = computeProductTotalForLot(prod, A, Va, totalApplication, productType);
+
+        const normalizedCpp = normalizeQuantity(quantityPerFullLoad);
+        const normalizedCfc = normalizeQuantity(quantityPerFractionalLoad);
+        const normalizedCeq = normalizeQuantity(quantityPerBalancedLoad);
+        const normalizedTotal = normalizeQuantity(quantityTotalLot);
+
+        const packageSize = productType === PRODUCT_TYPES.SOLID ? Number(prod.presentation) : 0;
+        const hasPackages = productType === PRODUCT_TYPES.SOLID && Number.isFinite(packageSize) && packageSize > 0;
+
+        return {
+            ...prod,
+            cpp: normalizedCpp,
+            cfc: normalizedCfc,
+            ceq: normalizedCeq,
+            total: normalizedTotal,
+            packageSize: hasPackages ? packageSize : 0,
+            cppPackages: hasPackages ? normalizedCpp / packageSize : null,
+            cfcPackages: hasPackages ? normalizedCfc / packageSize : null,
+            ceqPackages: hasPackages ? normalizedCeq / packageSize : null,
+            totalPackages: hasPackages ? normalizedTotal / packageSize : null,
+        };
+    });
 
     if (productType === PRODUCT_TYPES.LIQUID) {
+        const getMixtureProductVolumeForLoad = loadQuantity => products
+            .reduce((acc, prod) => acc + getLiquidVolumeLitersForLoad(prod, loadQuantity, Va), 0);
+
+        const totalProductVolumeLiters = products
+            .reduce((acc, prod) => acc + getLiquidVolumeLitersForTotal(prod, A, Va, totalApplication), 0);
+
         const water = {
             key: 'water',
             name: 'Agua',
             dose: 0,
             presentation: 4,
-            cpp: set2Decimals(Math.max(0, T - getMixtureProductVolume(T))),
-            cfc: set2Decimals(Math.max(0, Vf - getMixtureProductVolume(Vf))),
-            ceq: set2Decimals(Math.max(0, Vcb - getMixtureProductVolume(Vcb))),
-            total: set2Decimals(Math.max(0, A * Va - getMixtureProductVolume(A * Va))),
+            cpp: set2Decimals(Math.max(0, T - getMixtureProductVolumeForLoad(T))),
+            cfc: set2Decimals(Math.max(0, Vf - getMixtureProductVolumeForLoad(Vf))),
+            ceq: set2Decimals(Math.max(0, Vcb - getMixtureProductVolumeForLoad(Vcb))),
+            total: set2Decimals(Math.max(0, totalApplication - totalProductVolumeLiters)),
             isWater: true
         };
 
         pr.push(water);
     }
 
-    return {pr, Nc, Ncc, Vf, Ncb, Vcb, Vftl, productType};
+    return {
+        pr,
+        Nc,
+        Ncc,
+        Vf,
+        Ncb,
+        Vcb,
+        Vftl,
+        productType,
+        totalApplication,
+        theoreticalLoads: Nc,
+        unbalanced: {
+            fullLoads: Ncc,
+            fractionalLoad: Vf
+        },
+        balanced: {
+            loads: Ncb,
+            loadSize: Vcb
+        }
+    };
 };

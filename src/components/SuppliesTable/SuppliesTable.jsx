@@ -3,6 +3,14 @@ import { getProductQuantityLabel } from "../../entities/API";
 import classes from './style.module.css';
 import { formatNumber } from '../../utils';
 
+const formatSolidWithPackages = (value, prod) => {
+    const hasPackages = Number.isFinite(prod?.packageSize) && prod.packageSize > 0;
+    if(!hasPackages) return `${formatNumber(value)} kg`;
+
+    const packageCount = value / prod.packageSize;
+    return `${formatNumber(value)} kg (${formatNumber(packageCount)} envases de ${formatNumber(prod.packageSize)} kg)`;
+};
+
 const SuppliesTable = props => (
     <Card className={classes.Card}>
         <table className={["data-table", classes.SuppliesTable].join(' ')}>
@@ -20,13 +28,15 @@ const SuppliesTable = props => (
             {
                 props.supplies.pr?.map((prod, index) => {
                     const unit = getProductQuantityLabel(prod, props.supplies.productType);
+                    const isSolid = props.supplies.productType === 'solido';
+                    const formatCell = value => isSolid ? formatSolidWithPackages(value, prod) : `${formatNumber(value)} ${unit}`;
                     return (
                         <tr key={index}>
                             <td>{prod.name}</td>
-                            {!props.loadBalancing && <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.cpp) : formatNumber(prod.cpp)} {unit}</td>}
-                            {!props.loadBalancing && <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.cfc) : formatNumber(prod.cfc)} {unit}</td>}
-                            {props.loadBalancing && <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.ceq) : formatNumber(prod.ceq)} {unit}</td>}
-                            <td>{prod.presentation > 0 && props.supplies.productType === 'solido' ? Math.ceil(prod.total) : formatNumber(prod.total)} {unit}</td>
+                            {!props.loadBalancing && <td>{formatCell(prod.cpp)}</td>}
+                            {!props.loadBalancing && <td>{formatCell(prod.cfc)}</td>}
+                            {props.loadBalancing && <td>{formatCell(prod.ceq)}</td>}
+                            <td>{formatCell(prod.total)}</td>
                         </tr>
                     )}
                 )

@@ -200,6 +200,14 @@ const PresentationSelector = ({value, onChange, productType}) => {
                         onChange={e=>setLiquidValue(3)}/> gr/100l
                 </Col>
             </Row>
+            <Row style={{fontSize:"0.7em", marginTop: 6}}>
+                <Col width={25}>
+                    <Radio
+                        name="input-type"
+                        checked={value === 4}
+                        onChange={e=>setLiquidValue(4)}/> l/ha
+                </Col>
+            </Row>
         </div>
     );
 };

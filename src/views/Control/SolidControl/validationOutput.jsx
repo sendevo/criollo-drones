@@ -30,6 +30,11 @@ const ValidationOutput = props => { // Resultado de verificacion de dosis
                             <td style={fieldCellStyle}><b>Diferencia con dosis prevista:</b></td>
                             <td style={dataCellStyle} data-testid="solid-dose-diff-output">
                                 {dose_diff?.toFixed(2)} kg/ha ({dose_diff_p?.toFixed(2)}%)
+                                {Number(dose_diff_p) > 10 ? (
+                                    <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '2px' }}>
+                                        Se recomienda ajustar dosis
+                                    </div>
+                                ) : null}
                             </td>
                         </tr>
                         : null

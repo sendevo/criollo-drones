@@ -3,6 +3,36 @@ import ReactDOMServer from 'react-dom/server';
 import IconCollected from '../../assets/icons/peso_recolectado.png';
 import Input from '../Input';
 import { PRODUCT_TYPES } from '../../entities/Model';
+import { parseNonNegativeNumber, sanitizeTypedValue } from '../../utils';
+
+const parsePromptNumericValue = rawValue => {
+    const value = parseNonNegativeNumber(rawValue);
+    return Number.isFinite(value) ? value : 0;
+};
+
+const bindPromptNumericFormatting = inputId => {
+    const inputEl = document.getElementById(inputId);
+    if(!inputEl) return;
+
+    inputEl.setAttribute('inputmode', 'decimal');
+
+    inputEl.addEventListener('input', event => {
+        const originalValue = event?.target?.value ?? '';
+
+        const isSingleTypedDot =
+            event?.inputType === 'insertText' &&
+            event?.data === '.';
+
+        const valueForSanitizing = isSingleTypedDot
+            ? originalValue.replace(/\.(?!.*\.)/, ',')
+            : originalValue;
+
+        const sanitizedText = sanitizeTypedValue(valueForSanitizing);
+        if(sanitizedText !== originalValue) {
+            inputEl.value = sanitizedText;
+        }
+    });
+};
 
 export const trayCollectedPrompt = (productType, row, len, callback) => { 
     // Modal ingreso de peso/gotas recolectado de la bandeja/tarjeta
@@ -23,7 +53,7 @@ export const trayCollectedPrompt = (productType, row, len, callback) => {
 
     const returnValue = r => { // Capturar valor ingresado y retornar
         const inputEl = document.getElementById(elId);
-        const value = parseFloat(inputEl.value) || 0;
+        const value = parsePromptNumericValue(inputEl?.value);
         callback(r, value);
     };
 
@@ -48,6 +78,9 @@ export const trayCollectedPrompt = (productType, row, len, callback) => {
         title: title,
         content: content,
         buttons: buttons,
+        on: {
+            opened: () => bindPromptNumericFormatting(elId)
+        },
         destroyOnClose: true        
     }).open();
 };
@@ -73,7 +106,7 @@ export const nozzleCollectedPrompt = (row, callback) => {
 
     const returnValue = () => { // Capturar valor ingresado y retornar
         const inputEl = document.getElementById(elId);                    
-        callback(row, parseFloat(inputEl.value) || 0);
+        callback(row, parsePromptNumericValue(inputEl?.value));
     };
 
     const buttons = [ // Botones del modal
@@ -90,6 +123,9 @@ export const nozzleCollectedPrompt = (row, callback) => {
         title: "Pico controlado "+(row+1),
         content: content,
         buttons: buttons,
+        on: {
+            opened: () => bindPromptNumericFormatting(elId)
+        },
         destroyOnClose: true        
     }).open();
 };
@@ -120,7 +156,7 @@ export const openRecipientSizePrompt = (callback, unit = "l") => {
             text: "Aceptar",
             onClick: () => { // Capturar valor ingresado y retornar
                 const inputEl = document.getElementById(elId);                    
-                callback(parseFloat(inputEl.value) || 0);
+                callback(parsePromptNumericValue(inputEl?.value));
             }
         }
     ];
@@ -129,6 +165,9 @@ export const openRecipientSizePrompt = (callback, unit = "l") => {
         title: "Capacidad del envase",
         content: content,
         buttons: buttons,
+        on: {
+            opened: () => bindPromptNumericFormatting(elId)
+        },
         destroyOnClose: true        
     }).open();
 };
@@ -153,7 +192,7 @@ export const timerCollectedPrompt = (callback, productype) => {
 
     const returnValue = () => { // Capturar valor ingresado y retornar
         const inputEl = document.getElementById(elId);                    
-        callback(parseFloat(inputEl.value) || 0);
+        callback(parsePromptNumericValue(inputEl?.value));
     };
 
     const buttons = [ // Botones del modal
@@ -170,6 +209,9 @@ export const timerCollectedPrompt = (callback, productype) => {
         title: productype === PRODUCT_TYPES.LIQUID ? "Volumen recolectado" : "Peso recolectado",
         content: content,
         buttons: buttons,
+        on: {
+            opened: () => bindPromptNumericFormatting(elId)
+        },
         destroyOnClose: true        
     }).open();
 };
