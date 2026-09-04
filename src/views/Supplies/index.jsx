@@ -342,7 +342,7 @@ const Supplies = props => {
                 }
             </Block>
             
-            {model.productType === PRODUCT_TYPES.LIQUID || !model.seedMode &&
+            {(model.productType === PRODUCT_TYPES.LIQUID || !model.seedMode) &&
                 <Block style={{margin:0}}>
                     <ActionButton
                         icon={FaPlus}
