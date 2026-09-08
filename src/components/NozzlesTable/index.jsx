@@ -1,25 +1,32 @@
 import { Card } from "framework7-react";
+import { useEffect, useRef } from "react";
 import { formatNumber } from "../../utils";
 import { nozzleCollectedPrompt } from "../Prompts";
 import { FaCheck, FaTimes, FaQuestion } from 'react-icons/fa';
 import classes from './style.module.css';
 
 const NozzlesTable = props => {
+    const dataRef = useRef(props.data || []);
+
+    useEffect(() => {
+        dataRef.current = props.data || [];
+    }, [props.data]);
 
     const addCollected = (row, value) => { 
         // Callback prompt
-        let tempArr = [...props.data];
+        const tempArr = [...dataRef.current];
         tempArr[row] = {
             value,
             updated: true,
             ...props.evalCollected(value) // Debe retornar ef, s y ok
         };
+        dataRef.current = tempArr;
         props.onDataChange(tempArr);
     };
 
     const handleRowSelect = row => {
         if(!props.rowSelectDisabled)
-            nozzleCollectedPrompt(row, addCollected);
+            nozzleCollectedPrompt(row, props.data.length, addCollected);
     };
 
     return (

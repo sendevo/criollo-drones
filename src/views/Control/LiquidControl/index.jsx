@@ -120,20 +120,18 @@ const LiquidControl = props => {
         const wf = parseNonNegativeNumber(e.target.value);
         if(wf){ // Actualizar tabla, solo con valor de caudal valido            
             try{
-                const temp = inputs.recolectedData.map(row => ({
-                    ...row,
-                    ...API.computeEffectiveFlow({
-                        c: row.value, 
-                        tms: elapsed,
-                        Va: wf
-                    })
-                }));                  
-                model.update("nozzleFlow", wf);
-                updateData(temp);
+                const temp = buildNozzleRows(inputs.recolectedData.length);
+                const newCardData = inputs.cardData.map(c => ({...c, collected:0})); // Reset cardData
+                model.update({
+                    nozzleFlow: wf,
+                    recolectedData: temp,
+                    cardData: newCardData
+                });
                 setInputs({
                     ...inputs,
                     nozzleFlow: wf,
-                    recolectedData: temp
+                    recolectedData: temp,
+                    cardData: newCardData
                 });
             }catch(err){
                 Toast("error", err.message);

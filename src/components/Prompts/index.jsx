@@ -86,10 +86,10 @@ export const trayCollectedPrompt = (productType, row, len, callback) => {
 };
 
 
-export const nozzleCollectedPrompt = (row, callback) => { 
-    // Modal ingreso de peso recolectado de la bandeja
+export const nozzleCollectedPrompt = (row, len, callback) => { 
+    // Modal ingreso de volumen recolectado de un pico
 
-    const elId = "collectedvolumeinput"; // Id del input
+    const elId = `collectedvolumeinput-${row}`; // Id del input
     
     const content = ReactDOMServer.renderToStaticMarkup(
         <List form noHairlinesMd style={{marginBottom:"0px"}}>
@@ -104,9 +104,9 @@ export const nozzleCollectedPrompt = (row, callback) => {
         </List>
     );
 
-    const returnValue = () => { // Capturar valor ingresado y retornar
+    const returnValue = r => { // Capturar valor ingresado y retornar
         const inputEl = document.getElementById(elId);                    
-        callback(row, parsePromptNumericValue(inputEl?.value));
+        callback(r, parsePromptNumericValue(inputEl?.value));
     };
 
     const buttons = [ // Botones del modal
@@ -115,9 +115,20 @@ export const nozzleCollectedPrompt = (row, callback) => {
         },
         {
             text: "Aceptar",
-            onClick: returnValue
+            onClick: () => returnValue(row)
         }
     ];
+
+    if(row + 1 < len) {
+        buttons.push({
+            text: "Siguiente",
+            onClick: () => {
+                returnValue(row);
+                f7.dialog.close();
+                nozzleCollectedPrompt(row + 1, len, callback);
+            }
+        });
+    }
 
     f7.dialog.create({
         title: "Pico controlado "+(row+1),

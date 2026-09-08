@@ -5,6 +5,10 @@ import { PRODUCT_TYPES } from '../../entities/Model';
 
 const TrayTable = ({productType, trayData, onAddCollected}) => {
 
+    /** Formato trayData:
+     * { collected, side }
+    */
+
     const handleAddCollected = index => {
         if(onAddCollected){
             //console.log("Agregar peso recolectado a bandeja ", index);
