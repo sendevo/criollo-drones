@@ -17,7 +17,7 @@ class WorkWidthPicker extends React.Component {
                 <div class="toolbar">
                     <div class="toolbar-inner">
                         <div class="center" style="width:100%; text-align:center">
-                            <a style="color:black; font-size:130%">Ancho de labor - (CV)</a>
+                            <a style="color:black; font-size:130%">Ancho de faja - (CV)</a>
                         </div>
                     </div>
                 </div>`),
@@ -49,7 +49,7 @@ class WorkWidthPicker extends React.Component {
                     <div class="toolbar">
                         <div class="toolbar-inner">
                             <div class="center" style="width:100%; text-align:center">
-                                <a style="color:black; font-size:130%">Ancho de labor - (CV)</a>
+                                <a style="color:black; font-size:130%">Ancho de faja - (CV)</a>
                             </div>
                         </div>
                     </div>`),

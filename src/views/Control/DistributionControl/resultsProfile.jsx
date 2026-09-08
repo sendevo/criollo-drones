@@ -31,14 +31,14 @@ const ResultsProfile = ({seedMode, inputs, outputs, productType}) => {
                             </td>
                         </tr>
                     }
-                    {Boolean(avgDist) &&
+                    {/*Boolean(avgDist) &&
                         <tr>
                             <td style={fieldCellStyle}><b>Promedio:</b></td>
                             <td style={dataCellStyle} data-testid="distribution-average-output">
                                 {avgDist?.toFixed(2) || ''} {productType === PRODUCT_TYPES.LIQUID ? "gotas/cm²" : "gr"}
                             </td>
                         </tr>               
-                    }
+                    */}
                     {Boolean(cvDist) &&
                         <tr>
                             <td style={fieldCellStyle}><b>Coeficiente de variación:</b></td>

@@ -24,7 +24,7 @@ import { PresentationSelector } from '../../components/Selectors';
 import iconProduct from '../../assets/icons/calculador.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
-import iconVolume from '../../assets/icons/dropper.png';
+import iconVolume from '../../assets/icons/dropper2.png';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconCapacity from '../../assets/icons/capacidad_carga.png';
@@ -251,7 +251,7 @@ const Supplies = props => {
                     name="workVolume"
                     type="number"
                     unit={model.productType === "solido" ? "kg/ha" : "l/ha"}
-                    icon={iconVolume}
+                    icon={model.productType === PRODUCT_TYPES.SOLID ? iconDoseSol : iconDoseLiq}
                     value={inputs.workVolume}
                     onChange={v=>setMainParams('workVolume', parseNonNegativeNumber(v.target.value))}>
                 </Input>
@@ -321,7 +321,7 @@ const Supplies = props => {
                                         label="Dosis"
                                         type="number"
                                         unit={model.productType === PRODUCT_TYPES.SOLID ? "kg/ha" : API.getProductDoseUnit(p, model.productType)}
-                                        icon={model.productType === PRODUCT_TYPES.SOLID ? iconDoseSol : iconDoseLiq}
+                                        icon={iconVolume}
                                         value={p.dose || ''}
                                         onInputClear={()=>setProductParams(index, "dose", "")}
                                         onChange={v=>setProductParams(index, "dose", parseNonNegativeNumber(v.target.value))}>

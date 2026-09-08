@@ -114,6 +114,12 @@ const schemas = { // Esquemas de validación de parametros
         tray_distance: v => isPositiveFloat(v),
         pass_number: v => isPositiveFloat(v)
     },
+    computeNozzleVol: {
+        Va: v => isPositiveFloat(v),
+        Vt: v => isPositiveFloat(v),
+        work_width: v => isPositiveFloat(v),
+        nozzleCnt: v => isPositiveInteger(v)
+    },
     computeSuppliesList: {
         A: v => isPositiveFloat(v),
         T: v => isPositiveFloat(v),
@@ -673,6 +679,26 @@ export const sweepDistributionProfile = params => {
         }
     };
 };
+
+export const computeNozzleVol = params => { // Caudal de pico
+    const p = toFloat(params);
+
+    const wrongKeys = checkParams(schemas.computeNozzleVol, p);
+    if(wrongKeys && wrongKeys.length > 0) {
+        return {
+            status: "error",
+            wrongKeys: parameterNames[wrongKeys[0]]
+        };
+    }
+    const { Va, Vt, work_width, nozzleCnt } = p;
+
+    const Qp = Va*Vt*work_width/600/nozzleCnt; // Caudal de pico
+
+    return {
+        status: "success",
+        Qp
+    };
+}
 
 export const computeSuppliesList = params => { // Lista de insumos y cargas para mezcla   
     const p = toFloat(params);

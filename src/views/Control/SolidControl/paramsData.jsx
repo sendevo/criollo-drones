@@ -27,7 +27,7 @@ const ParamsData = props => { // Encabezado para mostrar los parámetros operati
                     }
                     {workWidth ?
                         <tr>
-                            <td style={fieldCellStyle}><b>Ancho de labor:</b></td>
+                            <td style={fieldCellStyle}><b>Ancho de faja:</b></td>
                             <td 
                                 data-testid="work-width-preview"
                                 style={dataCellStyle}>

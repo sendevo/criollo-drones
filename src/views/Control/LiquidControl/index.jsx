@@ -33,13 +33,27 @@ import iconReport from '../../../assets/icons/reportes.png';
 import cardAreaIcon from '../../../assets/icons/sup_bandeja.png';
 import cardCountIcon from '../../../assets/icons/cant_tarjetas.png';
 import cardSeparationIcon from '../../../assets/icons/dist_tarjetas.png';
+import { use } from "react";
 
 
 const timer = new Timer(0, true);
 
+const buildNozzleRows = count => Array.from({ length: count }, () => ({
+    value: 0,
+    updated: false,
+    ef: undefined,
+    s: undefined,
+    c: false
+}));
+
 const LiquidControl = props => {
     
     const model = useContext(ModelCtx);
+
+    const initialNozzleCount = parseInt(model.controlNozzleCnt || model.nozzleCnt || 0, 10) || 0;
+    const initialNozzleData = Array.isArray(model.recolectedData) && model.recolectedData.length === initialNozzleCount
+        ? model.recolectedData
+        : buildNozzleRows(initialNozzleCount);
 
     const [inputs, setInputs] = useState({
         productType: model.productType || '',
@@ -47,10 +61,10 @@ const LiquidControl = props => {
         doseLiquid: model.doseLiquid || '',
         workWidth: model.workWidth || '',
         workVelocity: model.workVelocity || '',
-        nozzleCnt: model.controlNozzleCnt || model.nozzleCnt || '',
+        nozzleCnt: model.nozzleCnt || model.controlNozzleCnt || '',
         totalNozzleCnt: model.nozzleCnt || '',
         nozzleFlow: model.nozzleFlow || '',
-        recolectedData: model.recolectedData || [],
+        recolectedData: initialNozzleData,
         
         cardArea: model.cardArea || '',
         cardCount: model.cardCount || '',
@@ -133,29 +147,23 @@ const LiquidControl = props => {
     };
 
     const handleNozzleCntChange = e => {        
-        const temp = [];
-        for(let i = 0; i < e.target.value; i++){
-            temp.push({
-                value: 0,
-                updated: false,
-                ef: undefined,
-                s: undefined,
-                c: false
-            });
-        }
+        const nozzleCnt = Math.abs(parseInt(e.target.value)) || 0;
+        const temp = buildNozzleRows(nozzleCnt);
         model.update({
             recolectedData: temp,
-            controlNozzleCnt: e.target.value
+            controlNozzleCnt: nozzleCnt,
+            nozzleCnt: nozzleCnt
         });
-        setInputs({
-            ...inputs,
+        setInputs(prevState => ({
+            ...prevState,
             recolectedData: temp,
-            nozzleCnt: e.target.value
-        });
-        setOutputs({
-            ...outputs,
+            nozzleCnt,
+            totalNozzleCnt: nozzleCnt
+        }));
+        setOutputs(prevState => ({
+            ...prevState,
             ready: false
-        });
+        }));
     };
 
     const handleNewCollectedValue = value => {        
@@ -222,12 +230,34 @@ const LiquidControl = props => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => { // Calculo de valor inicial de caudal de pico
+        const res = API.computeNozzleVol({
+            Va: parseFloat(inputs.doseLiquid),
+            Vt: parseFloat(inputs.workVelocity),
+            work_width: inputs.workWidth,
+            nozzleCnt: parseFloat(inputs.nozzleCnt)
+        });
+        setInputs({
+            ...inputs,
+            nozzleFlow: res.Qp
+        });
+        model.update("nozzleFlow", res.Qp);
+    }, []);
+
     useEffect(() => {
         setDistributionOutputs({
             expected_dose: inputs.doseLiquid || '',
             effective_dose: outputs.effectiveSprayVolume || ''
         });
     }, [inputs.doseLiquid, outputs.effectiveSprayVolume]);
+
+    useEffect(() => {
+        if(inputs.cardData.length === 0 || !inputs.cardArea || inputs.cardArea <= 0 || !inputs.cardSeparation || inputs.cardSeparation <= 0) {
+            return;
+        }
+
+        handleComputeProfile();
+    }, [inputs.cardData, inputs.cardArea, inputs.cardSeparation, inputs.workWidth]);
 
     const onTimeout = () => {
         KeepAwake.allowSleep();
@@ -411,7 +441,7 @@ const LiquidControl = props => {
             const selectedProfile = getSelectedProfile(result[workPattern], inputs.workWidth);
 
             if(!selectedProfile || selectedProfile.status === 'error') {
-                Toast("error", "No se pudo seleccionar un ancho de labor válido");
+                Toast("error", "No se pudo seleccionar un Ancho de faja válido");
                 return;
             }
 

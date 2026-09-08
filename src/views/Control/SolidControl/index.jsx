@@ -224,7 +224,7 @@ const SolidControl = () => {
                 const selectedProfile = getSelectedProfile(result[workPattern], inputs.workWidth);
 
                 if(!selectedProfile || selectedProfile.status === 'error') {
-                    Toast("error", "No se pudo seleccionar un ancho de labor válido");
+                    Toast("error", "No se pudo seleccionar un Ancho de faja válido");
                     return;
                 }
 
