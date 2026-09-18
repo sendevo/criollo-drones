@@ -121,9 +121,9 @@ const schemas = { // Esquemas de validación de parametros
         nozzleCnt: v => isPositiveInteger(v)
     },
     computeSuppliesList: {
-        A: v => isPositiveFloat(v),
-        T: v => isPositiveFloat(v),
-        Va: v => isPositiveFloat(v),
+        A: v => isPositiveFloat(v), // Area de aplicación
+        T: v => isPositiveFloat(v), // Capacidad de tanque
+        Va: v => isPositiveFloat(v), // Volumen de aplicación en l/ha
         products: v => v?.length > 0 && v.every(x => isPositiveFloat(x.dose) && isString(x.name) && isFloat(x.presentation))
     }
 };
@@ -418,7 +418,7 @@ export const computeEffectiveFlow = params => {
     checkParams(schemas.computeEffectiveFlow, p);
     const { c, tms, Va } = p;
     const th = 10; // Umbral en porcentaje
-    const ef = set2Decimals(c / tms * 60000); // Caudal efectivo
+    const ef = set2Decimals(c / tms * 60000); // Caudal efectivo medido en L/m
     const s = set2Decimals((ef - Va) / Va * 100); // Desviacion estandar
     const ok = Math.abs(s) <= th; // Correcto 
     return { ef, s, ok };

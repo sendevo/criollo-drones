@@ -155,6 +155,21 @@ describe('computeSuppliesList', () => {
         expect(water.total).toBeCloseTo(998, 8);
     });
 
+    it('computes a sample mix by using the sample volume as the tank capacity', () => {
+        const result = computeSuppliesList({
+            A: 10,
+            Va: 100,
+            T: 20,
+            productType: PRODUCT_TYPES.LIQUID,
+            products: [{ name: 'Herbicida', dose: 200, presentation: 0 }]
+        });
+
+        const product = getProduct(result, 'Herbicida');
+        expect(result.totalApplication).toBeCloseTo(1000, 8);
+        expect(product.total).toBeCloseTo(2, 8);
+        expect(result.pr.find(prod => prod.isWater)?.total).toBeCloseTo(998, 8);
+    });
+
     it('keeps total product quantity invariant across balancing strategies', () => {
         const result = computeSuppliesList({
             A: 25,

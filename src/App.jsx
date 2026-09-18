@@ -69,6 +69,14 @@ const f7params = {
                 transition: "f7-cover"        
             }
         },
+        { // Calculo de densidad de caldo
+            path: '/density/',
+            component: Views.Density,
+            on:{pageInit: ()=>pushState("density")},
+            options: {
+                transition: "f7-cover"        
+            }
+        },
         { // Ajuste de caudal
             path: '/volume/',
             component: Views.Volume,

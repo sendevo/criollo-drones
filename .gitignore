@@ -30,6 +30,9 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 
-# context
+# Legacy
 /criollo/
 /campero-fertilizadoras/
+
+# Agents
+/prompts/

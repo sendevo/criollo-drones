@@ -20,6 +20,7 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import TextSwitch from '../../components/Switch';
 import Toast from '../../components/Toast';
+import Divider from '../../components/Divider';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
 import iconArea from '../../assets/icons/sup_lote.png';
@@ -30,6 +31,7 @@ import iconWidth from '../../assets/icons/ancho_faja.png';
 import iconNozzleCnt from '../../assets/icons/cant_picos2.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
+import iconDensity from '../../assets/icons/densidad.png';
 
 import { PRODUCT_TYPES } from '../../entities/Model';
 
@@ -41,6 +43,8 @@ const Params = props => {
     const [inputs, setInputs] = useState({
         productType: model.productType,
     
+        productDensity: model.productDensity || '',
+
         lotName: model.lotName || '',
         workArea: model.workArea || '',
         lotCoordinates: model.lotCoordinates || [],
@@ -52,16 +56,17 @@ const Params = props => {
         workWidth: model.workWidth || '',
         nozzleCnt: model.nozzleCnt || '',
         workVelocity: model.workVelocity || '',
-        flightAltitude: model.flightAltitude || ''
+        flightAltitude: model.flightAltitude || '',
     });
 
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
         setInputs({
             ...inputs,
             workVelocity: model.workVelocity || '',
-            doseSolid: model.doseSolid || ''
+            doseSolid: model.doseSolid || '',
+            productDensity: model.productDensity || ''
         });
-    }, [model.workVelocity, model.doseSolid]);
+    }, [model.workVelocity, model.doseSolid, model.productDensity]);
 
     const handleProductTypeChange = (value) => {
         if(Object.values(PRODUCT_TYPES).includes(value)){
@@ -119,7 +124,39 @@ const Params = props => {
             {inputs.productType === PRODUCT_TYPES.SOLID && (
                 <SolidTypeSelector value={inputs.seedMode} onChange={v=>setMainParams('seedMode', v)}/>
             )}
+
+            { inputs.productType === PRODUCT_TYPES.LIQUID && (
+                <div>
+                    <Divider/>
+
+                    <BlockTitle style={{marginBottom: "5px", marginTop: "5px"}}>
+                        <Typography variant='subtitle'>Propiedades del caldo</Typography>
+                    </BlockTitle>
+
+                    <List form noHairlinesMd style={{marginBottom:"10px"}}>
+                        <Row slot="list">
+                            <Col width="80">
+                                <Input
+                                    slot="list"
+                                    label="Densidad de producto"
+                                    name="workDensity"
+                                    type="number"
+                                    unit="kg/l"
+                                    icon={iconDensity}
+                                    value={inputs.productDensity}
+                                    onChange={v=>setMainParams('productDensity', parseNonNegativeNumber(v.target.value))}>
+                                </Input>
+                            </Col>
+                            <Col width="20" style={{paddingTop:"5px", marginRight:"10px"}}>
+                                <ActionButton icon={FaCalculator} href="/density/" tooltip="Calcular densidad" />
+                            </Col>
+                        </Row>
+                    </List>
+                </div>
+            )}
             
+            <Divider/>
+
             <BlockTitle>
                 <Typography>Datos del lote</Typography>
             </BlockTitle>
@@ -164,6 +201,8 @@ const Params = props => {
                     </span>
                 </div>
             </List>
+
+            <Divider/>
 
             <BlockTitle>
                 <Typography>Parámetros de labor</Typography>

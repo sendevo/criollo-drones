@@ -46,6 +46,10 @@ const Supplies = props => {
 
     const [products, setProducts] = useState(Array.isArray(model.products) ? model.products : []);
 
+    useEffect(() => {
+        setProducts(Array.isArray(model.products) ? model.products : []);
+    }, [model.products]);
+
     const addProduct = () => {
         const temp = [...products];
         temp.push({

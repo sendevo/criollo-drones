@@ -84,6 +84,7 @@ const defaultFormParams = {
     flightAltitude: '', // Altitud de vuelo (m)
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
+    productDensity: 1, // Densidad del caldo (kg/l) (liquidos)
 
     seedMode: false,
     seedVariety: '', // Variedad de semilla (para productos solidos)
@@ -134,6 +135,7 @@ const defaultFormParams = {
     compatTestRunning: false, // Cronometro de prueba de compatibilidad en ejecucion
     compatTestEndTs: '', // Timestamp de finalizacion del cronometro de compatibilidad
     compatTestObservations: '', // Observaciones del test de compatibilidad
+    compatTestSampleVolume: '', // Volumen de la muestra para prueba de compatibilidad (l)
 
     currentReport: get_blank_report(),
     reports: [], // Lista de reportes
