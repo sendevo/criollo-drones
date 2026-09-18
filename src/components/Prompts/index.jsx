@@ -226,3 +226,47 @@ export const timerCollectedPrompt = (callback, productype) => {
         destroyOnClose: true        
     }).open();
 };
+
+export const sampleProductDosePrompt = (product, callback) => {
+    const key = product?.key || product?.name || 'sample-product';
+    const elId = `compat-product-dose-${key}`;
+    const currentValue = Number.isFinite(Number(product?.cpp)) ? Number(product.cpp).toFixed(2) : '0';
+
+    const content = ReactDOMServer.renderToStaticMarkup(
+        <List form noHairlinesMd style={{ marginBottom: "0px" }}>
+            <Input
+                slot="list"
+                label="Cantidad"
+                icon={IconCollected}
+                type="number"
+                unit="L"
+                value={currentValue}
+                inputId={elId}
+            ></Input>
+        </List>
+    );
+
+    const returnValue = () => {
+        const inputEl = document.getElementById(elId);
+        callback(parsePromptNumericValue(inputEl?.value));
+    };
+
+    f7.dialog.create({
+        title: `Producto ${product?.name || 'Sin nombre'}`,
+        content,
+        buttons: [
+            { text: 'Cancelar' },
+            { text: 'Aceptar', onClick: returnValue }
+        ],
+        on: {
+            opened: () => {
+                const inputEl = document.getElementById(elId);
+                if (inputEl) {
+                    inputEl.value = currentValue;
+                }
+                bindPromptNumericFormatting(elId);
+            }
+        },
+        destroyOnClose: true
+    }).open();
+};

@@ -360,26 +360,44 @@ const Supplies = props => {
             }
 
             {model.productType === PRODUCT_TYPES.LIQUID &&
-                <Block style={{marginTop:"0px", marginBottom:"0px"}}>
-                    <Row className="help-target-compat-test">
-                        <Col width={20}></Col>
-                        <Col width={60}>
-                            <Button 
-                                fill 
-                                onClick={() => props.f7router.navigate('/compatTest/')}
-                                data-testid="compat-test-btn" 
-                                color="green"
-                                style={{textTransform:"none"}}>
-                                    Prueba de compatibilidad
-                            </Button>
-                        </Col>
-                        <Col width={20}></Col>
-                    </Row>
-                </Block>
+                <>
+                    <Block style={{marginTop:"0px", marginBottom:"0px"}}>
+                        <Row className="help-target-dens-test">
+                            <Col width={20}></Col>
+                            <Col width={60}>
+                                <Button 
+                                    fill 
+                                    onClick={() => props.f7router.navigate('/density/')}
+                                    data-testid="dens-test-btn" 
+                                    color="teal"
+                                    style={{textTransform:"none"}}>
+                                        Ajustar por densidad
+                                </Button>
+                            </Col>
+                            <Col width={20}></Col>
+                        </Row>
+                    </Block>
+                    <Block style={{marginTop:"10px", marginBottom:"0px"}}>
+                        <Row className="help-target-compat-test">
+                            <Col width={20}></Col>
+                            <Col width={60}>
+                                <Button 
+                                    fill 
+                                    onClick={() => props.f7router.navigate('/compatTest/')}
+                                    data-testid="compat-test-btn" 
+                                    color="green"
+                                    style={{textTransform:"none"}}>
+                                        Prueba de compatibilidad
+                                </Button>
+                            </Col>
+                            <Col width={20}></Col>
+                        </Row>
+                    </Block>
+                </>
             }
                
-            <Block style={{marginTop: model.productType === PRODUCT_TYPES.LIQUID ? "10px" : "20px"}}>
-                <Row style={{marginBottom:"15px"}} className="help-target-supplies-results">
+            <Block style={{marginTop: model.productType === PRODUCT_TYPES.LIQUID ? "10px" : "20px", marginBottom:"50px"}}>
+                <Row className="help-target-supplies-results">
                     <Col width={20}></Col>
                     <Col width={60}>
                         <Button 
@@ -394,7 +412,7 @@ const Supplies = props => {
                 </Row>
             </Block>
             
-            <BackButton {...props} />
+            {/*<BackButton {...props} />*/}
 
         </Page>
     );

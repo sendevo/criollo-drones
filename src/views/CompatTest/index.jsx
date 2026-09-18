@@ -2,16 +2,18 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { f7, Page, PageContent, Block, Navbar, BlockTitle, Row, Col, Radio, List, Button, Card, CardContent } from 'framework7-react';
 import { FaPlay, FaStop } from 'react-icons/fa';
 import { NavbarTitle, BackButton, ActionButton, NAVBAR_STYLE } from '../../components/Buttons';
+import { sampleProductDosePrompt } from '../../components/Prompts';
 import Input from '../../components/Input';
 import Footer from '../../components/Footer';
 import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import { PRODUCT_TYPES } from '../../entities/Model';
 import * as API from '../../entities/API';
-import { formatNumber, parseNonNegativeNumber, sanitizeTypedValue } from '../../utils';
+import { formatNumber, parseNonNegativeNumber } from '../../utils';
 import timerIcon from '../../assets/icons/tiempo.png';
 import sampleIcon from '../../assets/icons/concentracion.png';
 import moment from 'moment';
+import classes from './style.module.css';
 
 const PRESET_INTERVALS = [30, 60, 90];
 const defaultSeconds = 30;
@@ -39,13 +41,10 @@ const CompatTest = props => {
     const [observations, setObservations] = useState(model.compatTestObservations || '');
     const [sampleVolume, setSampleVolume] = useState(model.compatTestSampleVolume ?? '');
     const [sampleMix, setSampleMix] = useState([]);
-    const [selectedSampleProductKey, setSelectedSampleProductKey] = useState(null);
-    const [editedSampleProductAmount, setEditedSampleProductAmount] = useState('');
-    const [showExportButton, setShowExportButton] = useState(false);
+    const [editedSampleAmounts, setEditedSampleAmounts] = useState({});
+    const hasEditedProducts = Object.keys(editedSampleAmounts).length > 0;
 
     const displayTime = useMemo(() => moment(Math.max(0, timeMs)).format('mm:ss:S'), [timeMs]);
-
-    const getSelectedSampleProduct = () => sampleMix.find(prod => (prod.key || prod.name) === selectedSampleProductKey) || null;
 
     const calculateMix = () => {
         const parsedSampleVolume = parseNonNegativeNumber(sampleVolume);
@@ -85,11 +84,11 @@ const CompatTest = props => {
             products
         });
 
-        const productRows = (result.pr || []).filter(prod => !prod.isWater && prod.name);
+        const productRows = (result.pr || [])
+            .filter(prod => !prod.isWater && prod.name)
+            .map(prod => ({ ...prod, originalCpp: prod.cpp }));
         setSampleMix(productRows);
-        setSelectedSampleProductKey(null);
-        setEditedSampleProductAmount('');
-        setShowExportButton(false);
+        setEditedSampleAmounts({});
         model.update({ compatTestSampleVolume: sampleVolume });
     };
 
@@ -205,77 +204,33 @@ const CompatTest = props => {
         const value = e.target.value;
         setSampleVolume(value);
         setSampleMix([]);
-        setSelectedSampleProductKey(null);
-        setEditedSampleProductAmount('');
-        setShowExportButton(false);
+        setEditedSampleAmounts({});
         model.update({ compatTestSampleVolume: value });
     };
 
     const handleSelectSampleProduct = prod => {
         const key = prod.key || prod.name;
-        const promptId = `compat-product-dose-${key}`;
-        const promptValue = Number.isFinite(Number(prod.cpp)) ? Number(prod.cpp).toFixed(2) : '0';
 
-        const applyPromptValue = () => {
-            const inputEl = document.getElementById(promptId);
-            const nextValue = parseNonNegativeNumber(inputEl?.value);
+        sampleProductDosePrompt(prod, nextValue => {
             if (!Number.isFinite(nextValue) || nextValue <= 0) {
                 Toast('error', 'Ingrese una cantidad válida para exportar', 2500, 'bottom');
                 return;
             }
 
-            setSelectedSampleProductKey(key);
-            setEditedSampleProductAmount(String(nextValue));
-            setSampleMix(prev => prev.map(row => ((row.key || row.name) === key ? { ...row, cpp: nextValue } : row)));
-            setShowExportButton(Math.abs(nextValue - (Number(prod.cpp) || 0)) > 0.0001);
-        };
-
-        const bindPromptFormatting = () => {
-            const inputEl = document.getElementById(promptId);
-            if (!inputEl) return;
-
-            inputEl.setAttribute('inputmode', 'decimal');
-            inputEl.addEventListener('input', event => {
-                const originalValue = event?.target?.value ?? '';
-                const isSingleTypedDot = event?.inputType === 'insertText' && event?.data === '.';
-                const valueForSanitizing = isSingleTypedDot ? originalValue.replace(/\.(?!.*\.)/, ',') : originalValue;
-                const sanitizedText = sanitizeTypedValue(valueForSanitizing);
-                if (sanitizedText !== originalValue) {
-                    inputEl.value = sanitizedText;
+            setEditedSampleAmounts(prev => {
+                const next = { ...prev, [key]: nextValue };
+                const originalCpp = Number(prod.originalCpp ?? prod.cpp) || 0;
+                if (Math.abs(nextValue - originalCpp) <= 0.0001) {
+                    delete next[key];
                 }
+                return next;
             });
-        };
-
-        f7.dialog.create({
-            title: prod.name,
-            content: `
-                <div class="list no-hairlines-md" style="margin-bottom:0;">
-                    <ul>
-                        <li class="item-content item-input">
-                            <div class="item-inner">
-                                <div class="item-title item-label">Cantidad</div>
-                                <div class="item-input-wrap">
-                                    <input id="${promptId}" type="number" min="0" step="0.01" value="${promptValue}" />
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            `,
-            buttons: [
-                { text: 'Cancelar' },
-                { text: 'Aceptar', onClick: applyPromptValue }
-            ],
-            on: {
-                opened: bindPromptFormatting
-            },
-            destroyOnClose: true
-        }).open();
+            setSampleMix(prev => prev.map(row => ((row.key || row.name) === key ? { ...row, cpp: nextValue } : row)));
+        });
     };
 
     const handleExportSampleMix = () => {
-        const selectedProduct = getSelectedSampleProduct();
-        const nextValue = parseNonNegativeNumber(editedSampleProductAmount);
+        const editedKeys = Object.keys(editedSampleAmounts);
         const sampleVol = parseNonNegativeNumber(sampleVolume);
         const applicationVolume = [
             model.workVolume,
@@ -286,7 +241,7 @@ const CompatTest = props => {
             model.verificationOutput?.expectedSprayVolume
         ].map(value => parseNonNegativeNumber(value)).find(value => Number.isFinite(value) && value > 0);
 
-        if (!selectedProduct || !Number.isFinite(nextValue) || nextValue <= 0) {
+        if (editedKeys.length === 0) {
             Toast('error', 'Ingrese una cantidad válida para exportar', 2500, 'bottom');
             return;
         }
@@ -296,32 +251,43 @@ const CompatTest = props => {
             return;
         }
 
-        const productIndex = model.products.findIndex(prod => (prod.key || prod.name) === (selectedProduct.key || selectedProduct.name));
-        if (productIndex === -1) {
-            Toast('error', 'No se encontró el producto en la lista principal', 2600, 'bottom');
+        let updatedProducts = model.products;
+        let exportedCount = 0;
+
+        editedKeys.forEach(key => {
+            const nextValue = parseNonNegativeNumber(editedSampleAmounts[key]);
+            const sampleRow = sampleMix.find(row => (row.key || row.name) === key);
+
+            if (!sampleRow || !Number.isFinite(nextValue) || nextValue <= 0) {
+                return;
+            }
+
+            const productIndex = updatedProducts.findIndex(prod => (prod.key || prod.name) === key);
+            if (productIndex === -1) {
+                return;
+            }
+
+            const baseDose = Number(updatedProducts[productIndex]?.dose || 0);
+            const baseSampleDose = Number(sampleRow.originalCpp || 0);
+            const equivalentDose = Number.isFinite(baseDose) && baseDose > 0 && Number.isFinite(baseSampleDose) && baseSampleDose > 0
+                ? baseDose * (nextValue / baseSampleDose)
+                : (nextValue * applicationVolume) / sampleVol;
+
+            updatedProducts = updatedProducts.map((prod, index) =>
+                index === productIndex ? { ...prod, dose: equivalentDose } : prod
+            );
+            exportedCount += 1;
+        });
+
+        if (exportedCount === 0) {
+            Toast('error', 'No se encontró ningún producto para exportar', 2600, 'bottom');
             return;
         }
 
-        const baseDose = Number(model.products[productIndex]?.dose || 0);
-        const baseSampleDose = Number(selectedProduct.cpp || 0);
-        const equivalentDose = Number.isFinite(baseDose) && baseDose > 0 && Number.isFinite(baseSampleDose) && baseSampleDose > 0
-            ? baseDose * (nextValue / baseSampleDose)
-            : (nextValue * applicationVolume) / sampleVol;
-
-        const updatedProducts = model.products.map((prod, index) =>
-            index === productIndex ? { ...prod, dose: equivalentDose } : prod
-        );
-
-        model.update('products', updatedProducts);
-        setSampleMix(prev => prev.map(prod => (prod.key || prod.name) === (selectedProduct.key || selectedProduct.name) ? {
-            ...prod,
-            cpp: nextValue
-        } : prod));
-        setShowExportButton(false);
-        setSelectedSampleProductKey(null);
-        setEditedSampleProductAmount('');
+        model.update({ products: updatedProducts });
+        setEditedSampleAmounts({});
         Toast('success', 'Proporciones exportadas', 2000, 'bottom');
-        f7.view.main.router.back();
+        props.f7router.navigate('/supplies/');
     };
 
     return (
@@ -400,26 +366,22 @@ const CompatTest = props => {
 
             {sampleMix.length > 0 && (
                 <Block style={{ marginTop: '0px', marginBottom: '10px' }}>
-                    <Card>
+                    <Card className={classes.Card}>
                         <CardContent>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <table className={["data-table", classes.MainTable].join(' ')}>
                                 <thead>
                                     <tr>
-                                        <th style={{ textAlign: 'left', padding: '8px 0' }}>Producto</th>
-                                        <th style={{ textAlign: 'right', padding: '8px 0' }}>Cantidad</th>
+                                        <th className="label-cell" style={{margin:0, padding:0}}>Producto</th>
+                                        <th className="label-cell" style={{margin:0, padding:0}}>Cantidad</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {sampleMix.map(prod => {
                                         const unit = API.getProductQuantityLabel(prod, PRODUCT_TYPES.LIQUID);
                                         return (
-                                            <tr
-                                                key={prod.key || prod.name}
-                                                onClick={() => handleSelectSampleProduct(prod)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <td style={{ padding: '8px 0' }}>{prod.name}</td>
-                                                <td style={{ textAlign: 'right', padding: '8px 0' }}>
+                                            <tr key={prod.key || prod.name} onClick={() => handleSelectSampleProduct(prod)}>
+                                                <td>{prod.name}</td>
+                                                <td>
                                                     {`${formatNumber(prod.cpp, 2)} ${unit}`}
                                                 </td>
                                             </tr>
@@ -427,15 +389,23 @@ const CompatTest = props => {
                                     })}
                                 </tbody>
                             </table>
-                            {showExportButton && (
-                                <div style={{ marginTop: '12px', textAlign: 'center' }}>
-                                    <Button fill onClick={handleExportSampleMix} style={{ textTransform: 'none' }}>
-                                        Exportar
-                                    </Button>
-                                </div>
-                            )}
                         </CardContent>
                     </Card>
+                    {hasEditedProducts && (
+                        <Row style={{marginTop:"10px", marginBottom:"10px"}}>
+                            <Col width={20}></Col>
+                            <Col width={60}>
+                                <Button 
+                                    fill 
+                                    color="green"
+                                    onClick={handleExportSampleMix} 
+                                    style={{ textTransform: 'none' }}>
+                                Exportar
+                            </Button>
+                            </Col>
+                            <Col width={20}></Col>
+                        </Row>
+                    )}
                 </Block>
             )}
 

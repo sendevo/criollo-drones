@@ -1,4 +1,4 @@
-import { 
+import {
     Page, 
     Navbar,
     Block, 
@@ -34,7 +34,8 @@ const Density = props => { // View
     const handleExport = () => {
         if(density){
             model.update("productDensity", density);
-            props.f7router.back();
+            //f7.views.main.router.navigate("/params");
+            props.f7router.navigate("/params/");
         }
     }
 
