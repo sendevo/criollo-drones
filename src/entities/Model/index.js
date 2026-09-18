@@ -85,6 +85,7 @@ const defaultFormParams = {
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)
     productDensity: 1, // Densidad del caldo (kg/l) (liquidos)
+    waterEqSprayFlow: '', // Caudal de pulverizacion equivalente a agua (l/min)
 
     seedMode: false,
     seedVariety: '', // Variedad de semilla (para productos solidos)

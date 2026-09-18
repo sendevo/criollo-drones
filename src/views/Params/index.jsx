@@ -23,6 +23,7 @@ import Toast from '../../components/Toast';
 import Divider from '../../components/Divider';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
+import { computeQa } from '../../entities/API';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
@@ -43,7 +44,7 @@ const Params = props => {
     const [inputs, setInputs] = useState({
         productType: model.productType,
     
-        productDensity: model.productDensity || '',
+        productDensity: model.productDensity || 1,
 
         lotName: model.lotName || '',
         workArea: model.workArea || '',
@@ -58,6 +59,9 @@ const Params = props => {
         workVelocity: model.workVelocity || '',
         flightAltitude: model.flightAltitude || '',
     });
+
+    // Calcular caudal equivalente en agua
+    let waterEqSprayFlow = inputs.doseLiquid*Math.sqrt(inputs.productDensity);
 
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
         setInputs({
@@ -211,17 +215,26 @@ const Params = props => {
             <List form noHairlinesMd style={{marginBottom:"10px"}}>
 
                 {inputs.productType === PRODUCT_TYPES.LIQUID ?
-                    <Input
-                        data-testid="input-dose-liquid"
-                        slot="list"
-                        label="Dosis prevista"
-                        name="doseLiquid"
-                        type="number"
-                        unit="L/ha"
-                        icon={iconDoseLiq}
-                        value={inputs.doseLiquid}
-                        onChange={v=>setMainParams('doseLiquid', parseNonNegativeNumber(v.target.value))}>
-                    </Input>
+                    <>
+                        <Input
+                            data-testid="input-dose-liquid"
+                            slot="list"
+                            label="Dosis prevista"
+                            name="doseLiquid"
+                            type="number"
+                            unit="L/ha"
+                            icon={iconDoseLiq}
+                            value={inputs.doseLiquid}
+                            onChange={v=>setMainParams('doseLiquid', parseNonNegativeNumber(v.target.value))}>
+                        </Input>
+                        {waterEqSprayFlow && Math.abs(inputs.productDensity - 1) > 0.1 &&
+                            <div slot="list">
+                                <span style={{fontSize: "0.9em", color: "rgb(100, 100, 250)", marginLeft: "50px"}}>
+                                    Volumen equivalente en agua: {waterEqSprayFlow.toFixed(2)} l/ha
+                                </span>
+                            </div>
+                        }
+                    </>
                     :
                     <Row>
                         <Col width={inputs.seedMode ? "80" : "100"}>
