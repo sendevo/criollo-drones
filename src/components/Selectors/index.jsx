@@ -259,10 +259,12 @@ const PatternSelector = props => {
         }
     };
 
+    const blockTitle = props.productType === PRODUCT_TYPES.LIQUID ? "Patrón de aplicación" : (props.seedMode ? "Patrón de siembra" : "Patrón de fertilización");
+
     return (
         <Block style={{margin:"0px"}}>
             <BlockTitle>
-                <Typography variant='subtitle'>{props.seedMode ? "Patrón de siembra" : "Patrón de fertilización"}</Typography>
+                <Typography variant='subtitle'>{blockTitle}</Typography>
             </BlockTitle>
             <Row>
                 <Col style={{textAlign:"center"}}>

@@ -10,9 +10,11 @@ const ResultsProfile = ({seedMode, inputs, outputs, productType}) => {
 
     const diffp_c = expected_dose > 0 ? ((effective_dose - expected_dose)/expected_dose*100).toFixed(2) : '';
 
+    const blockTitle = productType === PRODUCT_TYPES.LIQUID ? "Perfil de aplicación" : (seedMode ? "Perfil de siembra" : "Perfil de fertilización");
+
     return(
         <Block style={{margin: "25px 0px 25px 0px"}}>
-            <BlockTitle style={{marginBottom: "10px"}}>{seedMode ? "Perfil de siembra" : "Perfil de fertilización"}</BlockTitle>
+            <BlockTitle style={{marginBottom: "10px"}}>{blockTitle}</BlockTitle>
             <table style={tableStyle}>
                 <tbody>
                     {Boolean(effective_dose) &&

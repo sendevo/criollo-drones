@@ -110,6 +110,25 @@ const Params = props => {
         setInputs(prevState => ({ ...prevState, [attr]: value }));
         if(attr !== "gpsEnabled") // gpsEnabled no forma parte del modelo
             model.update(attr, value); 
+
+    
+        // Si se cambia el tipo de producto, limpiar los parámetros de la tarjeta
+        model.update({
+            cardProfile: [],
+            avgDist: null,
+            stdDist: null,
+            cvDist: null,
+            cardData: [],
+            cardCount: '',
+            cardArea: '',
+            cardSeparation: '',
+            profileComputed: false,
+            profileSweep: null,
+            solidProfile: [],
+            trayCount: '',
+            traySeparation: '',
+            trayData: [] 
+        });
     };
 
     const addResultsToReport = () => {

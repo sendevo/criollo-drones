@@ -49,6 +49,7 @@ const DistributionControl = props => {
 
             {inputs.profileComputed && workWidthOptions.length > 0 &&
                 <PatternSelector
+                    productType={productType}
                     seedMode={seedMode}
                     pattern={selectedWorkPattern}
                     onChange={onPatternChange}/>
