@@ -13,6 +13,9 @@ class WorkWidthPicker extends React.Component {
             inputEl: this.inputRef.current,
             rotateEffect: true,
             backdrop: true,
+            closeOnSelect: false,
+            closeByBackdropClick: true,
+            closeByOutsideClick: true,
             renderToolbar: () => (`
                 <div class="toolbar">
                     <div class="toolbar-inner">
@@ -35,16 +38,23 @@ class WorkWidthPicker extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(!this.picker) {
+        if (!this.picker) {
             return;
         }
 
-        if(prevProps.options !== this.props.options) {
+        const optionsChanged = JSON.stringify(prevProps.options) !== JSON.stringify(this.props.options);
+
+        if (optionsChanged) {
+            const wasOpened = this.picker.opened;
             this.picker.destroy();
+
             this.picker = f7.picker.create({
                 inputEl: this.inputRef.current,
                 rotateEffect: true,
                 backdrop: true,
+                closeOnSelect: false,
+                closeByBackdropClick: true,
+                closeByOutsideClick: true,
                 renderToolbar: () => (`
                     <div class="toolbar">
                         <div class="toolbar-inner">
@@ -64,12 +74,16 @@ class WorkWidthPicker extends React.Component {
                     }
                 }
             });
+
+            if (wasOpened) {
+                this.picker.open(false); 
+            }
             return;
         }
 
-        if(prevProps.value !== this.props.value) {
+        if (prevProps.value !== this.props.value) {
             const nextValue = this.getPickerValue(this.props.value, this.props.options);
-            if(nextValue) {
+            if (nextValue && JSON.stringify(this.picker.value) !== JSON.stringify(nextValue)) {
                 this.picker.setValue(nextValue);
             }
         }

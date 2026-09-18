@@ -61,7 +61,7 @@ const Params = props => {
     });
 
     // Calcular caudal equivalente en agua
-    let waterEqSprayFlow = inputs.doseLiquid*Math.sqrt(inputs.productDensity);
+    let waterEqSprayFlow = inputs.doseLiquid && inputs.doseLiquid*Math.sqrt(inputs.productDensity);
 
     useEffect(() => { // Actualizar input de velocidad por si se mide con cronometro
         setInputs({
