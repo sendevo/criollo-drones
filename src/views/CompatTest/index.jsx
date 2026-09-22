@@ -9,14 +9,14 @@ import Toast from '../../components/Toast';
 import { ModelCtx } from '../../context';
 import { PRODUCT_TYPES } from '../../entities/Model';
 import * as API from '../../entities/API';
-import { formatNumber, parseNonNegativeNumber } from '../../utils';
+import { formatNumber, parseNonNegativeNumber, formatValueWithUnit, PRES_TO_UNIT } from '../../utils';
 import timerIcon from '../../assets/icons/tiempo.png';
 import sampleIcon from '../../assets/icons/concentracion.png';
 import moment from 'moment';
 import classes from './style.module.css';
 
-const PRESET_INTERVALS = [30, 60, 90];
-const defaultSeconds = 30;
+const PRESET_INTERVALS = [300, 600, 900];
+const defaultSeconds = 300;
 
 const CompatTest = props => {
 
@@ -117,8 +117,8 @@ const CompatTest = props => {
     const handleCustomChange = event => {
         if (running) return;
         const value = event.target.value;
-        setCustomSeconds(value);
-        const seconds = parseFloat(value);
+        setCustomSeconds(value*60);
+        const seconds = parseFloat(value*60);
         if (Number.isFinite(seconds) && seconds > 0) {
             updateInterval(seconds, value);
         } else {
@@ -306,7 +306,7 @@ const CompatTest = props => {
                                 name="compat-time"
                                 checked={selectedSeconds === seconds && customSeconds === ''}
                                 onChange={() => handlePresetChange(seconds)}
-                            /> {seconds} seg.
+                            /> {seconds/60} min.
                         </Col>
                     ))}
                 </Row>
@@ -319,7 +319,7 @@ const CompatTest = props => {
                     label="Otro intervalo"
                     name="customInterval"
                     type="number"
-                    unit="seg"
+                    unit="min."
                     value={customSeconds}
                     disabled={running}
                     onChange={handleCustomChange}
@@ -377,12 +377,12 @@ const CompatTest = props => {
                                 </thead>
                                 <tbody>
                                     {sampleMix.map(prod => {
-                                        const unit = API.getProductQuantityLabel(prod, PRODUCT_TYPES.LIQUID);
+                                        const {value, unit } = formatValueWithUnit(prod.cpp, PRES_TO_UNIT[prod.presentation]);
                                         return (
                                             <tr key={prod.key || prod.name} onClick={() => handleSelectSampleProduct(prod)}>
                                                 <td>{prod.name}</td>
                                                 <td>
-                                                    {`${formatNumber(prod.cpp, 2)} ${unit}`}
+                                                    {`${formatNumber(value, 2)} ${unit}`}
                                                 </td>
                                             </tr>
                                         );

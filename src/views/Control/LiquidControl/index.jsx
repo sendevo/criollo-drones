@@ -563,7 +563,7 @@ const LiquidControl = props => {
                     type="number"
                     unit="l/min"
                     icon={iconFlow}
-                    value={inputs.nozzleFlow}
+                    value={formatNumber(inputs.nozzleFlow)}
                     onChange={handleNozzleFlowChange}
                     disabled={running}>
                 </Input>

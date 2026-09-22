@@ -18,12 +18,16 @@ export const SEEDING_DENSITY_UNITS = {
 
 // Lista de versiones
 const DB_NAMES = [
-    "criollo_drones_1"
-    //"criollo_drones_2" // Descomentar para migraciones posteriores
+    "criollo_drones_1",
+    "criollo_drones_2" // Descomentar para migraciones posteriores
 ];
 
 const migrationFunctions = [
     //oldData => oldData // Descomentar para migraciones posteriores
+    oldData => {
+        // Migración de criollo_drones_1 a criollo_drones_2
+        localStorage.removeItem("criollo_drones_1"); // Limpiar versión anterior
+    }
 ];
 
 
@@ -131,7 +135,7 @@ const defaultFormParams = {
     loadBalancingEnabled: false, // Balanceo de cargas activado/desactivado
     supplies: [], // Insumos y cantidades
 
-    compatTestSelectedSeconds: 30, // Tiempo seleccionado para prueba de compatibilidad (s)
+    compatTestSelectedSeconds: 300, // Tiempo seleccionado para prueba de compatibilidad (s)
     compatTestCustomSeconds: '', // Tiempo personalizado de prueba de compatibilidad (s)
     compatTestRunning: false, // Cronometro de prueba de compatibilidad en ejecucion
     compatTestEndTs: '', // Timestamp de finalizacion del cronometro de compatibilidad

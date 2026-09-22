@@ -3,7 +3,6 @@ import {
     Navbar, 
     Page, 
     List,
-    ListItem,
     Checkbox,
     Row,
     Col,
@@ -13,17 +12,14 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { FaCalculator, FaStopwatch } from 'react-icons/fa';
 import { NavbarTitle, BackButton, ActionButton, NAVBAR_STYLE } from '../../components/Buttons';
-import { parseNonNegativeNumber } from '../../utils';
+import { parseNonNegativeNumber, formatNumber } from '../../utils';
 import { ProductTypeSelector, SolidTypeSelector } from '../../components/Selectors';
 import Typography from '../../components/Typography';
 import Input from '../../components/Input';
-import Select from '../../components/Select';
-import TextSwitch from '../../components/Switch';
 import Toast from '../../components/Toast';
 import Divider from '../../components/Divider';
 import { ModelCtx } from '../../context';
 import { getLocation } from '../../utils';
-import { computeQa } from '../../entities/API';
 import iconArea from '../../assets/icons/sup_lote.png';
 import iconName from '../../assets/icons/reportes.png';
 import iconVel from '../../assets/icons/velocidad.png';
@@ -33,7 +29,6 @@ import iconNozzleCnt from '../../assets/icons/cant_picos2.png';
 import iconDoseLiq from '../../assets/icons/dosis_liq.png';
 import iconDoseSol from '../../assets/icons/dosis_sol.png';
 import iconDensity from '../../assets/icons/densidad.png';
-
 import { PRODUCT_TYPES } from '../../entities/Model';
 
 
@@ -166,7 +161,7 @@ const Params = props => {
                                     type="number"
                                     unit="kg/l"
                                     icon={iconDensity}
-                                    value={inputs.productDensity}
+                                    value={formatNumber(inputs.productDensity)}
                                     onChange={v=>setMainParams('productDensity', parseNonNegativeNumber(v.target.value))}>
                                 </Input>
                             </Col>

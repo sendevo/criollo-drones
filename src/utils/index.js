@@ -215,3 +215,244 @@ export const handleSaveReport = async (fileName, base64pdf, share = false, feedb
         feedback("error", "No se pudo guardar el reporte", 2000, "center");
     }
 };
+
+// Conversion de unidades
+export const UNITS = {
+    unit: {
+        name: "Unidad",
+        abbr: "u"
+    },
+    kilogram: {
+        name: "Kilogramo/s",
+        abbr: "kg"
+    },
+    liter: {
+        name: "Litro/s",
+        abbr: "l"
+    },
+    gallon: {
+        name: "Galón/es",
+        abbr: "gal"
+    },
+    mililiter: {
+        name: "Mililitro/s",
+        abbr: "ml"
+    },
+    pint: {
+        name: "Pinta/s",
+        abbr: "pint"
+    },
+    quart: {
+        name: "Cuarto/s",
+        abbr: "qt"
+    },
+    ounce: {
+        name: "Onza/s",
+        abbr: "oz"
+    },
+    pound: {
+        name: "Libra/s",
+        abbr: "lb"
+    },
+    
+    gram: {
+        name: "Gramo/s",
+        abbr: "g"
+    },
+    ton: {
+        name: "Tonelada/s",
+        abbr: "tn"
+    },
+    unit_ha: {
+        name: "Unidades por hectárea",
+        abbr: "u/ha"
+    },
+    kilogram_ha: {
+        name: "Kilos por hectárea",
+        abbr: "kg/ha"
+    },
+    liter_ha: {
+        name: "Litros por hectárea",
+        abbr: "l/ha"
+    },
+    mililiter_ha: {
+        name: "Mililitros por hectárea",
+        abbr: "ml/ha"
+    },
+    gallon_ha: {
+        name: "Galones por hectárea",
+        abbr: "gal/ha"
+    },
+    pint_ha: {
+        name: "Pintas por hectárea",
+        abbr: "pint/ha"
+    },
+    quart_ha: {
+        name: "Cuartos por hectárea",
+        abbr: "qt/ha"
+    },
+    ounce_ha: {
+        name: "Onzas por hectárea",
+        abbr: "oz/ha"
+    },
+    gram_ha: {
+        name: "Gramos por hectárea",
+        abbr: "g/ha"
+    },
+    pound_ha: {
+        name: "Libras por hectárea",
+        abbr: "lb/ha"
+    },
+    ton_ha: {
+        name: "Toneladas por hectárea",
+        abbr: "tn/ha"
+    },
+    meter: {
+        name: "Metro/s",
+        abbr: "m"
+    },
+    pack: {
+        name: "Paquete/s",
+        abbr: "paq"
+    },
+    box: {
+        name: "Caja/s",
+        abbr: "caja/s"
+    },
+    bag: {
+        name: "Bolsa/s",
+        abbr: "bolsa/s"
+    },
+    bottle: {
+        name: "Botella/s",
+        abbr: "bot"
+    },
+    can: {
+        name: "Lata/s",
+        abbr: "lata/s"
+    },
+    drum: {
+        name: "Tambor",
+        abbr: "tambor"
+    },
+    pallet: {
+        name: "Pallet/s",
+        abbr: "pallet/s"
+    },
+    seeds: {
+        name: "Semilla/s",
+        abbr: "sem"
+    },
+    other: {
+        name: "Otro/s",
+        abbr: "otro/s"
+    }
+};
+
+export const VOLUME_UNITS = ['liter', 'mililiter', 'gallon', 'pint', 'quart', 'ounce'];
+export const WEIGHT_UNITS = ['kilogram', 'gram', 'pound', 'ton'];
+export const PRES_TO_UNIT = [ // See ../../entities/API.js -> presentation units
+    "ml", // 0
+    "gr", // 1
+    "ml", // 2
+    "gr", // 3
+    "l", // 4
+];
+
+export const UNIT_CONVERSION_FACTORS = {
+    // Volume
+    'liter': 1,
+    'mililiter': 0.001, // Typo
+    'gallon': 3.78541,
+    'pint': 0.473176,
+    'quart': 0.946353,
+    'ounce': 0.0295735,
+    // Weight
+    'kilogram': 1,
+    'gram': 0.001,
+    'pound': 0.453592,
+    'ton': 1000,
+};
+
+export const unitConversion = (value, fromUnit, toUnit) => {
+
+    const UNIT_KEYS = Object.keys(UNITS);
+
+    if (!UNIT_KEYS.includes(fromUnit) || !UNIT_KEYS.includes(toUnit)) {
+        console.error(`Invalid inputs: ${fromUnit} or ${toUnit}`);
+        return value; //throw new Error(`Invalid unit: ${fromUnit} or ${toUnit}`);
+    }
+    
+    // Avoid conversion between volume and weight
+    if ((VOLUME_UNITS.includes(fromUnit) && WEIGHT_UNITS.includes(toUnit)) || 
+        (WEIGHT_UNITS.includes(fromUnit) && VOLUME_UNITS.includes(toUnit))) {
+        console.error(`Invalid conversion: ${fromUnit} to ${toUnit}`);
+        return value; //throw new Error(`Invalid conversion: ${fromUnit} to ${toUnit}`);
+    }
+
+    const fromFactor = UNIT_CONVERSION_FACTORS[fromUnit];
+    const toFactor = UNIT_CONVERSION_FACTORS[toUnit];
+    
+    if (!fromFactor || !toFactor) {
+        console.error(`Invalid units: ${fromUnit} or ${toUnit}`);
+        return value; //throw new Error(`Invalid unit: ${fromUnit} or ${toUnit}`);
+    }
+    
+    return (value * fromFactor) / toFactor;
+};
+
+const DISPLAY_UNIT_GROUPS = {
+    volume: [
+        { unit: 'l', factor: 1 },
+        { unit: 'ml', factor: 0.001 },
+    ],
+    weight: [
+        { unit: 'tn', factor: 1000 },
+        { unit: 'kg', factor: 1 },
+        { unit: 'g', factor: 0.001 },
+    ],
+};
+
+export const formatValueWithUnit = (value, unit) => {
+
+    console.log(`formatValueWithUnit called with value: ${value}, unit: ${unit}`);
+
+    if (!Number.isFinite(value)) {
+        return { value, unit };
+    }
+
+    const group = Object.values(DISPLAY_UNIT_GROUPS).find(units =>
+        units.some(item => item.unit === unit)
+    );
+
+    // No hay conversión automática para esta unidad
+    if (!group) {
+        return {
+            value: Number(value.toPrecision(3)),
+            unit
+        };
+    }
+
+    // Convertimos primero a la unidad base del grupo
+    const sourceFactor = group.find(item => item.unit === unit).factor;
+    const baseValue = value * sourceFactor;
+
+    // Elegimos la unidad que produzca un número más legible
+    let selected = group[0];
+
+    for (const candidate of group) {
+        const converted = baseValue / candidate.factor;
+
+        if (converted >= 1 && converted < 1000) {
+            selected = candidate;
+            break;
+        }
+    }
+
+    const convertedValue = baseValue / selected.factor;
+
+    return {
+        value: Number(convertedValue.toPrecision(3)),
+        unit: selected.unit
+    };
+};

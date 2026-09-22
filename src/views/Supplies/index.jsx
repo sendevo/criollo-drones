@@ -377,22 +377,24 @@ const Supplies = props => {
                             <Col width={20}></Col>
                         </Row>
                     </Block>
-                    <Block style={{marginTop:"10px", marginBottom:"0px"}}>
-                        <Row className="help-target-compat-test">
-                            <Col width={20}></Col>
-                            <Col width={60}>
-                                <Button 
-                                    fill 
-                                    onClick={() => props.f7router.navigate('/compatTest/')}
-                                    data-testid="compat-test-btn" 
-                                    color="green"
-                                    style={{textTransform:"none"}}>
-                                        Prueba de compatibilidad
-                                </Button>
-                            </Col>
-                            <Col width={20}></Col>
-                        </Row>
-                    </Block>
+                    {model.products?.length > 0 && model.products?.every(p => p.dose && p.dose > 0) &&
+                        <Block style={{marginTop:"10px", marginBottom:"0px"}}>
+                            <Row className="help-target-compat-test">
+                                <Col width={20}></Col>
+                                <Col width={60}>
+                                    <Button 
+                                        fill 
+                                        onClick={() => props.f7router.navigate('/compatTest/')}
+                                        data-testid="compat-test-btn" 
+                                        color="green"
+                                        style={{textTransform:"none"}}>
+                                            Prueba de compatibilidad
+                                    </Button>
+                                </Col>
+                                <Col width={20}></Col>
+                            </Row>
+                        </Block>
+                    }
                 </>
             }
                
