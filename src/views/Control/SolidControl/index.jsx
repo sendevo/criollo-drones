@@ -41,6 +41,8 @@ const SolidControl = () => {
 
     const model = useContext(ModelCtx);
 
+    const [originalWorkWidth] = useState(model.workWidth || '');
+
     const [inputs, setInputs] = useState({
         productType: model.productType,
         lotCoordinates: model.lotCoordinates || [],
@@ -349,7 +351,7 @@ const SolidControl = () => {
                 </BlockTitle>
             </Block>
 
-            <ParamsData {...model} />
+            <ParamsData {...model} originalWorkWidth={originalWorkWidth} />
 
             <List form noHairlinesMd style={{marginTop:"0px", marginBottom:"0px"}}>
                 <Row slot="list">

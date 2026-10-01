@@ -6,7 +6,7 @@ const ParamsData = props => { // Encabezado para mostrar los parámetros operati
 
     const {
         doseSolid,
-        workWidth,
+        originalWorkWidth,
         workVelocity
     } = props;
 
@@ -25,13 +25,13 @@ const ParamsData = props => { // Encabezado para mostrar los parámetros operati
                         </tr>
                         : null
                     }
-                    {workWidth ?
+                    {originalWorkWidth ?
                         <tr>
-                            <td style={fieldCellStyle}><b>Ancho de faja:</b></td>
+                            <td style={fieldCellStyle}><b>Ancho de faja previsto:</b></td>
                             <td 
                                 data-testid="work-width-preview"
                                 style={dataCellStyle}>
-                                    {workWidth} m
+                                    {originalWorkWidth} m
                             </td>
                         </tr>
                         : null
