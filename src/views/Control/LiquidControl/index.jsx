@@ -61,7 +61,7 @@ const LiquidControl = props => {
         productType: model.productType || '',
 
         doseLiquid: model.doseLiquid || '',
-        workWidth: model.workWidth || '',
+        adjustedWorkWidth: model.adjustedWorkWidth || model.workWidth || '',
         workVelocity: model.workVelocity || '',
         nozzleCnt: model.nozzleCnt || model.controlNozzleCnt || '',
         totalNozzleCnt: model.nozzleCnt || '',
@@ -188,7 +188,7 @@ const LiquidControl = props => {
                 const totalNozzleCnt = parseFloat(inputs.totalNozzleCnt) || parseFloat(inputs.nozzleCnt);
                 const effectiveSprayVolume = API.computeSprayVolume({
                     Q: efAvg,
-                    d: inputs.workWidth/totalNozzleCnt,
+                    d: inputs.adjustedWorkWidth/totalNozzleCnt,
                     vel: inputs.workVelocity
                 });
                 const diff = effectiveSprayVolume - inputs.doseLiquid;
@@ -234,7 +234,7 @@ const LiquidControl = props => {
         const res = API.computeNozzleVol({
             Va: parseFloat(inputs.doseLiquid),
             Vt: parseFloat(inputs.workVelocity),
-            work_width: inputs.workWidth,
+            work_width: inputs.adjustedWorkWidth,
             nozzleCnt: parseFloat(inputs.nozzleCnt)
         });
         setInputs({
@@ -257,7 +257,7 @@ const LiquidControl = props => {
         }
 
         handleComputeProfile();
-    }, [inputs.cardData, inputs.cardArea, inputs.cardSeparation, inputs.workWidth]);
+    }, [inputs.cardData, inputs.cardArea, inputs.cardSeparation, inputs.adjustedWorkWidth]);
 
     const onTimeout = () => {
         KeepAwake.allowSleep();
@@ -380,7 +380,7 @@ const LiquidControl = props => {
         setInputs(prevState => ({
             ...prevState,
             workPattern: selectedPattern,
-            workWidth: selectedWidth,
+            adjustedWorkWidth: selectedWidth,
             cardProfile: selectedProfile.solidProfile,
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
@@ -395,7 +395,7 @@ const LiquidControl = props => {
 
         model.update({
             workPattern: selectedPattern,
-            workWidth: selectedWidth,
+            adjustedWorkWidth: selectedWidth,
             cardProfile: selectedProfile.solidProfile,
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
@@ -405,7 +405,7 @@ const LiquidControl = props => {
     };
 
     const handlePatternChange = pattern => {
-        applyProfileSelection(pattern, inputs.workWidth);
+        applyProfileSelection(pattern, inputs.adjustedWorkWidth);
     };
 
     const handleWorkWidthChange = workWidth => {
@@ -438,7 +438,7 @@ const LiquidControl = props => {
             }
 
             const workPattern = inputs.workPattern || 'lineal';
-            const selectedProfile = getSelectedProfile(result[workPattern], inputs.workWidth);
+            const selectedProfile = getSelectedProfile(result[workPattern], inputs.adjustedWorkWidth);
 
             if(!selectedProfile || selectedProfile.status === 'error') {
                 Toast("error", "No se pudo seleccionar un Ancho de faja válido");
@@ -450,7 +450,7 @@ const LiquidControl = props => {
                 ...prevState,
                 profileSweep: result,
                 workPattern,
-                workWidth: work_width,
+                adjustedWorkWidth: work_width,
                 cardProfile: solidProfile,
                 avgDist: avg,
                 stdDist: dst,
@@ -460,7 +460,7 @@ const LiquidControl = props => {
 
             model.update({
                 workPattern,
-                workWidth: work_width,
+                adjustedWorkWidth: work_width,
                 cardProfile: solidProfile,
                 avgDist: avg,
                 stdDist: dst,
@@ -520,6 +520,7 @@ const LiquidControl = props => {
         }
 
         if(attr === "cardArea" || attr === "cardSeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
+            const inputAttr = attr === "workWidth" ? "adjustedWorkWidth" : attr;
             setInputs(prevState => ({ 
                 ...prevState, 
                 profileComputed: false,
@@ -527,9 +528,9 @@ const LiquidControl = props => {
                 avgDist: null,
                 stdDist: null,
                 cvDist: null,
-                [attr]: value
+                [inputAttr]: value
             }));
-            model.update(attr, value);
+            model.update(attr === "workWidth" ? "adjustedWorkWidth" : attr, value);
         }
     };
 

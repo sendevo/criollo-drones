@@ -84,6 +84,7 @@ const Params = props => {
             const prevInputs = { ...inputs, productType: value };
             model.update({
                 productType: value,
+                adjustedWorkWidth: model.workWidth,
                 recolectedData: clearNozzleData()
             });
             setInputs({
@@ -118,8 +119,14 @@ const Params = props => {
         }
 
         setInputs(prevState => ({ ...prevState, [attr]: value }));
-        if(attr !== "gpsEnabled") // gpsEnabled no forma parte del modelo
+        if(attr === "workWidth") {
+            model.update({
+                workWidth: value,
+                adjustedWorkWidth: value
+            });
+        } else if(attr !== "gpsEnabled") { // gpsEnabled no forma parte del modelo
             model.update(attr, value); 
+        }
 
     
         // Si se cambia el tipo de producto, limpiar los parámetros de la tarjeta

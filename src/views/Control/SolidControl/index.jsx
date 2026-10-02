@@ -51,7 +51,7 @@ const SolidControl = () => {
         workVelocity: model.workVelocity || '',
         recolected: model.recolected || '',
         recolectedTime: model.recolectedTime || '',
-        workWidth: model.workWidth || '',
+        adjustedWorkWidth: model.adjustedWorkWidth || model.workWidth || '',
         doseSolid: model.doseSolid || '',
         doseLiquid: model.doseLiquid || '',
         gpsEnabled: false,
@@ -92,7 +92,7 @@ const SolidControl = () => {
 
     useEffect(() => {
         handleComputeProfile();
-    }, [inputs.trayData, inputs.traySeparation, inputs.workWidth]);
+    }, [inputs.trayData, inputs.traySeparation, inputs.adjustedWorkWidth]);
 
     const setMainParams = (attr, value) => {
         if(attr === "trayCount"){ // Actualizar array de datos de bandejas
@@ -117,6 +117,7 @@ const SolidControl = () => {
         }
 
         if(attr === "traySeparation" || attr === "workWidth"){ // Al cambiar estos parámetros, el perfil debe recalcularse
+            const inputAttr = attr === "workWidth" ? "adjustedWorkWidth" : attr;
             setInputs(prevState => ({ 
                 ...prevState, 
                 profileComputed: false,
@@ -124,9 +125,9 @@ const SolidControl = () => {
                 avgDist: null,
                 stdDist: null,
                 cvDist: null,
-                [attr]: value
+                [inputAttr]: value
             }));
-            model.update(attr, value);
+            model.update(attr === "workWidth" ? "adjustedWorkWidth" : attr, value);
         }
     };
 
@@ -161,12 +162,12 @@ const SolidControl = () => {
 
         const selectedWidth = selectedProfile.work_width;
         const effectiveDose = Number.isFinite(selectedProfile.avg) ? selectedProfile.avg : 0;
-        const adjustedDose = effectiveDose*inputs.workWidth/selectedWidth;
+        const adjustedDose = effectiveDose*inputs.adjustedWorkWidth/selectedWidth;
 
         setInputs(prevState => ({
             ...prevState,
             workPattern: selectedPattern,
-            workWidth: selectedWidth,
+            adjustedWorkWidth: selectedWidth,
             solidProfile: selectedProfile.solidProfile,
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
@@ -182,7 +183,7 @@ const SolidControl = () => {
 
         model.update({
             workPattern: selectedPattern,
-            workWidth: selectedWidth,
+            adjustedWorkWidth: selectedWidth,
             solidProfile: selectedProfile.solidProfile,
             avgDist: selectedProfile.avg,
             stdDist: selectedProfile.dst,
@@ -193,7 +194,7 @@ const SolidControl = () => {
     };
 
     const handlePatternChange = pattern => {
-        applyProfileSelection(pattern, inputs.workWidth);
+        applyProfileSelection(pattern, inputs.adjustedWorkWidth);
     };
 
     const handleWorkWidthChange = workWidth => {
@@ -223,7 +224,7 @@ const SolidControl = () => {
                 return;
             }else{
                 const workPattern = inputs.workPattern || 'lineal';
-                const selectedProfile = getSelectedProfile(result[workPattern], inputs.workWidth);
+                const selectedProfile = getSelectedProfile(result[workPattern], inputs.adjustedWorkWidth);
 
                 if(!selectedProfile || selectedProfile.status === 'error') {
                     Toast("error", "No se pudo seleccionar un Ancho de faja válido");
@@ -235,7 +236,7 @@ const SolidControl = () => {
                     ...prevState, 
                     profileSweep: result,
                     workPattern,
-                    workWidth: work_width,
+                    adjustedWorkWidth: work_width,
                     solidProfile: solidProfile,
                     avgDist: avg,
                     stdDist: dst,
@@ -248,7 +249,7 @@ const SolidControl = () => {
                 }));
                 model.update({
                     workPattern,
-                    workWidth: work_width,
+                    adjustedWorkWidth: work_width,
                     solidProfile,
                     avgDist: avg,
                     stdDist: dst,
@@ -275,7 +276,7 @@ const SolidControl = () => {
             recolected: parseFloat(inputs.recolected),
             work_velocity: parseFloat(inputs.workVelocity),
             recolected_time: parseFloat(inputs.recolectedTime),
-            work_width: parseFloat(inputs.workWidth),
+            work_width: parseFloat(inputs.adjustedWorkWidth),
             expected_dose: parseFloat(inputs.doseSolid)
         };
 

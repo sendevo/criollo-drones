@@ -85,6 +85,7 @@ const defaultFormParams = {
     recolected: '', // Cantidad recolectada (kg o l)
     recolectedTime: '', // Tiempo de recolección (s)
     workWidth: '', // Ancho de trabajo (m)
+    adjustedWorkWidth: '', // Ancho de trabajo ajustado (m)
     flightAltitude: '', // Altitud de vuelo (m)
     doseSolid: '', // Dosis para productos solidos (kg/ha)
     doseLiquid: '', // Dosis para productos liquidos (l/ha)

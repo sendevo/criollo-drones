@@ -58,7 +58,7 @@ const DistributionControl = props => {
             {inputs.profileComputed && workWidthOptions.length > 0 &&
                 <WorkWidthPicker
                     options={workWidthOptions}
-                    value={inputs.workWidth}
+                    value={inputs.adjustedWorkWidth}
                     onChange={onWorkWidthChange}/>
             }
 
