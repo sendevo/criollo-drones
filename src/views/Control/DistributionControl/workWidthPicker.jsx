@@ -1,6 +1,8 @@
 import React from 'react';
 import { f7, Row, Col, Button } from 'framework7-react';
 
+const roundToTwoDecimals = value => Number(Number(value).toFixed(2));
+
 class WorkWidthPicker extends React.Component {
     constructor(props) {
         super(props);
@@ -30,7 +32,7 @@ class WorkWidthPicker extends React.Component {
                 change: pickerValue => {
                     const selected = parseFloat(pickerValue?.value?.[0]);
                     if(Number.isFinite(selected) && this.props.onChange) {
-                        this.props.onChange(selected);
+                        this.props.onChange(roundToTwoDecimals(selected));
                     }
                 }
             }
@@ -69,7 +71,7 @@ class WorkWidthPicker extends React.Component {
                     change: pickerValue => {
                         const selected = parseFloat(pickerValue?.value?.[0]);
                         if(Number.isFinite(selected) && this.props.onChange) {
-                            this.props.onChange(selected);
+                                this.props.onChange(roundToTwoDecimals(selected));
                         }
                     }
                 }
@@ -96,8 +98,8 @@ class WorkWidthPicker extends React.Component {
     getPickerCols(options = []) {
         return [
             {
-                values: options.map(v => v.work_width),
-                displayValues: options.map(v => `${v.work_width} m - (${v.cv?.toFixed(2) || '0.00'}%)`),
+                values: options.map(v => roundToTwoDecimals(v.work_width)),
+                displayValues: options.map(v => `${roundToTwoDecimals(v.work_width)} m - (${v.cv?.toFixed(2) || '0.00'}%)`),
                 textAlign: 'left'
             }
         ];
@@ -110,10 +112,10 @@ class WorkWidthPicker extends React.Component {
 
         const parsedValue = parseFloat(value);
         if(Number.isFinite(parsedValue)) {
-            return [parsedValue];
+            return [roundToTwoDecimals(parsedValue)];
         }
 
-        return [options[0].work_width];
+        return [roundToTwoDecimals(options[0].work_width)];
     }
 
     handleClick(e) {

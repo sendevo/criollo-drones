@@ -13,6 +13,7 @@ import { useSound } from "use-sound";
 import moment from 'moment';
 import { KeepAwake } from '@capacitor-community/keep-awake';
 import DistributionControl from '../DistributionControl';
+import ParamsData from '../SolidControl/paramsData.jsx';
 import Input from "../../../components/Input";
 import Toast from "../../../components/Toast";
 import { FaPlay, FaStop } from 'react-icons/fa';
@@ -49,6 +50,7 @@ const buildNozzleRows = count => Array.from({ length: count }, () => ({
 const LiquidControl = props => {
     
     const model = useContext(ModelCtx);
+    const [originalWorkWidth] = useState(model.workWidth || '');
 
     const initialNozzleCount = parseInt(model.controlNozzleCnt || model.nozzleCnt || 0, 10) || 0;
     const initialNozzleData = Array.isArray(model.recolectedData) && model.recolectedData.length === initialNozzleCount
@@ -543,6 +545,13 @@ const LiquidControl = props => {
 
     return (
         <div>
+            <Block style={{marginTop:"0px", marginBottom:"0px"}}>
+                <BlockTitle>
+                    <Typography>Control de dosis</Typography>
+                </BlockTitle>
+            </Block>
+            
+            <ParamsData {...model} originalWorkWidth={originalWorkWidth} />
             <ElapsedSelector value={elapsed} disabled={running} onChange={handleElapsedChange}/>
 
             <List form noHairlinesMd style={{marginBottom:"10px", marginTop: "10px"}}>    
@@ -587,18 +596,6 @@ const LiquidControl = props => {
                     evalCollected={handleNewCollectedValue}/>
             </Block>
 
-            <List form noHairlinesMd style={{marginBottom:"10px", marginTop: "10px"}}>    
-                <Input
-                    slot="list"
-                    label="Observaciones"
-                    name="comments"
-                    type="textarea"
-                    icon={iconReport}
-                    value={outputs.comments}
-                    onChange={e => setComments(e.target.value)}>
-                </Input>
-            </List>
-
             {outputs.ready && 
                 <Block style={{
                         lineHeight: "0.5em",
@@ -606,8 +603,8 @@ const LiquidControl = props => {
                     }}>
                     <p><b>Resultados</b></p>
                     {/*<p>Caudal efectivo promedio: {formatNumber(outputs.efAvg)} l/min</p>*/}
+                    <p style={{fontSize: "16px"}}>Volumen pulverizado efectivo: {formatNumber(outputs.effectiveSprayVolume)} l/ha</p>
                     {outputs.totalEffectiveFlow && <p>Caudal pulverizado efectivo: {formatNumber(outputs.totalEffectiveFlow)} l/min</p>}
-                    <p>Volumen pulverizado efectivo: {formatNumber(outputs.effectiveSprayVolume)} l/ha</p>
                     {inputs.doseLiquid && <p>Diferencia: {formatNumber(outputs.diff)} l/ha ({formatNumber(outputs.diffp)} %)</p>}
                 </Block>
             }
@@ -666,6 +663,18 @@ const LiquidControl = props => {
                     handleComputeProfile={handleComputeProfile}
                     handleClearDistrForm={handleClearDistrForm}/>
             }
+
+            <List form noHairlinesMd style={{marginBottom:"10px", marginTop: "10px"}}>    
+                <Input
+                    slot="list"
+                    label="Observaciones"
+                    name="comments"
+                    type="textarea"
+                    icon={iconReport}
+                    value={outputs.comments}
+                    onChange={e => setComments(e.target.value)}>
+                </Input>
+            </List>
 
             <Row style={{marginTop:30, marginBottom: 20}}>
                 <Col width={20}></Col>

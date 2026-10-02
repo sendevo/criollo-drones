@@ -211,6 +211,14 @@ const PDFExport = async (report, share) => {
             }, formatNumber(report.control.efAvg)+" l/min"]
         ];
 
+        controlRows.push([
+            {
+                text: "Volumen pulverizado efectivo:",
+                style: "tableHeader",
+                fontSize: 14
+            }, formatNumber(report.control.effectiveSprayVolume) + " l/ha"
+        ]);
+
         if(report.control.totalEffectiveFlow) {
             controlRows.push([
                 {
@@ -219,13 +227,6 @@ const PDFExport = async (report, share) => {
                 }, formatNumber(report.control.totalEffectiveFlow)+" l/min"
             ]);
         }
-
-        controlRows.push([
-            {
-                text: "Volumen pulverizado efectivo:",
-                style: "tableHeader"
-            }, formatNumber(report.control.effectiveSprayVolume) + " l/ha"
-        ]);
 
         if(report.control.expectedSprayVolume) {
             controlRows.push(

@@ -31,10 +31,22 @@ import iconDoseSol from '../../assets/icons/dosis_sol.png';
 import iconDensity from '../../assets/icons/densidad.png';
 import { PRODUCT_TYPES } from '../../entities/Model';
 
+const buildEmptyNozzleRows = count => Array.from({ length: count }, () => ({
+    value: 0,
+    updated: false,
+    ef: undefined,
+    s: undefined,
+    c: false
+}));
+
 
 const Params = props => {
 
     const model = useContext(ModelCtx);
+    const clearNozzleData = () => {
+        const nozzleCount = parseInt(model.controlNozzleCnt || model.nozzleCnt || 0, 10) || 0;
+        return buildEmptyNozzleRows(nozzleCount);
+    };
 
     const [inputs, setInputs] = useState({
         productType: model.productType,
@@ -70,7 +82,10 @@ const Params = props => {
     const handleProductTypeChange = (value) => {
         if(Object.values(PRODUCT_TYPES).includes(value)){
             const prevInputs = { ...inputs, productType: value };
-            model.update("productType", value );
+            model.update({
+                productType: value,
+                recolectedData: clearNozzleData()
+            });
             setInputs({
                 ...prevInputs,
                 productType: value
@@ -109,6 +124,7 @@ const Params = props => {
     
         // Si se cambia el tipo de producto, limpiar los parámetros de la tarjeta
         model.update({
+            recolectedData: clearNozzleData(),
             cardProfile: [],
             avgDist: null,
             stdDist: null,

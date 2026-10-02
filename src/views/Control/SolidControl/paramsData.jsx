@@ -1,26 +1,32 @@
 import { Block } from 'framework7-react';
 import { tableStyle, fieldCellStyle, dataCellStyle } from '../styles.js';
+import { PRODUCT_TYPES } from '../../../entities/Model/index.js';
 
 
 const ParamsData = props => { // Encabezado para mostrar los parámetros operativos
 
     const {
         doseSolid,
+        doseLiquid,
+        productType,
         originalWorkWidth,
         workVelocity
     } = props;
+    const dose = productType === PRODUCT_TYPES.LIQUID ? doseLiquid : doseSolid;
+    const doseUnit = productType === PRODUCT_TYPES.LIQUID ? 'l/ha' : 'kg/ha';
+    const doseTestId = productType === PRODUCT_TYPES.LIQUID ? 'liquid-dose-preview' : 'solid-dose-preview';
 
     return (
         <Block style={{margin: "10px 0px 5px 0px"}}>
-            <table style={tableStyle}>
+            <table style={{...tableStyle, color: 'blue', marginBottom: '15px'}}>
                 <tbody>
-                    {doseSolid ? 
+                    {dose ? 
                         <tr>
                             <td style={fieldCellStyle}><b>Dosis prevista:</b></td>
                             <td 
-                                data-testid="solid-dose-preview" 
+                                data-testid={doseTestId}
                                 style={dataCellStyle}>
-                                    {doseSolid?.toFixed(2)} kg/ha
+                                    {dose?.toFixed(2)} {doseUnit}
                             </td>
                         </tr>
                         : null

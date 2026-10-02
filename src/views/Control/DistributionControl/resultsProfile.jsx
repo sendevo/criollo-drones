@@ -5,7 +5,7 @@ import { PRODUCT_TYPES } from '../../../entities/Model/index.js';
 
 const ResultsProfile = ({seedMode, inputs, outputs, productType}) => {
     
-    const {avgDist, cvDist} = inputs;
+    const {avgDist, cvDist, workWidth} = inputs;
     const {expected_dose, effective_dose, adjusted_dose} = outputs;
 
     const diffp_c = expected_dose > 0 ? ((effective_dose - expected_dose)/expected_dose*100).toFixed(2) : '';
@@ -46,6 +46,14 @@ const ResultsProfile = ({seedMode, inputs, outputs, productType}) => {
                             <td style={fieldCellStyle}><b>Coeficiente de variación:</b></td>
                             <td style={dataCellStyle} data-testid="distribution-cv-output">
                                 {cvDist?.toFixed(2) || ''} %
+                            </td>
+                        </tr>
+                    }
+                    {Boolean(workWidth) &&
+                        <tr>
+                            <td style={fieldCellStyle}><b>Ancho de labor ajustado:</b></td>
+                            <td style={dataCellStyle} data-testid="distribution-adjusted-work-width-output">
+                                {workWidth} m
                             </td>
                         </tr>
                     }
